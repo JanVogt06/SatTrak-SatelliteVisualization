@@ -1,9 +1,9 @@
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-Assets/AssetStoreTools*
+UnityProjekt/[Ll]ibrary/
+UnityProjekt/[Tt]emp/
+UnityProjekt/[Oo]bj/
+UnityProjekt/[Bb]uild/
+UnityProjekt/[Bb]uilds/
+UnityProjekt/Assets/AssetStoreTools*
 
 # Visual Studio cache directory
 .vs/
@@ -37,5 +37,4 @@ sysinfo.txt
 *.unitypackage
 
 # Crashlytics generated file
-Assets/StreamingAssets/crashlytics-build.properties
-
+UnityProjekt/Assets/StreamingAssets/crashlytics-build.properties
