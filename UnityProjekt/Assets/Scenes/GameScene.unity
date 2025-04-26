@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 57a03e42a58e1e242b3b60b258a9229b, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 0f029606978e25b48ab68ff079fdc586, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -237,12 +237,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 84079441}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1786786861}
+  m_Father: {fileID: 708874051}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &84079443
 MonoBehaviour:
@@ -880,6 +880,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 664286996}
   m_CullTransparentMesh: 1
+--- !u!1 &708874050
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 708874051}
+  m_Layer: 0
+  m_Name: Globe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &708874051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708874050}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 84079442}
+  m_Father: {fileID: 1786786861}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,7 +986,7 @@ Transform:
   m_GameObject: {fileID: 1080272860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1812182, y: -3133864.5, z: -2435147.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1382,10 +1414,10 @@ MonoBehaviour:
   _originPlacement: 1
   _originAuthority: 0
   _latitude: 51.217959
-  _longitude: 11.666985
+  _longitude: 11.66698500000001
   _height: 222
   _ecefX: 3920586.3711542115
-  _ecefY: 809558.6792242513
+  _ecefY: 809558.6792242518
   _ecefZ: 4948941.569174374
   _scale: 1
 --- !u!4 &1786786861
@@ -1396,12 +1428,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1786786858}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1812182, y: 3133864.5, z: 2435147.5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 84079442}
+  - {fileID: 708874051}
   - {fileID: 1952269527}
   m_Father: {fileID: 1080272861}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1554,6 +1586,8 @@ GameObject:
   - component: {fileID: 1952269535}
   - component: {fileID: 1952269537}
   - component: {fileID: 1952269538}
+  - component: {fileID: 1952269539}
+  - component: {fileID: 1952269540}
   m_Layer: 0
   m_Name: DynamicCamera
   m_TagString: MainCamera
@@ -1569,9 +1603,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1952269526}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6057589, y: -1.3823576e-16, z: 1.01172534e-16, w: 0.7956483}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.0000001, z: 1.0000001}
+  m_LocalRotation: {x: 0.8742067, y: -0.04384972, z: -0.463071, w: 0.13930218}
+  m_LocalPosition: {x: 2220432, y: -6519477, z: -6737460.5}
+  m_LocalScale: {x: 1, y: 1.0000025, z: 1.0000006}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1786786861}
@@ -1721,24 +1755,24 @@ MonoBehaviour:
   _detectTransformChanges: 1
   _localToGlobeFixedMatrix:
     c0:
-      x: -0.20222301351092464
-      y: 0.9793394982367252
-      z: 0.00000000000000020950611481997498
+      x: 0.3678889469469974
+      y: 0.6552176598780255
+      z: -0.6598087338522353
       w: 0
     c1:
-      x: -0.5726630178748028
-      y: -0.11824871906974879
-      z: 0.8112179692237206
+      x: -0.8147830415541603
+      y: -0.11479328479275086
+      z: -0.568292366649642
       w: 0
     c2:
-      x: -0.7944577989401735
-      y: -0.1640469423506332
-      z: -0.5847441248983292
+      x: 0.44809595963719323
+      y: -0.7466679750087599
+      z: -0.49162813634207086
       w: 0
     c3:
-      x: 3920586.3711542115
-      y: 809558.6792242513
-      z: 4948941.569174374
+      x: 4615967.628462703
+      y: 3220422.427335049
+      z: -4353286.846868874
       w: 1
   _localToGlobeFixedMatrixIsValid: 1
 --- !u!114 &1952269538
@@ -1768,7 +1802,43 @@ MonoBehaviour:
   targetCamera: {fileID: 1952269534}
   earthFov: 60
   spaceFov: 80
-  fovTransitionDuration: 1.5
+  fovTransitionDuration: 2
+  orbitController: {fileID: 1952269539}
+--- !u!114 &1952269539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952269526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a92b42601e6874b89c813eabfb109e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeFlyCamera: {fileID: 1952269535}
+  georeference: {fileID: 1786786860}
+  fovThreshold: 70
+  rotationSpeed: 0.09
+  inertiaDamping: 3
+  maxPitch: 90
+  smoothFactor: 8
+--- !u!114 &1952269540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952269526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a08d75aa373384ebec040e7526e367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  globeAnchor: {fileID: 1952269537}
+  tileset: {fileID: 84079443}
+  minAboveGround: 5
+  sampleRateHz: 10
 --- !u!1 &2038890114
 GameObject:
   m_ObjectHideFlags: 0

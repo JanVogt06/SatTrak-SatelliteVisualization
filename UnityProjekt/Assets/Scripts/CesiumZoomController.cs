@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using CesiumForUnity;
 using Unity.Mathematics;
@@ -8,21 +8,25 @@ public class CesiumZoomController : MonoBehaviour
     public CesiumGlobeAnchor globeAnchor;
     public float zoomDuration = 2f;
 
-    // Zielpositionen: (Lon, Lat, Höhe)
-    public double3 spaceView = new double3(11.666985, 51.217959, 300); // Space
-    public double3 earthView = new double3(11.666985, 51.217959, 200);      // Earth (Dorf)
+    public double3 spaceView = new double3(11.666985, 51.217959, 300); 
+    public double3 earthView = new double3(11.666985, 51.217959, 200);     
 
-    public Vector3 spaceRotation = new Vector3(45f, 0f, 0f);   // Schräg oben
-    public Vector3 earthRotation = new Vector3(25f, 0f, 0f);   // Schräg unten
+    public Vector3 spaceRotation = new Vector3(45f, 0f, 0f);   
+    public Vector3 earthRotation = new Vector3(25f, 0f, 0f);   
 
     [Header("FOV Transition")]
     public Camera targetCamera;
     public float earthFov = 60f;
     public float spaceFov = 80f;
     public float fovTransitionDuration = 1.5f;
-
+    public GlobeRotationController orbitController;
 
     private Coroutine zoomRoutine;
+
+    private void Start()
+    {
+        ZoomToSpace();
+    }
 
     public void ZoomToEarth()
     {
@@ -59,6 +63,12 @@ public class CesiumZoomController : MonoBehaviour
 
         globeAnchor.longitudeLatitudeHeight = targetLLH;
         transform.rotation = targetRotation;
+
+        // <- hier Initialisierung fÃ¼r den Orbit-Controller:
+        if (this.orbitController != null)
+        {
+            this.orbitController.InitializeOrbit();
+        }         
     }
 
     IEnumerator AnimateFOV(float from, float to)

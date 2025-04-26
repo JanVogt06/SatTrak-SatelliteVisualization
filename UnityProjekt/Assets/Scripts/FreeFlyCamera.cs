@@ -102,14 +102,12 @@ public class FreeFlyCamera : MonoBehaviour
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
 
-        // Initialer Kamera-Modus
-        _cursorLocked = true;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        _cursorLocked = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
-    // Apply requested cursor state
-    private bool _cursorLocked = true; // Startmodus = Kamera-Modus
+    private bool _cursorLocked = true;
 
     private void SetCursorState()
     {
@@ -143,19 +141,17 @@ public class FreeFlyCamera : MonoBehaviour
 
         SetCursorState();
 
-        // Wenn Cursor freigegeben → UI-Modus → kein Kamerasteuern!
         if (Cursor.lockState != CursorLockMode.Locked)
             return;
 
-        // --- Eingabe sammeln ---
         _movementInput = Vector3.zero;
 
         if (_enableMovement)
         {
-            if (Input.GetKey(KeyCode.W)) _movementInput.z += 1;
-            if (Input.GetKey(KeyCode.S)) _movementInput.z -= 1;
-            if (Input.GetKey(KeyCode.A)) _movementInput.x -= 1;
-            if (Input.GetKey(KeyCode.D)) _movementInput.x += 1;
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) _movementInput.z += 1;
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) _movementInput.z -= 1;
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) _movementInput.x -= 1;
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) _movementInput.x += 1;
             if (Input.GetKey(_moveUp)) _movementInput.y += 1;
             if (Input.GetKey(_moveDown)) _movementInput.y -= 1;
         }
