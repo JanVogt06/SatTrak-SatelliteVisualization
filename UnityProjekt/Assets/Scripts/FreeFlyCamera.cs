@@ -198,4 +198,10 @@ public class FreeFlyCamera : MonoBehaviour
             CalculateCurrentIncrease(false);
         }
     }
+
+    public void SyncInitTransform()
+    {
+        _initPosition = transform.position;
+        _initRotation = transform.eulerAngles;
+    }
 }

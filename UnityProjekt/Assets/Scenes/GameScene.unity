@@ -2204,6 +2204,7 @@ MonoBehaviour:
   orbitController: {fileID: 1952269539}
   spaceButton: {fileID: 664286998}
   search: {fileID: 806567998}
+  freeFlyCameraScript: {fileID: 1952269535}
 --- !u!114 &1952269539
 MonoBehaviour:
   m_ObjectHideFlags: 0

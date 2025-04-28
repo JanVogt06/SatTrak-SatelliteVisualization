@@ -28,6 +28,8 @@ public class CesiumZoomController : MonoBehaviour
 
     public GameObject search;
 
+    public FreeFlyCamera freeFlyCameraScript;
+
     private void Start()
     {
         search.SetActive(true);
@@ -73,6 +75,8 @@ public class CesiumZoomController : MonoBehaviour
 
         globeAnchor.longitudeLatitudeHeight = targetLLH;
         transform.rotation = targetRotation;
+
+        freeFlyCameraScript.SyncInitTransform();
 
         if (this.orbitController != null)
         {
