@@ -29,11 +29,9 @@ public class GlobeRotationController : MonoBehaviour
 
     void Start()
     {
-        // Anfangs-Pivot und Kameradistanz ermitteln
         UpdatePivot();
         Vector3 dir = (transform.position - pivot);
         distance = dir.magnitude;
-        // Start-Yaw/Pitch aus der aktuellen Rotation
         Quaternion init = transform.rotation;
         Vector3 e = init.eulerAngles;
         targetYaw = currentYaw = e.y;
@@ -42,7 +40,6 @@ public class GlobeRotationController : MonoBehaviour
 
     void UpdatePivot()
     {
-        // Wandelt ECEF-(0,0,0) in Unity‐Space um
         var u = georeference.TransformEarthCenteredEarthFixedPositionToUnity(new double3(0, 0, 0));
         pivot = new Vector3((float)u.x, (float)u.y, (float)u.z);
     }
@@ -55,7 +52,6 @@ public class GlobeRotationController : MonoBehaviour
         if (!spaceMode)
             return;
 
-        // Eingabe
         if (Input.GetMouseButtonDown(0))
         {
             dragging = true;
@@ -68,7 +64,6 @@ public class GlobeRotationController : MonoBehaviour
             Vector2 delta = (Vector2)Input.mousePosition - lastMouse;
             lastMouse = Input.mousePosition;
 
-            // Ziele anpassen
             targetYaw += delta.x * rotationSpeed;
             targetPitch -= delta.y * rotationSpeed;
             targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
@@ -79,7 +74,6 @@ public class GlobeRotationController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
             dragging = false;
 
-        // Inertia weiterdrehen
         if (!dragging && inertia.magnitude > 0.01f)
         {
             targetYaw += inertia.x * rotationSpeed * Time.deltaTime;
@@ -89,11 +83,9 @@ public class GlobeRotationController : MonoBehaviour
             inertia = Vector2.Lerp(inertia, Vector2.zero, inertiaDamping * Time.deltaTime);
         }
 
-        // Smooth auf die Ziel-Yaw/Pitch gleiten lassen
         currentYaw = Mathf.Lerp(currentYaw, targetYaw, smoothFactor * Time.deltaTime);
         currentPitch = Mathf.Lerp(currentPitch, targetPitch, smoothFactor * Time.deltaTime);
 
-        // Kamera neu positionieren und drehen
         Quaternion rot = Quaternion.Euler(currentPitch, currentYaw, 0f);
         Vector3 dir = rot * Vector3.forward;
         transform.position = pivot - dir * distance;
@@ -102,14 +94,11 @@ public class GlobeRotationController : MonoBehaviour
 
     public void InitializeOrbit()
     {
-        // 1) Pivot neu holen (falls sich georeference verschoben hat)
         UpdatePivot();
 
-        // 2) Abstand von der Kamera zum Pivot merken
         Vector3 dir = transform.position - pivot;
         distance = dir.magnitude;
 
-        // 3) Aktuelle Rotation als Ausgangswinkel übernehmen
         Vector3 e = transform.rotation.eulerAngles;
         targetYaw = currentYaw = e.y;
         targetPitch = currentPitch = e.x;

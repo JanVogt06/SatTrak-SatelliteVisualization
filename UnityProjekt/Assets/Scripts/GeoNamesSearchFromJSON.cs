@@ -91,56 +91,39 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         inputField.onValueChanged.AddListener(OnTextChanged);
     }
 
-    void OnTextChanged(string text)
+    private void OnTextChanged(string text)
     {
-        // 1) Alte Buttons zurück in Pool
-        foreach (Transform child in suggestionPanel)
-        {
-            var go = child.gameObject;
-            go.SetActive(false);
-            _buttonPool.Push(go);
-        }
-        suggestionPanel.DetachChildren();
+        ClearSuggestions();
 
         if (string.IsNullOrWhiteSpace(text))
             return;
 
         string lower = text.ToLowerInvariant();
-        List<LocationEntry> candidates;
 
-        // 2) Suche nur in der passenden Gruppe
-        if (lower.Length >= 2 && _group2.TryGetValue(lower.Substring(0, 2), out candidates))
-        {
-            // zwei-Buchstaben-Gruppe
-        }
-        else if (_group1.TryGetValue(lower[0], out candidates))
-        {
-            // ein-Buchstaben-Gruppe
-        }
+        List<LocationEntry> candidates = null;
+        if (lower.Length >= 2 && _group2.TryGetValue(lower.Substring(0, 2), out var g2))
+            candidates = g2;
+        else if (_group1.TryGetValue(lower[0], out var g1))
+            candidates = g1;
         else
-        {
-            return; // keine Gruppe → kein Match
-        }
+            return;
 
         int count = 0;
         foreach (var entry in candidates)
         {
-            if (entry.nameLower.StartsWith(lower))
-            {
-                var btn = GetPooledButton();
-                btn.transform.SetParent(suggestionPanel, false);
-                btn.GetComponentInChildren<TMP_Text>().text = entry.name;
+            if (!entry.nameLower.StartsWith(lower))
+                continue;
 
-                var button = btn.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => {
-                    SelectLocation(entry);
-                });
+            var btn = GetPooledButton();
+            btn.transform.SetParent(suggestionPanel, false);
+            btn.GetComponentInChildren<TMP_Text>().text = entry.name;
 
-                count++;
-                if (count >= maxResults)
-                    break;
-            }
+            var uiBtn = btn.GetComponent<Button>();
+            uiBtn.onClick.RemoveAllListeners();
+            uiBtn.onClick.AddListener(() => OnSelect(entry));
+
+            if (++count >= maxResults)
+                break;
         }
     }
 
@@ -158,48 +141,36 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         }
     }
 
-    void SelectLocation(LocationEntry entry)
+    private void OnSelect(LocationEntry entry)
     {
-        zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 400));
-
-        inputField.text = entry.name;
-        OnTextChanged(entry.name);
-
+        ClearSuggestions();
         inputField.text = "";
-    }
 
-    void OnSelect(LocationEntry entry)
-    {
-        // Alte Coroutines abbrechen, wenn noch eine läuft
         StopAllCoroutines();
-
-        // Start der neuen Sequenz
         StartCoroutine(SwitchSpaceThenZoom(entry));
     }
 
-    IEnumerator SwitchSpaceThenZoom(LocationEntry entry)
+    private IEnumerator SwitchSpaceThenZoom(LocationEntry entry)
     {
-        // 1) in Space schalten
+        if (Mathf.Abs(zoomController.targetCamera.fieldOfView - zoomController.spaceFov) < 0.1f)
+        {
+            zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 400));
+            yield break;
+        }
+
         zoomController.ZoomToSpace();
-
-        // 2) warten bis Space-Zoom + FOV fertig ist
-        float waitTime = zoomController.zoomDuration + zoomController.fovTransitionDuration;
-        yield return new WaitForSeconds(waitTime);
-
-        // 3) reinzoomen auf die neue Stadt
+        
+        yield return new WaitForSeconds(2f);
         zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 400));
-
-        // 4) UI aufräumen (Input-Feld & Vorschläge)
-        inputField.text = entry.name;
-        ClearSuggestions();
     }
 
-    void ClearSuggestions()
+    private void ClearSuggestions()
     {
         foreach (Transform child in suggestionPanel)
         {
-            child.gameObject.SetActive(false);
-            _buttonPool.Push(child.gameObject);
+            var go = child.gameObject;
+            go.SetActive(false);
+            _buttonPool.Push(go);
         }
         suggestionPanel.DetachChildren();
     }
