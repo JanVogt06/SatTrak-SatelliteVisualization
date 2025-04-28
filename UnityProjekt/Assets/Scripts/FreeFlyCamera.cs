@@ -1,8 +1,4 @@
-﻿//===========================================================================//
-//                       FreeFlyCamera (Version 1.2)                         //
-//                        (c) 2019 Sergey Stafeyev                           //
-//===========================================================================//
-
+﻿using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
@@ -16,6 +12,9 @@ public class FreeFlyCamera : MonoBehaviour
     [SerializeField]
     [Tooltip("The script is currently active")]
     private bool _active = true;
+
+    [SerializeField]
+    private TextMeshProUGUI modeText;
 
     [Space]
 
@@ -99,6 +98,7 @@ public class FreeFlyCamera : MonoBehaviour
 
     private void Start()
     {
+        modeText.text = "Mode: Inspector";
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
 
@@ -114,7 +114,14 @@ public class FreeFlyCamera : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             _cursorLocked = !_cursorLocked;
-
+            if (_cursorLocked == false)
+            {
+                modeText.text = "Mode: Inspector";
+            }
+            else
+            {
+                modeText.text = "Mode: Camera";
+            }
             Cursor.lockState = _cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !_cursorLocked;
         }

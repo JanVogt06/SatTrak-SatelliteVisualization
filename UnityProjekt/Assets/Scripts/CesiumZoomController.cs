@@ -3,7 +3,6 @@ using System.Collections;
 using CesiumForUnity;
 using Unity.Mathematics;
 using UnityEngine.UI;
-using UnityEditor.Searcher;
 
 public class CesiumZoomController : MonoBehaviour
 {
@@ -19,7 +18,7 @@ public class CesiumZoomController : MonoBehaviour
     public Camera targetCamera;
     public float earthFov = 60f;
     public float spaceFov = 80f;
-    public float fovTransitionDuration = 1.5f;
+    public float fovTransitionDuration = 2f;
     public GlobeRotationController orbitController;
 
     private Coroutine zoomRoutine;
@@ -29,6 +28,8 @@ public class CesiumZoomController : MonoBehaviour
     public GameObject search;
 
     public FreeFlyCamera freeFlyCameraScript;
+
+    public CesiumGeoreference georeference;
 
     private void Start()
     {
@@ -51,6 +52,9 @@ public class CesiumZoomController : MonoBehaviour
         spaceButton.interactable = false;
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
         zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation), true));
+        georeference.latitude = 51.21796;
+        georeference.longitude = 11.66699;
+        georeference.height = 400;
         StartCoroutine(AnimateFOV(earthFov, spaceFov));
     }
 

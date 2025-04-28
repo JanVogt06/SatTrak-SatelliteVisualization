@@ -21,7 +21,7 @@ public class DefaultStuff : MonoBehaviour
 
     void Start()
     {
-        Application.targetFrameRate = 240; // Max FPS setzen
+        Application.targetFrameRate = 240;
     }
 
     public void EndGame()

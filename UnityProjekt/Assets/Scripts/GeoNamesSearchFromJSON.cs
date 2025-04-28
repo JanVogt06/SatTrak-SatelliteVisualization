@@ -4,8 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Mathematics;
-using static UnityEngine.EventSystems.EventTrigger;
 using System.Collections;
+using CesiumForUnity;
 
 [Serializable]
 public class LocationEntry
@@ -14,7 +14,6 @@ public class LocationEntry
     public double lat;
     public double lon;
 
-    // Laufzeit-Cache für schnelleren Vergleich:
     [NonSerialized] public string nameLower;
 }
 
@@ -38,32 +37,28 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
     [Header("Controllers")]
     public CesiumZoomController zoomController;
 
-    // Laufzeit-DB
     private List<LocationEntry> _db;
     private Dictionary<char, List<LocationEntry>> _group1;
     private Dictionary<string, List<LocationEntry>> _group2;
 
-    // Pool für Buttons
     private Stack<GameObject> _buttonPool = new Stack<GameObject>();
+
+    public CesiumGeoreference georeference;
 
     void Awake()
     {
-        // 1) JSON parsen
         var dbWrap = JsonUtility.FromJson<LocationDatabase>(geoJson.text);
         _db = dbWrap.entries;
 
-        // 2) Namen lower-cachen
         foreach (var e in _db)
             e.nameLower = e.name.ToLowerInvariant();
 
-        // 3) Ein- und Zwei-Buchstaben Gruppen bauen
         _group1 = new Dictionary<char, List<LocationEntry>>();
         _group2 = new Dictionary<string, List<LocationEntry>>();
         foreach (var e in _db)
         {
             if (string.IsNullOrEmpty(e.nameLower)) continue;
 
-            // Gruppe 1 Buchstabe
             char c1 = e.nameLower[0];
             if (!_group1.TryGetValue(c1, out var list1))
             {
@@ -72,7 +67,6 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
             }
             list1.Add(e);
 
-            // Gruppe 2 Buchstaben
             if (e.nameLower.Length >= 2)
             {
                 string c2 = e.nameLower.Substring(0, 2);
@@ -154,6 +148,9 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
     {
         if (Mathf.Abs(zoomController.targetCamera.fieldOfView - zoomController.spaceFov) < 0.1f)
         {
+            georeference.latitude = entry.lat; 
+            georeference.longitude = entry.lon;
+            georeference.height = 400;
             zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 400));
             yield break;
         }
@@ -161,6 +158,9 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         zoomController.ZoomToSpace();
         
         yield return new WaitForSeconds(2f);
+        georeference.latitude = entry.lat;
+        georeference.longitude = entry.lon;
+        georeference.height = 400;
         zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 400));
     }
 

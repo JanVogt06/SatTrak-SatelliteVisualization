@@ -12,7 +12,8 @@ public class GlobeRotationController : MonoBehaviour
     [Header("Orbit Settings")]
     public float rotationSpeed = 0.2f;
     public float inertiaDamping = 3f;
-    public float maxPitch = 85f;
+    public float maxPitchUp;
+    public float maxPitchDown;
 
     [Header("Smoothing")]
     [Tooltip("Wie stark die Kamera der Zielrotation nachgleitet")]
@@ -66,7 +67,7 @@ public class GlobeRotationController : MonoBehaviour
 
             targetYaw += delta.x * rotationSpeed;
             targetPitch -= delta.y * rotationSpeed;
-            targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
+            targetPitch = Mathf.Clamp(targetPitch, maxPitchDown, maxPitchUp);
 
             inertia = delta / Time.deltaTime;
         }
@@ -78,7 +79,7 @@ public class GlobeRotationController : MonoBehaviour
         {
             targetYaw += inertia.x * rotationSpeed * Time.deltaTime;
             targetPitch -= inertia.y * rotationSpeed * Time.deltaTime;
-            targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
+            targetPitch = Mathf.Clamp(targetPitch, maxPitchDown, maxPitchUp);
 
             inertia = Vector2.Lerp(inertia, Vector2.zero, inertiaDamping * Time.deltaTime);
         }
