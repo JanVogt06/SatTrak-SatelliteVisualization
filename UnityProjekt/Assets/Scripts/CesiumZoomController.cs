@@ -2,14 +2,15 @@
 using System.Collections;
 using CesiumForUnity;
 using Unity.Mathematics;
+using UnityEngine.UI;
+using UnityEditor.Searcher;
 
 public class CesiumZoomController : MonoBehaviour
 {
     public CesiumGlobeAnchor globeAnchor;
     public float zoomDuration = 2f;
 
-    public double3 spaceView = new double3(11.666985, 51.217959, 300); 
-    public double3 earthView = new double3(11.666985, 51.217959, 200);     
+    public double3 spaceView = new double3(11.666985, 51.217959, 300);     
 
     public Vector3 spaceRotation = new Vector3(45f, 0f, 0f);   
     public Vector3 earthRotation = new Vector3(25f, 0f, 0f);   
@@ -23,26 +24,35 @@ public class CesiumZoomController : MonoBehaviour
 
     private Coroutine zoomRoutine;
 
+    public Button spaceButton;
+
+    public GameObject search;
+
     private void Start()
     {
+        search.SetActive(true);
+        spaceButton.interactable = false;
         ZoomToSpace();
     }
 
-    public void ZoomToEarth()
+    public void ZoomToEarth(double3 earthView)
     {
+        search.SetActive(false);
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
-        zoomRoutine = StartCoroutine(ZoomToPosition(earthView, Quaternion.Euler(earthRotation)));
+        zoomRoutine = StartCoroutine(ZoomToPosition(earthView, Quaternion.Euler(earthRotation), false));
         StartCoroutine(AnimateFOV(spaceFov, earthFov));
     }
 
     public void ZoomToSpace()
     {
+        search.SetActive(false);
+        spaceButton.interactable = false;
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
-        zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation)));
+        zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation), true));
         StartCoroutine(AnimateFOV(earthFov, spaceFov));
     }
 
-    IEnumerator ZoomToPosition(double3 targetLLH, Quaternion targetRotation)
+    IEnumerator ZoomToPosition(double3 targetLLH, Quaternion targetRotation, bool space)
     {
         double3 startLLH = globeAnchor.longitudeLatitudeHeight;
         Quaternion startRotation = transform.rotation;
@@ -64,11 +74,17 @@ public class CesiumZoomController : MonoBehaviour
         globeAnchor.longitudeLatitudeHeight = targetLLH;
         transform.rotation = targetRotation;
 
-        // <- hier Initialisierung für den Orbit-Controller:
         if (this.orbitController != null)
         {
             this.orbitController.InitializeOrbit();
-        }         
+        }
+
+        if (!space)
+        {
+            spaceButton.interactable = true;
+        }
+
+        search.SetActive(true);
     }
 
     IEnumerator AnimateFOV(float from, float to)
