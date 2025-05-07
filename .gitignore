@@ -42,3 +42,6 @@ sysinfo.txt
 
 # Crashlytics generated file
 UnityProjekt/Assets/StreamingAssets/crashlytics-build.properties
+UnityProjekt/.vscode/extensions.json
+UnityProjekt/.vscode/launch.json
+UnityProjekt/.vscode/settings.json
