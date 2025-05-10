@@ -6,34 +6,25 @@ using SGPdotNET.Propagation;
 using SGPdotNET.TLE;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class SatelliteController : MonoBehaviour
 {
-    private Sgp4 _orbitPropagator;
-
-    private CesiumGlobeAnchor anchor;
+    public Sgp4 OrbitPropagator;
+    public Tle Tle;
+    public Renderer Renderer { get; private set; }
+    public CesiumGlobeAnchor Anchor { get; private set; }
 
     void Awake()
     {
-        anchor = GetComponent<CesiumGlobeAnchor>();
+        
     }
 
-    public void Initialize(Sgp4 propagator)
+    public void Initialize(Tle tle)
     {
-        _orbitPropagator = propagator;
-        StartCoroutine(UpdateSatellitesCoroutine());
-    }
-    
-    private IEnumerator UpdateSatellitesCoroutine()
-    {
-        while (true)
-        {
-            if (_orbitPropagator == null) yield return new WaitForSeconds(1);
-
-            var result = _orbitPropagator.FindPosition(DateTime.UtcNow);
-            var pos = result.ToGeodetic();
-            anchor.longitudeLatitudeHeight = new double3(pos.Longitude.Degrees, pos.Latitude.Degrees, pos.Altitude * 3);
-            yield return new WaitForSeconds(1);
-        }
+        Anchor = GetComponent<CesiumGlobeAnchor>();
+        Renderer = GetComponent<Renderer>();
+        Tle = tle;
+        OrbitPropagator = new Sgp4(tle);
     }
 }

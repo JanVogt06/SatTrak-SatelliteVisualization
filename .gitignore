@@ -8,6 +8,8 @@ UnityProjekt/Assets/AssetStoreTools*
 UnityProjekt/[Uu]ser[Ss]ettings/
 *.log
 
+cacheTle.txt
+
 # Visual Studio cache directory
 .vs/
 .idea/
