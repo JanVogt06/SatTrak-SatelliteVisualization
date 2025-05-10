@@ -77,11 +77,12 @@ public class SatelliteManager : MonoBehaviour
                         }
 
                         var positions = MaxPositionCache - satellitePositions[satellite.Tle.NoradNumber].Count;
-
+                        
+                        DateTime futureTime = nextTime; // 10 Minuten Schritt für jede Position
                         // Berechne die Positionen 10 Minuten weiter als den Startzeitpunkt
                         for (int j = 0; j < positions; j++)
                         {
-                            DateTime futureTime = nextTime; // 10 Minuten Schritt für jede Position
+                            futureTime = futureTime.AddMinutes(10);
                             EciCoordinate result = null;
                             try
                             {
