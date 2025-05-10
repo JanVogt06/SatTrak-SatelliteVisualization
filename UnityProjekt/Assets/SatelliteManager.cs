@@ -27,7 +27,7 @@ public class SatelliteManager : MonoBehaviour
     private Dictionary<uint, Queue<double3>> satellitePositions = new();
     private const int MaxPositionCache = 50;
     private const int UpdateBatchSize = 250; // Größe des Updates pro Durchlauf
-    private const int TotalUpdateDelay = 1; // Wartezeit in Sekunden zwischen den Updates
+    private float TotalUpdateDelay = 1; // Wartezeit in Sekunden zwischen den Updates
 
 
     void Start()
@@ -36,7 +36,12 @@ public class SatelliteManager : MonoBehaviour
         StartCoroutine(PositionUpdateCoroutine());
         StartPositionCalculation();
     }
-
+    
+    public void OnSliderValueChanged(float newValue)
+    {
+        TotalUpdateDelay = newValue;
+    }
+    
     void FetchTleData()
     {
         try
@@ -116,7 +121,7 @@ public class SatelliteManager : MonoBehaviour
                     }
                 }
 
-                Task.Delay(1000); // Berechnungen alle 100ms
+                Task.Delay((int)(TotalUpdateDelay * 1000)); // Berechnungen alle 100ms
             }
         });
     }
@@ -125,9 +130,9 @@ public class SatelliteManager : MonoBehaviour
     {
         int startIndex = 0; // Startindex für den aktuellen Batch
 
-        var delay = CalculateDelay(satellites.Count, TotalUpdateDelay);
         while (true)
         { 
+            var delay = CalculateDelay(satellites.Count, TotalUpdateDelay);
             // Berechne den Endindex des aktuellen Batches
             int endIndex = Mathf.Min(startIndex + UpdateBatchSize, satellites.Count);
 
@@ -166,7 +171,7 @@ public class SatelliteManager : MonoBehaviour
         }
     }
 
-    private float CalculateDelay(int totalItems, int targetIterationDuration)
+    private float CalculateDelay(int totalItems, float targetIterationDuration)
     {
         if (UpdateBatchSize <= 0 || totalItems <= 0)
             return 0;
