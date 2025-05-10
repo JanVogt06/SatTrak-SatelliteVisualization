@@ -82,7 +82,7 @@ public class SatelliteManager : MonoBehaviour
                         // Berechne die Positionen 10 Minuten weiter als den Startzeitpunkt
                         for (int j = 0; j < positions; j++)
                         {
-                            futureTime = futureTime.AddMinutes(10);
+                            futureTime = futureTime.AddMinutes(1);
                             EciCoordinate result = null;
                             try
                             {
