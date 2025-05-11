@@ -7576,19 +7576,19 @@ MonoBehaviour:
   _detectTransformChanges: 1
   _localToGlobeFixedMatrix:
     c0:
-      x: -1559.3122036677257
-      y: 9476.120340277485
-      z: -2787.7748885302744
+      x: -1559.3125372518512
+      y: 9476.120263524988
+      z: -2787.774963397287
       w: 0
     c1:
-      x: -9052.886723781343
-      y: -241.9898333354472
-      z: 4241.071250051151
+      x: -9052.886706935764
+      y: -241.9901083200739
+      z: 4241.071281476769
       w: 0
     c2:
-      x: -3951.428838737309
-      y: -3185.0563993275014
-      z: -8616.358177702803
+      x: -3951.4287576127253
+      y: -3185.0566070880354
+      z: -8616.358143420286
       w: 0
     c3:
       x: -1543998.872778643
@@ -7616,10 +7616,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aee7af7d2a2a07a4d95b53d21946e3f3, type: 2}
-  - {fileID: 2100000, guid: 911d2c7b56e35d545a8e60fc34db34aa, type: 2}
-  - {fileID: 2100000, guid: fb11a7c9e5777c24f9521f5d349ababb, type: 2}
-  - {fileID: 2100000, guid: 82e13eab8efcd764190a697124eb4cdc, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7657,7 +7654,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888826446}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7705789, y: -0.010890464, z: -0.14176746, w: 0.62128216}
+  m_LocalRotation: {x: 0.7705789, y: -0.010890482, z: -0.14176746, w: 0.62128216}
   m_LocalPosition: {x: 817492.8, y: -2419126.5, z: 4997769.5}
   m_LocalScale: {x: 10000, y: 10000, z: 10000}
   m_ConstrainProportionsScale: 0
