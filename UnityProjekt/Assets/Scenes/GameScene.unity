@@ -6478,7 +6478,8 @@ MonoBehaviour:
   cesiumGeoreference: {fileID: 1786786860}
   zoomController: {fileID: 1952269538}
   fovThreshold: 70
-  interpolationDuration: 3
+  segmentDuration: 10
+  lookAheadThreshold: 0.6
 --- !u!4 &964490651
 Transform:
   m_ObjectHideFlags: 0
@@ -7580,19 +7581,19 @@ MonoBehaviour:
   _detectTransformChanges: 1
   _localToGlobeFixedMatrix:
     c0:
-      x: -1559.3128006077372
-      y: 9476.120202930906
-      z: -2787.775022502824
+      x: -1559.3129059500918
+      y: 9476.12017869327
+      z: -2787.775046145038
       w: 0
     c1:
-      x: -9052.886693636621
-      y: -241.99032541320048
-      z: 4241.071306286469
+      x: -9052.886688316965
+      y: -241.99041225045062
+      z: 4241.0713162103475
       w: 0
     c2:
-      x: -3951.428693566995
-      y: -3185.056771109509
-      z: -8616.358116355148
+      x: -3951.4286679486995
+      y: -3185.056836718097
+      z: -8616.358105529096
       w: 0
     c3:
       x: -1543998.872778643
@@ -7662,7 +7663,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888826446}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7705789, y: -0.010890496, z: -0.14176746, w: 0.62128216}
+  m_LocalRotation: {x: 0.7705789, y: -0.010890502, z: -0.14176746, w: 0.62128216}
   m_LocalPosition: {x: 817492.8, y: -2419126.5, z: 4997769.5}
   m_LocalScale: {x: 10000, y: 10000, z: 10000}
   m_ConstrainProportionsScale: 0

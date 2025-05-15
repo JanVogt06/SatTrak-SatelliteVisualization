@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using CesiumForUnity;
-using Newtonsoft.Json;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Exception;
 using SGPdotNET.Propagation;
@@ -28,24 +25,40 @@ public class SatelliteManager : MonoBehaviour
     [Header("Movement Settings")]
     [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
     public float fovThreshold = 70f;
-    [Tooltip("Dauer der Interpolation im Erde-Modus (in Sekunden)")]
-    public float interpolationDuration = 0.5f;
+    [Tooltip("Wie lange es dauert, einen Abschnitt zu durchlaufen")]
+    public float segmentDuration = 0.5f;
+    [Tooltip("Bei welchem Fortschritt die nächste Position vorgeladen wird (0-1)")]
+    [Range(0.1f, 0.9f)]
+    public float lookAheadThreshold = 0.6f;
 
     private readonly List<SatelliteController> satellites = new();
     private Dictionary<uint, Queue<double3>> satellitePositions = new();
-    private Dictionary<uint, double3> currentPositions = new();
-    private Dictionary<uint, Coroutine> activeRoutines = new();
+    private Dictionary<uint, bool> continuousMovementActive = new();
+    private Dictionary<uint, List<SatellitePathPoint>> activePaths = new();
     
     private const int MaxPositionCache = 50;
     private const int UpdateBatchSize = 250;
     private float TotalUpdateDelay = 1;
 
+    // Struktur für die Satelliten-Pfadpunkte mit Zeitstempel
+    private class SatellitePathPoint
+    {
+        public double3 Position;
+        public float ArrivalTime; // Wann der Punkt erreicht werden soll
+        
+        public SatellitePathPoint(double3 position, float arrivalTime)
+        {
+            Position = position;
+            ArrivalTime = arrivalTime;
+        }
+    }
+
     void Start()
     {
         Debug.Log("SatelliteManager: Start");
         FetchTleData();
-        StartCoroutine(PositionUpdateCoroutine());
         StartPositionCalculation();
+        StartCoroutine(SpaceModeUpdateCoroutine());
     }
     
     public void OnSliderValueChanged(float newValue)
@@ -69,8 +82,8 @@ public class SatelliteManager : MonoBehaviour
                 con.Initialize(tle);
                 satellites.Add(con);
                 satellitePositions[con.Tle.NoradNumber] = new Queue<double3>();
-                currentPositions[con.Tle.NoradNumber] = new double3(0, 0, 0);
-                activeRoutines[con.Tle.NoradNumber] = null;
+                continuousMovementActive[con.Tle.NoradNumber] = false;
+                activePaths[con.Tle.NoradNumber] = new List<SatellitePathPoint>();
             }
             
             Debug.Log($"Initialisiert: {satellites.Count} Satelliten");
@@ -111,7 +124,6 @@ public class SatelliteManager : MonoBehaviour
                             }
                             catch (DecayedException _)
                             {
-                                // Behandle abgestürzte Satelliten
                                 continue;
                             }
                             catch (Exception _)
@@ -142,109 +154,155 @@ public class SatelliteManager : MonoBehaviour
         });
     }
 
-    private IEnumerator PositionUpdateCoroutine()
+    private IEnumerator SpaceModeUpdateCoroutine()
     {
         int startIndex = 0;
-        int updateCount = 0;
-
+        
         while (true)
         { 
-            updateCount++;
-            if (updateCount % 100 == 0)
-            {
-                Debug.Log($"Position Update: Frame {updateCount}");
-            }
-            
             var delay = CalculateDelay(satellites.Count, TotalUpdateDelay);
             int endIndex = Mathf.Min(startIndex + UpdateBatchSize, satellites.Count);
             
-            // Standard-Modus ist Space (false)
             bool isEarthMode = false;
             if (zoomController != null && zoomController.targetCamera != null)
             {
                 isEarthMode = zoomController.targetCamera.fieldOfView < fovThreshold;
             }
 
-            for (int i = startIndex; i < endIndex; i++)
+            // Modus-basierte Verarbeitung
+            if (isEarthMode)
             {
-                if (i >= satellites.Count || satellites[i] == null) continue;
-                
-                uint noradNumber = satellites[i].Tle.NoradNumber;
-                
-                if (satellitePositions.ContainsKey(noradNumber) && 
-                    satellitePositions[noradNumber].Count > 0)
+                for (int i = 0; i < satellites.Count; i++)
                 {
-                    var nextPosition = satellitePositions[noradNumber].Dequeue();
+                    if (satellites[i] == null) continue;
                     
-                    // WICHTIG: Wir überspringen den Visibility-Check, damit die Satelliten immer sichtbar sind
-                    // Später können wir ihn wieder aktivieren, wenn alles funktioniert
+                    uint noradNumber = satellites[i].Tle.NoradNumber;
                     
-                    if (isEarthMode)
+                    // Starte kontinuierliche Bewegung, falls noch nicht aktiv
+                    if (!continuousMovementActive.ContainsKey(noradNumber) || 
+                        !continuousMovementActive[noradNumber])
                     {
-                        // Im Erde-Modus: Smooth interpolieren
-                        if (activeRoutines.ContainsKey(noradNumber) && 
-                            activeRoutines[noradNumber] != null)
-                        {
-                            StopCoroutine(activeRoutines[noradNumber]);
-                        }
-                        
-                        activeRoutines[noradNumber] = 
-                            StartCoroutine(InterpolatePosition(satellites[i], nextPosition));
+                        continuousMovementActive[noradNumber] = true;
+                        StartCoroutine(ContinuousSmoothMovementCoroutine(satellites[i]));
                     }
-                    else
+                }
+            }
+            else
+            {
+                // Im Space-Modus: Direkte Positionierung in Batches
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    if (i >= satellites.Count || satellites[i] == null) continue;
+                    
+                    uint noradNumber = satellites[i].Tle.NoradNumber;
+                    
+                    // Stoppe kontinuierliche Bewegung falls aktiv
+                    continuousMovementActive[noradNumber] = false;
+                    
+                    // Direkte Positionierung wenn Positionen vorhanden
+                    if (satellitePositions.ContainsKey(noradNumber) && 
+                        satellitePositions[noradNumber].Count > 0)
                     {
-                        // Im Space-Modus: Direkt setzen
+                        var nextPosition = satellitePositions[noradNumber].Dequeue();
                         satellites[i].Anchor.longitudeLatitudeHeight = nextPosition;
-                        currentPositions[noradNumber] = nextPosition;
                     }
+                }
+                
+                // Batch-Index-Update nur für Space-Modus
+                startIndex = endIndex;
+                if (startIndex >= satellites.Count)
+                {
+                    startIndex = 0;
                 }
             }
 
             yield return new WaitForSeconds(delay);
-
-            startIndex = endIndex;
-            if (startIndex >= satellites.Count)
-            {
-                startIndex = 0;
-            }
         }
     }
     
-    private IEnumerator InterpolatePosition(SatelliteController satellite, double3 targetPosition)
+    // Komplett neue Methode für nahtlose Bewegung mit Look-ahead
+    private IEnumerator ContinuousSmoothMovementCoroutine(SatelliteController satellite)
     {
         uint noradNumber = satellite.Tle.NoradNumber;
+        List<SatellitePathPoint> path = activePaths[noradNumber];
         
-        // Initialisiere aktuelle Position falls noch nicht vorhanden
-        if (!currentPositions.ContainsKey(noradNumber) ||
-            (currentPositions[noradNumber].x == 0 && 
-             currentPositions[noradNumber].y == 0 && 
-             currentPositions[noradNumber].z == 0))
+        // Initialisiere aktuelle Position als Startpunkt
+        double3 currentPosition = satellite.Anchor.longitudeLatitudeHeight;
+        
+        // Startpunkt zum Pfad hinzufügen
+        path.Clear();
+        path.Add(new SatellitePathPoint(currentPosition, Time.time));
+        
+        // Füge sofort einen zweiten Punkt hinzu, wenn verfügbar
+        if (satellitePositions[noradNumber].Count > 0)
         {
-            currentPositions[noradNumber] = satellite.Anchor.longitudeLatitudeHeight;
+            double3 nextPos = satellitePositions[noradNumber].Dequeue();
+            path.Add(new SatellitePathPoint(nextPos, Time.time + segmentDuration));
         }
         
-        double3 startPosition = currentPositions[noradNumber];
-        float elapsedTime = 0;
-        
-        while (elapsedTime < interpolationDuration)
+        while (continuousMovementActive[noradNumber])
         {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / interpolationDuration);
-            float smoothT = Mathf.SmoothStep(0, 1, t);
+            // Aktuellster Zeitpunkt
+            float currentTime = Time.time;
             
-            double3 newPosition = new double3(
-                Mathf.Lerp((float)startPosition.x, (float)targetPosition.x, smoothT),
-                Mathf.Lerp((float)startPosition.y, (float)targetPosition.y, smoothT),
-                Mathf.Lerp((float)startPosition.z, (float)targetPosition.z, smoothT)
-            );
+            // Alte Pfadpunkte entfernen
+            while (path.Count > 2 && path[1].ArrivalTime < currentTime)
+            {
+                path.RemoveAt(0);
+            }
             
-            satellite.Anchor.longitudeLatitudeHeight = newPosition;
+            // Wenn wir zu wenige Punkte haben oder nahe am letzten Punkt sind, neue Punkte laden
+            if ((path.Count < 2) || 
+                (path.Count == 2 && (currentTime > path[0].ArrivalTime + (path[1].ArrivalTime - path[0].ArrivalTime) * lookAheadThreshold)))
+            {
+                if (satellitePositions[noradNumber].Count > 0)
+                {
+                    double3 newTargetPos = satellitePositions[noradNumber].Dequeue();
+                    
+                    // Neuen Pfadpunkt mit Zeitstempel hinzufügen
+                    float arrivalTime = (path.Count > 0) ? 
+                                      path[path.Count-1].ArrivalTime + segmentDuration : 
+                                      currentTime + segmentDuration;
+                                      
+                    path.Add(new SatellitePathPoint(newTargetPos, arrivalTime));
+                }
+            }
             
-            yield return null;
+            // Wenn wir mindestens zwei Punkte haben, zwischen ihnen interpolieren
+            if (path.Count >= 2)
+            {
+                SatellitePathPoint p0 = path[0];
+                SatellitePathPoint p1 = path[1];
+                
+                // Berechne, wie weit wir zwischen den beiden Punkten sind (0-1)
+                float segmentDuration = p1.ArrivalTime - p0.ArrivalTime;
+                float segmentProgress = (currentTime - p0.ArrivalTime) / segmentDuration;
+                segmentProgress = Mathf.Clamp01(segmentProgress);
+                
+                // Verwende SmoothStep für gleichmäßige Beschleunigung/Verlangsamung
+                float smoothProgress = Mathf.SmoothStep(0f, 1f, segmentProgress);
+                
+                // Berechne interpolierte Position
+                double3 interpolatedPosition = new double3(
+                    Mathf.Lerp((float)p0.Position.x, (float)p1.Position.x, smoothProgress),
+                    Mathf.Lerp((float)p0.Position.y, (float)p1.Position.y, smoothProgress),
+                    Mathf.Lerp((float)p0.Position.z, (float)p1.Position.z, smoothProgress)
+                );
+                
+                // Setze Position
+                satellite.Anchor.longitudeLatitudeHeight = interpolatedPosition;
+            }
+            
+            // Wenn wir keine Punkte haben und auch keine in der Queue, warten
+            if (path.Count == 0 && satellitePositions[noradNumber].Count == 0)
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
+            else
+            {
+                yield return null;
+            }
         }
-        
-        satellite.Anchor.longitudeLatitudeHeight = targetPosition;
-        currentPositions[noradNumber] = targetPosition;
     }
 
     private float CalculateDelay(int totalItems, float targetIterationDuration)
