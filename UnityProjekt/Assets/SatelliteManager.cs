@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 using CesiumForUnity;
+using Newtonsoft.Json;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Exception;
 using SGPdotNET.Propagation;
@@ -30,6 +33,10 @@ public class SatelliteManager : MonoBehaviour
     [Tooltip("Bei welchem Fortschritt die nächste Position vorgeladen wird (0-1)")]
     [Range(0.1f, 0.9f)]
     public float lookAheadThreshold = 0.6f;
+    
+    [Header("Initialization")]
+    [Tooltip("Verzögerung vor der Anzeige der Satelliten (Sekunden)")]
+    public float initialDelay = 0.5f;
 
     private readonly List<SatelliteController> satellites = new();
     private Dictionary<uint, Queue<double3>> satellitePositions = new();
@@ -39,6 +46,7 @@ public class SatelliteManager : MonoBehaviour
     private const int MaxPositionCache = 50;
     private const int UpdateBatchSize = 250;
     private float TotalUpdateDelay = 1;
+    private bool simulationStarted = false;
 
     // Struktur für die Satelliten-Pfadpunkte mit Zeitstempel
     private class SatellitePathPoint
@@ -56,9 +64,55 @@ public class SatelliteManager : MonoBehaviour
     void Start()
     {
         Debug.Log("SatelliteManager: Start");
-        FetchTleData();
+        
+        // Verzögere den gesamten Start, um genug Zeit für Positionsberechnung zu haben
+        StartCoroutine(DelayedStart());
+    }
+    
+    private IEnumerator DelayedStart()
+    {
+        // Alles wird vorbereitet, aber Satelliten bleiben unsichtbar
+        FetchTleData(false);
         StartPositionCalculation();
+        
+        // Warte, damit die Positionsberechnung Zeit hat
+        yield return new WaitForSeconds(initialDelay);
+        
+        // Satelliten anzeigen und Bewegung starten
+        ShowAllSatellites();
         StartCoroutine(SpaceModeUpdateCoroutine());
+        simulationStarted = true;
+    }
+    
+    // Zeige alle Satelliten an
+    private void ShowAllSatellites()
+    {
+        foreach (var satellite in satellites)
+        {
+            if (satellite == null) continue;
+            
+            uint noradNumber = satellite.Tle.NoradNumber;
+            
+            // Stelle sicher, dass der Satellit eine gültige Position hat
+            if (satellitePositions.ContainsKey(noradNumber) && 
+                satellitePositions[noradNumber].Count > 0)
+            {
+                var position = satellitePositions[noradNumber].Dequeue();
+                satellite.Anchor.longitudeLatitudeHeight = position;
+                
+                if (activePaths.ContainsKey(noradNumber))
+                {
+                    activePaths[noradNumber].Clear();
+                    activePaths[noradNumber].Add(new SatellitePathPoint(position, Time.time));
+                }
+            }
+            
+            // Aktiviere Renderer
+            if (satellite.Renderer != null)
+            {
+                satellite.Renderer.enabled = true;
+            }
+        }
     }
     
     public void OnSliderValueChanged(float newValue)
@@ -66,7 +120,8 @@ public class SatelliteManager : MonoBehaviour
         TotalUpdateDelay = newValue;
     }
     
-    void FetchTleData()
+    // Angepasste FetchTleData mit Option zum Verstecken
+    void FetchTleData(bool visible = true)
     {
         try
         {
@@ -80,6 +135,13 @@ public class SatelliteManager : MonoBehaviour
                 sat.name = tle.NoradNumber + " " + tle.Name;
                 var con = sat.GetComponent<SatelliteController>();
                 con.Initialize(tle);
+                
+                // Verstecke Satelliten bis sie bereit sind
+                if (con.Renderer != null && !visible)
+                {
+                    con.Renderer.enabled = false;
+                }
+                
                 satellites.Add(con);
                 satellitePositions[con.Tle.NoradNumber] = new Queue<double3>();
                 continuousMovementActive[con.Tle.NoradNumber] = false;
@@ -124,6 +186,7 @@ public class SatelliteManager : MonoBehaviour
                             }
                             catch (DecayedException _)
                             {
+                                // Behandle abgestürzte Satelliten
                                 continue;
                             }
                             catch (Exception _)
@@ -157,9 +220,19 @@ public class SatelliteManager : MonoBehaviour
     private IEnumerator SpaceModeUpdateCoroutine()
     {
         int startIndex = 0;
+        int updateCount = 0;
+        
+        // Warte, bis die Simulation wirklich gestartet wurde
+        yield return new WaitUntil(() => simulationStarted);
         
         while (true)
         { 
+            updateCount++;
+            if (updateCount % 100 == 0)
+            {
+                Debug.Log($"Position Update: Frame {updateCount}");
+            }
+            
             var delay = CalculateDelay(satellites.Count, TotalUpdateDelay);
             int endIndex = Mathf.Min(startIndex + UpdateBatchSize, satellites.Count);
             
@@ -220,9 +293,13 @@ public class SatelliteManager : MonoBehaviour
         }
     }
     
-    // Komplett neue Methode für nahtlose Bewegung mit Look-ahead
+    // Methode für nahtlose Bewegung mit Look-ahead
     private IEnumerator ContinuousSmoothMovementCoroutine(SatelliteController satellite)
     {
+        // Warte, bis die Simulation wirklich gestartet wurde
+        if (!simulationStarted)
+            yield return new WaitUntil(() => simulationStarted);
+            
         uint noradNumber = satellite.Tle.NoradNumber;
         List<SatellitePathPoint> path = activePaths[noradNumber];
         
