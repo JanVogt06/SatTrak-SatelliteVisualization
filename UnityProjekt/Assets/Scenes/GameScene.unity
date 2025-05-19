@@ -6424,15 +6424,15 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1988732556}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 10
+  m_MaxValue: 1000
   m_WholeNumbers: 1
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 964490650}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: OnSliderValueChanged
+        m_TargetAssemblyTypeName: Satellites.SatelliteManager, Assembly-CSharp
+        m_MethodName: OnTimeMultiplierChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6452,7 +6452,6 @@ GameObject:
   m_Component:
   - component: {fileID: 964490651}
   - component: {fileID: 964490650}
-  - component: {fileID: 964490652}
   m_Layer: 0
   m_Name: SatelliteManager
   m_TagString: Untagged
@@ -6474,13 +6473,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tleUrl: https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE
   satellitePrefab: {fileID: 1888826446}
-  orbitParent: {fileID: 0}
   cesiumGeoreference: {fileID: 1786786860}
-  zoomController: {fileID: 1952269538}
-  fovThreshold: 70
-  segmentDuration: 15
-  lookAheadThreshold: 0.6
-  initialDelay: 0.5
+  timeMultiplier: 60
 --- !u!4 &964490651
 Transform:
   m_ObjectHideFlags: 0
@@ -6496,18 +6490,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1786786861}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &964490652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 964490649}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4f20795309a3154fa774730cf91b47e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1018168475
 GameObject:
   m_ObjectHideFlags: 0
@@ -7556,7 +7538,6 @@ GameObject:
   - component: {fileID: 1888826452}
   - component: {fileID: 1888826451}
   - component: {fileID: 1888826450}
-  - component: {fileID: 1888826448}
   - component: {fileID: 1888826453}
   - component: {fileID: 1888826454}
   m_Layer: 0
@@ -7566,42 +7547,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 125
   m_IsActive: 1
---- !u!114 &1888826448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888826446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74f14e1eb550b9a4fb6c0a2f0456845b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _adjustOrientationForGlobeWhenMoving: 1
-  _detectTransformChanges: 1
-  _localToGlobeFixedMatrix:
-    c0:
-      x: -1559.3129937353867
-      y: 9476.120158495243
-      z: -2787.775065846884
-      w: 0
-    c1:
-      x: -9052.886683883917
-      y: -241.99048461482607
-      z: 4241.071324480247
-      w: 0
-    c2:
-      x: -3951.4286466001213
-      y: -3185.0568913919215
-      z: -8616.358096507383
-      w: 0
-    c3:
-      x: -1543998.872778643
-      y: 515919.74555094517
-      z: 6193687.443070931
-      w: 1
-  _localToGlobeFixedMatrixIsValid: 1
 --- !u!23 &1888826450
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7664,7 +7609,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888826446}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7705789, y: -0.010890506, z: -0.14176746, w: 0.62128216}
+  m_LocalRotation: {x: 0.7705789, y: -0.0108905425, z: -0.14176746, w: 0.62128216}
   m_LocalPosition: {x: 817492.8, y: -2419126.5, z: 4997769.5}
   m_LocalScale: {x: 10000, y: 10000, z: 10000}
   m_ConstrainProportionsScale: 0
