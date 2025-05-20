@@ -18,6 +18,7 @@ namespace Satellites
         public Sgp4 OrbitPropagator;
         public Renderer Renderer { get; private set; }
         public List<Vector3> NextPositions { get; private set; } = new();
+        private GameObject orbitGO;
 
         public void Initialize(Tle tle, CesiumGeoreference cesiumGeoreference)
         {
@@ -26,6 +27,7 @@ namespace Satellites
             var pos = OrbitPropagator.FindPosition(DateTime.Now).ToSphericalEcef();
             var position = cesiumGeoreference.TransformEarthCenteredEarthFixedPositionToUnity(pos.ToDouble());
             transform.position = position.ToVector();
+            
         }
 
         public double3 CalculatePosition(DateTime currentSimulatedTime)
@@ -47,6 +49,29 @@ namespace Satellites
                 NextPositions.RemoveAt(0);
                 NextPositions.Add(position);
             }
+        }
+        
+        public void DrawOrbit()
+        {
+            if (orbitGO != null)
+            {
+                Destroy(orbitGO);
+            }
+
+            // Neues Orbit-Objekt erstellen
+            orbitGO = new GameObject("OrbitPath");
+            if (transform != null)
+                orbitGO.transform.parent = transform;
+
+            LineRenderer lineRenderer = orbitGO.AddComponent<LineRenderer>();
+            lineRenderer.positionCount = NextPositions.Count;
+            lineRenderer.SetPositions(NextPositions.ToArray());
+
+            lineRenderer.startWidth = 5000f;
+            lineRenderer.endWidth = 5000f;
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            lineRenderer.startColor = Color.cyan;
+            lineRenderer.endColor = Color.cyan;
         }
     }
 }

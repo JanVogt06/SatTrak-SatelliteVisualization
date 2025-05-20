@@ -27,7 +27,7 @@ namespace Satellites
 
         [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
         public float timeMultiplier = 10f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
-        public static int NextPositionAmount = 10;
+        public static int NextPositionAmount = 50;
 
         private DateTime currentSimulatedTime;
         private double simulationTimeSeconds;
@@ -39,6 +39,7 @@ namespace Satellites
         private MoveSatelliteJobParallelForTransform _currentJob;
         public GameObject spinner;
         private bool _multiplierChanged = false;
+        private SatelliteController satelliteExample;
 
         void Start()
         {
@@ -46,6 +47,7 @@ namespace Satellites
             currentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
             FetchTleData();
+            satelliteExample = _satellites.Single(sat => sat.name == "900 CALSPHERE 1");
             AllocateTransformAccessArray();
             StartPositionGeneration();
         }
@@ -156,6 +158,7 @@ namespace Satellites
             // Simulationszeit updaten
             simulationTimeSeconds += Time.deltaTime * timeMultiplier;
             currentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
+            satelliteExample.DrawOrbit();
 
             _currentJob = jobs.Dequeue();
 
