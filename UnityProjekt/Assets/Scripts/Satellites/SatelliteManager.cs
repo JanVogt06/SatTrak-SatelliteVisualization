@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Assets.SimpleSpinner;
 using CesiumForUnity;
+using DefaultNamespace;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Exception;
 using SGPdotNET.TLE;
@@ -22,10 +24,10 @@ namespace Satellites
 
         [Header("Prefabs & References")] public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
-        
-        [Header("Simulation Time Settings")]
-        public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
+
+        [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
         public float timeMultiplier = 10f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
+        public static int NextPositionAmount = 10;
 
         private DateTime currentSimulatedTime;
         private double simulationTimeSeconds;
@@ -35,52 +37,58 @@ namespace Satellites
         private JobHandle _handle;
         private readonly Queue<MoveSatelliteJobParallelForTransform> jobs = new();
         private MoveSatelliteJobParallelForTransform _currentJob;
+        public GameObject spinner;
+        private bool _multiplierChanged = false;
 
         void Start()
         {
             Debug.Log("SatelliteManager: Start");
             currentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
-            // Verzögere den gesamten Start, um genug Zeit für Positionsberechnung zu haben
             FetchTleData();
-            InitializeJobArrays();
-            StartSimulation();
+            AllocateTransformAccessArray();
+            StartPositionGeneration();
         }
 
-        private void StartSimulation()
+        private void StartPositionGeneration()
         {
             Task.Run(() =>
             {
                 while (true)
                 {
-                    if (jobs.Count >= 10)
+                    if (_multiplierChanged)
                         continue;
-                    
-                    var positions = new NativeArray<double3>(_satellites.Count, Allocator.Persistent);
-                    // Schleife über Satelliten, nur gültige verwenden
-                    for (var i = 0; i < _satellites.Count; i++)
-                    {
-                        try
-                        {
-                            var pos = _satellites[i].OrbitPropagator.FindPosition(currentSimulatedTime).ToSphericalEcef();
-                            positions[i] = new double3(pos.X * 1000, pos.Y * 1000, pos.Z * 1000);
-                        }
-                        catch
-                        {
-                            Debug.LogWarning($"Satellit {_satellites[i].name} konnte nicht berechnet werden.");
-                        }
-                    }
-
-                    var job = new MoveSatelliteJobParallelForTransform
-                    {
-                        ecefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
-                        Positions = positions
-                    };
-                    
-                    Debug.Log("Enqueue new pos");
-                    jobs.Enqueue(job);
+                    GeneratePositions();
                 }
             });
+        }
+
+        private void GeneratePositions()
+        {
+            if (jobs.Count >= NextPositionAmount)
+                return;
+
+            var positions = new NativeArray<double3>(_satellites.Count, Allocator.Persistent);
+            // Schleife über Satelliten, nur gültige verwenden
+            for (var i = 0; i < _satellites.Count; i++)
+            {
+                try
+                {
+                    positions[i] = _satellites[i].CalculatePosition(currentSimulatedTime);
+                }
+                catch
+                {
+                    Debug.LogWarning($"Satellit {_satellites[i].name} konnte nicht berechnet werden.");
+                }
+            }
+
+            var job = new MoveSatelliteJobParallelForTransform
+            {
+                EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
+                Positions = positions
+            };
+
+            jobs.Enqueue(job);
         }
 
         // Angepasste FetchTleData mit Option zum Verstecken
@@ -95,7 +103,7 @@ namespace Satellites
 
                 foreach (var tle in data.Values)
                 {
-                    GameObject sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
+                    var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
                     sat.name = tle.NoradNumber + " " + tle.Name;
                     var con = sat.GetComponent<SatelliteController>();
                     con.Initialize(tle, cesiumGeoreference);
@@ -110,24 +118,41 @@ namespace Satellites
                 Debug.LogError("Parsing-Fehler: " + e.Message);
             }
         }
-        
-        private void InitializeJobArrays()
+
+        private void AllocateTransformAccessArray()
         {
             var transforms = _satellites.Select(sat => sat.transform).ToArray();
             _transformAccessArray = new TransformAccessArray(transforms.ToArray());
         }
-        
+
         public void OnTimeMultiplierChanged(float value)
         {
+            _multiplierChanged = true;
             timeMultiplier = value;
+            spinner.SetActive(true);
+            if (!_handle.IsCompleted)
+            {
+                _handle.Complete();
+                _currentJob.Positions.Dispose();
+            }
+            ClearCurrentPositions();
+            spinner.SetActive(false);
+            _multiplierChanged = false;
+        }
+
+        private void ClearCurrentPositions()
+        {
+            jobs.Clear();
+            _satellites.ForEach(sat => sat.NextPositions.Clear());
+            GeneratePositions();
         }
 
         private void Update()
         {
-            if (!_handle.IsCompleted || jobs.Count == 0) return;
+            if (!_handle.IsCompleted || jobs.Count == 0 || _multiplierChanged) return;
             _handle.Complete();
             _currentJob.Positions.Dispose();
-            
+
             // Simulationszeit updaten
             simulationTimeSeconds += Time.deltaTime * timeMultiplier;
             currentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
