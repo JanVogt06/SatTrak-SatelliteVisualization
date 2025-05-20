@@ -47,7 +47,7 @@ namespace Satellites
             currentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
             FetchTleData();
-            satelliteExample = _satellites.Single(sat => sat.name == "900 CALSPHERE 1");
+            satelliteExample = _satellites.Single(sat => sat.name == "25544 ISS (ZARYA)");
             AllocateTransformAccessArray();
             StartPositionGeneration();
         }
@@ -76,7 +76,7 @@ namespace Satellites
             {
                 try
                 {
-                    positions[i] = _satellites[i].CalculatePosition(currentSimulatedTime);
+                    positions[i] = _satellites[i].CalculatePosition(currentSimulatedTime, cesiumGeoreference.ecefToLocalMatrix);
                 }
                 catch
                 {
@@ -86,7 +86,6 @@ namespace Satellites
 
             var job = new MoveSatelliteJobParallelForTransform
             {
-                EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
                 Positions = positions
             };
 
