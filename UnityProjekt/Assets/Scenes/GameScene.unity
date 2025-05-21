@@ -7661,8 +7661,7 @@ MonoBehaviour:
   tleUrl: https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE
   satellitePrefab: {fileID: 1888826446}
   cesiumGeoreference: {fileID: 1786786860}
-  timeMultiplier: 60
-  spinner: {fileID: 103991477}
+  timeMultiplier: 1
 --- !u!4 &964490651
 Transform:
   m_ObjectHideFlags: 0
@@ -8602,7 +8601,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1330124191}
   m_Direction: 0
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9618,6 +9617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92393eb8bf081ad45ada9a826b0bf0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShouldCalculateOrbit: 0
 --- !u!114 &1888826454
 MonoBehaviour:
   m_ObjectHideFlags: 0
