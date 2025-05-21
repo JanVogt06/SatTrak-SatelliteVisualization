@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Assets.SimpleSpinner;
 using CesiumForUnity;
 using DefaultNamespace;
-using SGPdotNET.CoordinateSystem;
-using SGPdotNET.Exception;
-using SGPdotNET.TLE;
+using Satellites.SGP.Propagation;
+using Satellites.SGP.TLE;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -37,70 +36,26 @@ namespace Satellites
         public CesiumGeoreference cesiumGeoreference;
 
         [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
-        public float timeMultiplier = 10f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
-        public static int NextPositionAmount = 50;
+        public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
 
-        private DateTime currentSimulatedTime;
+        public DateTime CurrentSimulatedTime { get; private set; }
         private double simulationTimeSeconds;
         private TransformAccessArray _transformAccessArray;
 
         private readonly List<SatelliteController> _satellites = new();
         private JobHandle _handle;
-        private readonly Queue<MoveSatelliteJobParallelForTransform> jobs = new();
-        private MoveSatelliteJobParallelForTransform _currentJob;
-        public GameObject spinner;
         private bool _multiplierChanged = false;
-        private SatelliteController satelliteExample;
-
+        // private SatelliteController _satelliteExample;
+        private NativeArray<Sgp4> _propagators;
+        
         void Start()
         {
             Debug.Log("SatelliteManager: Start");
-            currentSimulatedTime = simulationStartTime;
+            CurrentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
             FetchTleData();
-            satelliteExample = _satellites.Single(sat => sat.name == "25544 ISS (ZARYA)");
+            // _satelliteExample = _satellites.Single(sat => sat.name == "25544 ISS (ZARYA)");
             AllocateTransformAccessArray();
-            StartPositionGeneration();
-        }
-
-        private void StartPositionGeneration()
-        {
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    if (_multiplierChanged)
-                        continue;
-                    GeneratePositions();
-                }
-            });
-        }
-
-        private void GeneratePositions()
-        {
-            if (jobs.Count >= NextPositionAmount)
-                return;
-
-            var positions = new NativeArray<double3>(_satellites.Count, Allocator.Persistent);
-            // Schleife über Satelliten, nur gültige verwenden
-            for (var i = 0; i < _satellites.Count; i++)
-            {
-                try
-                {
-                    positions[i] = _satellites[i].CalculatePosition(currentSimulatedTime, cesiumGeoreference.ecefToLocalMatrix);
-                }
-                catch
-                {
-                    Debug.LogWarning($"Satellit {_satellites[i].name} konnte nicht berechnet werden.");
-                }
-            }
-
-            var job = new MoveSatelliteJobParallelForTransform
-            {
-                Positions = positions
-            };
-
-            jobs.Enqueue(job);
         }
 
         // Angepasste FetchTleData mit Option zum Verstecken
@@ -118,7 +73,7 @@ namespace Satellites
                     var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
                     sat.name = tle.NoradNumber + " " + tle.Name;
                     var con = sat.GetComponent<SatelliteController>();
-                    con.Initialize(tle, cesiumGeoreference);
+                    con.Initialize(tle);
 
                     _satellites.Add(con);
                 }
@@ -133,7 +88,15 @@ namespace Satellites
 
         private void AllocateTransformAccessArray()
         {
-            var transforms = _satellites.Select(sat => sat.transform).ToArray();
+            _propagators = new NativeArray<Sgp4>(_satellites.Count, Allocator.Persistent);
+
+            var transforms = new Transform[_satellites.Count];
+            for (int i = 0; i < _satellites.Count; i++)
+            {
+                transforms[i] = _satellites[i].transform;
+                _propagators[i] = _satellites[i].OrbitPropagator;
+            }
+            
             _transformAccessArray = new TransformAccessArray(transforms.ToArray());
         }
 
@@ -141,38 +104,24 @@ namespace Satellites
         {
             _multiplierChanged = true;
             timeMultiplier = value;
-            spinner.SetActive(true);
-            if (!_handle.IsCompleted)
-            {
-                _handle.Complete();
-                _currentJob.Positions.Dispose();
-            }
-            ClearCurrentPositions();
-            spinner.SetActive(false);
             _multiplierChanged = false;
-        }
-
-        private void ClearCurrentPositions()
-        {
-            jobs.Clear();
-            _satellites.ForEach(sat => sat.NextPositions.Clear());
-            GeneratePositions();
         }
 
         private void Update()
         {
-            if (!_handle.IsCompleted || jobs.Count == 0 || _multiplierChanged) return;
-            _handle.Complete();
-            _currentJob.Positions.Dispose();
-
-            // Simulationszeit updaten
             simulationTimeSeconds += Time.deltaTime * timeMultiplier;
-            currentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
-            satelliteExample.DrawOrbit();
+            CurrentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
+            if (!_handle.IsCompleted) return;
+            _handle.Complete();
 
-            _currentJob = jobs.Dequeue();
+            var job = new MoveSatelliteJobParallelForTransform
+            {
+                CurrentTime = CurrentSimulatedTime,
+                EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
+                OrbitPropagator = _propagators
+            };
 
-            _handle = _currentJob.ScheduleByRef(_transformAccessArray, _handle);
+            _handle = job.ScheduleByRef(_transformAccessArray, _handle);
         }
 
         private void OnDestroy()

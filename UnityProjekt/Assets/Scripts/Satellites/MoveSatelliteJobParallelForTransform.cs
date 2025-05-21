@@ -1,5 +1,7 @@
+using System;
 using CesiumForUnity;
 using DefaultNamespace;
+using Satellites.SGP.Propagation;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -9,11 +11,16 @@ namespace Satellites
 {
     public struct MoveSatelliteJobParallelForTransform : IJobParallelForTransform
     {
-        public NativeArray<double3> Positions;
+        [ReadOnly]public NativeArray<Sgp4> OrbitPropagator;
+        [ReadOnly]public DateTime CurrentTime;
+        [ReadOnly]public double4x4 EcefToLocalMatrix;
 
         public void Execute(int index, TransformAccess transform)
         {
-            transform.position = Positions[index].ToVector();
+            double tsince = (CurrentTime - OrbitPropagator[index].Orbit.Epoch).TotalMinutes;
+            var pos = OrbitPropagator[index].FindPosition(tsince).ToSphericalEcef();
+            var position = math.mul(EcefToLocalMatrix, new double4(pos.ToDouble(), 1.0)).xyz;
+            transform.position = position.ToVector();
         }
     }
 }

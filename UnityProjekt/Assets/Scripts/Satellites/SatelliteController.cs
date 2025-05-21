@@ -1,76 +1,65 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CesiumForUnity;
 using DefaultNamespace;
-using SGPdotNET.CoordinateSystem;
-using SGPdotNET.Exception;
-using SGPdotNET.Propagation;
-using SGPdotNET.TLE;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Satellites.SGP;
+using Satellites.SGP.Propagation;
+using Satellites.SGP.TLE;
 
 namespace Satellites
 {
     public class SatelliteController : MonoBehaviour
     {
         public Sgp4 OrbitPropagator;
-        public Renderer Renderer { get; private set; }
-        public List<Vector3> NextPositions { get; private set; } = new();
+        public Tle Tle;
+        public bool ShouldCalculateOrbit;
         private GameObject orbitGO;
+        private LineRenderer orbitRenderer;
 
-        public void Initialize(Tle tle, CesiumGeoreference cesiumGeoreference)
+        public void Initialize(Tle tle)
         {
-            Renderer = GetComponent<Renderer>();
             OrbitPropagator = new Sgp4(tle);
-            var pos = OrbitPropagator.FindPosition(DateTime.Now).ToSphericalEcef();
-            var position = cesiumGeoreference.TransformEarthCenteredEarthFixedPositionToUnity(pos.ToDouble());
-            transform.position = position.ToVector();
-            
+            Tle = tle;
         }
 
-        public double3 CalculatePosition(DateTime currentSimulatedTime, double4x4 ecefToLocalMatrix)
+        public void Update()
         {
-            var pos = OrbitPropagator.FindPosition(currentSimulatedTime).ToSphericalEcef();
-            var position = math.mul(ecefToLocalMatrix, new double4(pos.ToDouble(), 1.0)).xyz;
-            AddNextPosition(position.ToVector());
-            return position;
-        }
-
-        private void AddNextPosition(Vector3 position)
-        {
-            // + 10 damit die letzten 10 Positionen auch gespeichert werden
-            if (NextPositions.Count < SatelliteManager.NextPositionAmount + 10)
-            {
-                NextPositions.Add(position);
-            }
-            else
-            {
-                NextPositions.RemoveAt(0);
-                NextPositions.Add(position);
-            }
-        }
-        
-        public void DrawOrbit()
-        {
-            if (orbitGO != null)
+            if (ShouldCalculateOrbit) CalculateOrbit();
+            else if (orbitGO)
             {
                 Destroy(orbitGO);
             }
+        }
 
-            // Neues Orbit-Objekt erstellen
-            orbitGO = new GameObject("OrbitPath");
+        public void CalculateOrbit()
+        {
+            if (!orbitGO)
+            {
+                orbitGO = new GameObject("OrbitPath");
 
-            LineRenderer lineRenderer = orbitGO.AddComponent<LineRenderer>();
-            lineRenderer.positionCount = NextPositions.Count;
-            lineRenderer.SetPositions(NextPositions.ToArray());
+                orbitRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.startWidth = 5000f;
-            lineRenderer.endWidth = 5000f;
-            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            lineRenderer.startColor = Color.cyan;
-            lineRenderer.endColor = Color.cyan;
+                orbitRenderer.startWidth = 5000f;
+                orbitRenderer.endWidth = 5000f;
+                orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                orbitRenderer.startColor = Color.cyan;
+                orbitRenderer.endColor = Color.cyan;
+            }
+
+            var positions = new List<Vector3>();
+            for (TimeSpan i = TimeSpan.Zero; i < TimeSpan.FromHours(12); i = i.Add(TimeSpan.FromMinutes(1)))
+            {
+                var pos = OrbitPropagator.FindPosition(SatelliteManager.Instance.CurrentSimulatedTime.Add(i))
+                    .ToSphericalEcef();
+                var position = math.mul(SatelliteManager.Instance.cesiumGeoreference.ecefToLocalMatrix,
+                    new double4(pos.ToDouble(), 1.0)).xyz;
+                positions.Add(position.ToVector());
+            }
+
+            orbitRenderer.positionCount = positions.Count;
+            orbitRenderer.SetPositions(positions.ToArray());
         }
     }
 }
