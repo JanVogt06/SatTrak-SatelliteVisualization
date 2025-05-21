@@ -30,11 +30,12 @@ namespace Satellites
             
         }
 
-        public double3 CalculatePosition(DateTime currentSimulatedTime)
+        public double3 CalculatePosition(DateTime currentSimulatedTime, double4x4 ecefToLocalMatrix)
         {
             var pos = OrbitPropagator.FindPosition(currentSimulatedTime).ToSphericalEcef();
-            AddNextPosition(pos.ToVector());
-            return pos.ToDouble();
+            var position = math.mul(ecefToLocalMatrix, new double4(pos.ToDouble(), 1.0)).xyz;
+            AddNextPosition(position.ToVector());
+            return position;
         }
 
         private void AddNextPosition(Vector3 position)
@@ -60,8 +61,6 @@ namespace Satellites
 
             // Neues Orbit-Objekt erstellen
             orbitGO = new GameObject("OrbitPath");
-            if (transform != null)
-                orbitGO.transform.parent = transform;
 
             LineRenderer lineRenderer = orbitGO.AddComponent<LineRenderer>();
             lineRenderer.positionCount = NextPositions.Count;
