@@ -19,6 +19,17 @@ namespace Satellites
 {
     public class SatelliteManager : MonoBehaviour
     {
+        public static SatelliteManager Instance { get; private set; }
+
+        void Awake()
+        {
+            if (Instance != null && Instance != this)
+                Destroy(this);
+            else
+                Instance = this;
+        }
+
+
         [Header("TLE Source")]
         public string tleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
 
@@ -168,6 +179,16 @@ namespace Satellites
         private void OnDestroy()
         {
             _transformAccessArray.Dispose();
+        }
+
+        public List<string> GetSatelliteNames()
+        {
+            return _satellites.Select(s => s.gameObject.name).ToList();
+        }
+
+        public SatelliteController GetSatelliteByName(string name)
+        {
+            return _satellites.FirstOrDefault(s => s.gameObject.name == name);
         }
     }
 }
