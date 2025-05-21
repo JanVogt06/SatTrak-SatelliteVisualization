@@ -108,11 +108,7 @@ public class SearchPanelController : MonoBehaviour
         }
 
         // sofortiger Sprung zur aktuellen Position
-        Vector3 sphVec = trackedSatellite
-            .OrbitPropagator
-            .FindPosition(DateTime.UtcNow)
-            .ToSphericalEcef()
-            .ToVector();            // ConversionExtensions :contentReference[oaicite:1]{index=1}
+        Vector3 sphVec = trackedSatellite.transform.position;          // ConversionExtensions :contentReference[oaicite:1]{index=1}
 
         georeference.latitude  = sphVec.y;
         georeference.longitude = sphVec.x;
