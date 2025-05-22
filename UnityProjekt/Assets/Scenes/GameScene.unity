@@ -7838,10 +7838,13 @@ MonoBehaviour:
   timeMultiplier: 1
   satelliteModelPrefabs:
   - {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
-  - {fileID: 8164078558771037576, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
   - {fileID: 8164078558771037576, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
   - {fileID: 8164078558771037576, guid: 6d6be1ccbed3043af81cabef64ef4d2b, type: 3}
+  - {fileID: 8164078558771037576, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
   - {fileID: 8164078558771037576, guid: 6ffb9a84f1b0a4bd8a27614d318927b8, type: 3}
+  - {fileID: 8164078558771037576, guid: dfc2c680e0f955c4cb72d60bd554cd06, type: 3}
+  - {fileID: 8164078558771037576, guid: d8252f6a03d14cf4a8708af985f53608, type: 3}
+  - {fileID: 8164078558771037576, guid: ecb0bef0e1fdcd44f944721973130dfc, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   _heatmapController: {fileID: 2058484569}
 --- !u!4 &964490651
@@ -8936,8 +8939,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1330124192}
   m_HandleRect: {fileID: 1330124191}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
