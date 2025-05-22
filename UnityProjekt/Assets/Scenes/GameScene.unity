@@ -8601,7 +8601,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1330124191}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9556,10 +9556,10 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aee7af7d2a2a07a4d95b53d21946e3f3, type: 2}
-  - {fileID: 2100000, guid: 911d2c7b56e35d545a8e60fc34db34aa, type: 2}
-  - {fileID: 2100000, guid: fb11a7c9e5777c24f9521f5d349ababb, type: 2}
-  - {fileID: 2100000, guid: 82e13eab8efcd764190a697124eb4cdc, type: 2}
+  - {fileID: -156486658544998735, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: 5865586234719623449, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: 3473123015285894068, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: 8801679490653950251, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
   - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -9589,7 +9589,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888826446}
-  m_Mesh: {fileID: 4300000, guid: 7678e6a79514b324da40efaadafd0d16, type: 3}
+  m_Mesh: {fileID: -2432090755550338912, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
 --- !u!4 &1888826452
 Transform:
   m_ObjectHideFlags: 0
@@ -9632,10 +9632,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zoomController: {fileID: 1952269538}
   earthModeMaterials:
-  - {fileID: 2100000, guid: aee7af7d2a2a07a4d95b53d21946e3f3, type: 2}
-  - {fileID: 2100000, guid: 911d2c7b56e35d545a8e60fc34db34aa, type: 2}
-  - {fileID: 2100000, guid: fb11a7c9e5777c24f9521f5d349ababb, type: 2}
-  - {fileID: 2100000, guid: 82e13eab8efcd764190a697124eb4cdc, type: 2}
+  - {fileID: -156486658544998735, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: 5865586234719623449, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: 3473123015285894068, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: 8801679490653950251, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
   spaceMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   fovThreshold: 70
 --- !u!1 &1952269526
