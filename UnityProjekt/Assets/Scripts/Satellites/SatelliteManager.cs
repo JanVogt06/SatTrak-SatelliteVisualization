@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Assets.SimpleSpinner;
 using CesiumForUnity;
 using DefaultNamespace;
+using Heatmap;
 using Satellites.SGP.Propagation;
 using Satellites.SGP.TLE;
 using Unity.Collections;
@@ -31,22 +32,19 @@ namespace Satellites
         [Header("TLE Source")]
         public string tleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
 
-        [Header("Prefabs & References")]
-        public GameObject satellitePrefab;
+        [Header("Prefabs & References")] public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
 
-        [Header("Simulation Time Settings")]
-        public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
+        [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
         public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
 
-        [Header("Satellite Models")]
-        [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
+        [Header("Satellite Models")] [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
         public GameObject[] satelliteModelPrefabs;
 
-        [Header("Materials")]
-        [Tooltip("Material für Satelliten im Space-Modus")]
+        [Header("Materials")] [Tooltip("Material für Satelliten im Space-Modus")]
         public Material globalSpaceMaterial;
 
+        [SerializeField] private HeatmapController _heatmapController;
         public DateTime CurrentSimulatedTime { get; private set; }
         private double simulationTimeSeconds;
         private TransformAccessArray _transformAccessArray;
@@ -55,6 +53,7 @@ namespace Satellites
         private JobHandle _handle;
         private bool _multiplierChanged;
         private NativeArray<Sgp4> _propagators;
+        private NativeArray<Vector3> _currentPositions;
 
         void Start()
         {
@@ -200,7 +199,6 @@ namespace Satellites
                     }
 
                     Material[] mats = renderer.sharedMaterials;
-                    Debug.LogWarning($"Prefab {prefab.name} hat {mats.Length} Materialien");
 
                     foreach (Material mat in mats)
                     {
@@ -209,8 +207,6 @@ namespace Satellites
                             Debug.LogWarning("Material ist null!");
                             continue;
                         }
-
-                        Debug.LogWarning($"Material {mat.name}: GPU Instancing ist {(mat.enableInstancing ? "bereits aktiviert" : "deaktiviert")}");
 
                         if (!mat.enableInstancing)
                         {
@@ -224,7 +220,8 @@ namespace Satellites
             // Für das Space-Material
             if (globalSpaceMaterial != null)
             {
-                Debug.LogWarning($"Space Material: GPU Instancing ist {(globalSpaceMaterial.enableInstancing ? "bereits aktiviert" : "deaktiviert")}");
+                Debug.LogWarning(
+                    $"Space Material: GPU Instancing ist {(globalSpaceMaterial.enableInstancing ? "bereits aktiviert" : "deaktiviert")}");
 
                 if (!globalSpaceMaterial.enableInstancing)
                 {
@@ -237,30 +234,25 @@ namespace Satellites
                 Debug.LogWarning("Globales Space-Material ist nicht zugewiesen!");
             }
         }
+
         private void AllocateTransformAccessArray()
         {
             if (_satellites.Count == 0)
             {
-                Debug.LogError("Keine Satelliten zum Initialisieren der TransformAccessArray");
+                Debug.LogError("Keine Satelliten zum Initialisieren des TransformAccessArray");
                 return;
             }
 
             Debug.Log($"Initialisiere TransformAccessArray mit {_satellites.Count} Satelliten");
 
             _propagators = new NativeArray<Sgp4>(_satellites.Count, Allocator.Persistent);
+            _currentPositions = new NativeArray<Vector3>(_satellites.Count, Allocator.Persistent);
 
             var transforms = new Transform[_satellites.Count];
             for (int i = 0; i < _satellites.Count; i++)
             {
-                if (_satellites[i] != null)
-                {
-                    transforms[i] = _satellites[i].transform;
-                    _propagators[i] = _satellites[i].OrbitPropagator;
-                }
-                else
-                {
-                    Debug.LogError($"Satellite at index {i} is null");
-                }
+                transforms[i] = _satellites[i].transform;
+                _propagators[i] = _satellites[i].OrbitPropagator;
             }
 
             _transformAccessArray = new TransformAccessArray(transforms);
@@ -279,12 +271,14 @@ namespace Satellites
             UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
             _handle.Complete();
+            _heatmapController.UpdateHeatmap(_currentPositions);
 
             var job = new MoveSatelliteJobParallelForTransform
             {
                 CurrentTime = CurrentSimulatedTime,
                 EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
-                OrbitPropagator = _propagators
+                OrbitPropagator = _propagators,
+                Positions = _currentPositions
             };
 
             _handle = job.ScheduleByRef(_transformAccessArray);
