@@ -28,7 +28,6 @@ namespace Satellites
                 Instance = this;
         }
 
-
         [Header("TLE Source")]
         public string tleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
 
@@ -36,8 +35,13 @@ namespace Satellites
         public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
 
-        [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
+        [Header("Simulation Time Settings")] 
+        public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
         public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
+
+        [Header("Satellite Models")]
+        [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
+        public GameObject[] satelliteModelPrefabs;
 
         public DateTime CurrentSimulatedTime { get; private set; }
         private double simulationTimeSeconds;
@@ -46,7 +50,6 @@ namespace Satellites
         private readonly List<SatelliteController> _satellites = new();
         private JobHandle _handle;
         private bool _multiplierChanged;
-        // private SatelliteController _satelliteExample;
         private NativeArray<Sgp4> _propagators;
         
         void Start()
@@ -55,7 +58,6 @@ namespace Satellites
             CurrentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
             FetchTleData();
-            // _satelliteExample = _satellites.Single(sat => sat.name == "25544 ISS (ZARYA)");
             AllocateTransformAccessArray();
         }
 
@@ -71,10 +73,14 @@ namespace Satellites
 
                 foreach (var tle in data.Values)
                 {
+                    // Basis-Satellit erstellen
                     var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
                     sat.name = tle.NoradNumber + " " + tle.Name;
                     var con = sat.GetComponent<SatelliteController>();
                     con.Initialize(tle);
+
+                    // Zufälliges Modell auswählen und anhängen
+                    ApplyRandomModel(sat);
 
                     _satellites.Add(con);
                 }
@@ -86,6 +92,79 @@ namespace Satellites
                 Debug.LogError("Parsing-Fehler: " + e.Message);
             }
         }
+        
+        private void ApplyRandomModel(GameObject satellite)
+{
+    if (satelliteModelPrefabs == null || satelliteModelPrefabs.Length == 0)
+    {
+        Debug.LogWarning("Keine Satelliten-Modelle konfiguriert!");
+        return;
+    }
+
+    // Zufälliges Modell aus Array wählen
+    int randomIndex = UnityEngine.Random.Range(0, satelliteModelPrefabs.Length);
+    GameObject modelPrefab = satelliteModelPrefabs[randomIndex];
+
+    // Mesh und MeshRenderer vom Satelliten finden oder erstellen wenn nicht vorhanden
+    MeshFilter meshFilter = satellite.GetComponent<MeshFilter>();
+    if (meshFilter == null)
+    {
+        meshFilter = satellite.AddComponent<MeshFilter>();
+        Debug.Log($"MeshFilter zu {satellite.name} hinzugefügt");
+    }
+        
+    MeshRenderer meshRenderer = satellite.GetComponent<MeshRenderer>();
+    if (meshRenderer == null)
+    {
+        meshRenderer = satellite.AddComponent<MeshRenderer>();
+        Debug.Log($"MeshRenderer zu {satellite.name} hinzugefügt");
+    }
+
+    // Prefab laden, um Mesh und Materialien zu extrahieren
+    GameObject tempModel = Instantiate(modelPrefab);
+    MeshFilter modelMeshFilter = tempModel.GetComponent<MeshFilter>();
+    MeshRenderer modelMeshRenderer = tempModel.GetComponent<MeshRenderer>();
+
+    if (modelMeshFilter != null && modelMeshRenderer != null)
+    {
+        // Mesh kopieren
+        meshFilter.mesh = modelMeshFilter.sharedMesh;
+
+        // Material-Controller suchen oder hinzufügen
+        SatelliteMaterialController materialController = satellite.GetComponent<SatelliteMaterialController>();
+        if (materialController == null)
+        {
+            materialController = satellite.AddComponent<SatelliteMaterialController>();
+            Debug.Log($"SatelliteMaterialController zu {satellite.name} hinzugefügt");
+        }
+
+        // Zoom-Controller Referenz setzen
+        CesiumZoomController zoomController = FindObjectOfType<CesiumZoomController>();
+        materialController.zoomController = zoomController;
+
+        // Earth-Mode Materialien setzen
+        Material[] materials = modelMeshRenderer.sharedMaterials;
+        materialController.earthModeMaterials = materials;
+        
+        // Materialien auch direkt dem Renderer zuweisen
+        meshRenderer.materials = materials;
+
+        // Space-Mode Material
+        if (materialController.spaceMaterial == null)
+        {
+            Material spaceMaterial = new Material(Shader.Find("Standard"));
+            spaceMaterial.color = Color.gray;
+            materialController.spaceMaterial = spaceMaterial;
+        }
+    }
+    else
+    {
+        Debug.LogError($"Modell {modelPrefab.name} hat keinen MeshFilter oder MeshRenderer");
+    }
+
+    // Temporäres Modell löschen
+    Destroy(tempModel);
+}
 
         private void AllocateTransformAccessArray()
         {
@@ -97,7 +176,7 @@ namespace Satellites
                 transforms[i] = _satellites[i].transform;
                 _propagators[i] = _satellites[i].OrbitPropagator;
             }
-            
+
             _transformAccessArray = new TransformAccessArray(transforms.ToArray());
         }
 

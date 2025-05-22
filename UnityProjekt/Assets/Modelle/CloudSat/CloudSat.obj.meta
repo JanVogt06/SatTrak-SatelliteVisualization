@@ -1,110 +1,14 @@
 fileFormatVersion: 2
-guid: 7678e6a79514b324da40efaadafd0d16
+guid: 6d6be1ccbed3043af81cabef64ef4d2b
 ModelImporter:
   serializedVersion: 22200
-  internalIDToNameTable:
-  - first:
-      1: 100000
-    second: aluminum
-  - first:
-      1: 100002
-    second: aluminum2
-  - first:
-      1: 100004
-    second: dish_etc
-  - first:
-      1: 100006
-    second: korpus
-  - first:
-      1: 100008
-    second: //RootNode
-  - first:
-      1: 100010
-    second: solar_plane
-  - first:
-      1: 100012
-    second: solar_plane1
-  - first:
-      4: 400000
-    second: aluminum
-  - first:
-      4: 400002
-    second: aluminum2
-  - first:
-      4: 400004
-    second: dish_etc
-  - first:
-      4: 400006
-    second: korpus
-  - first:
-      4: 400008
-    second: //RootNode
-  - first:
-      4: 400010
-    second: solar_plane
-  - first:
-      4: 400012
-    second: solar_plane1
-  - first:
-      23: 2300000
-    second: aluminum
-  - first:
-      23: 2300002
-    second: aluminum2
-  - first:
-      23: 2300004
-    second: dish_etc
-  - first:
-      23: 2300006
-    second: korpus
-  - first:
-      23: 2300008
-    second: solar_plane
-  - first:
-      23: 2300010
-    second: solar_plane1
-  - first:
-      33: 3300000
-    second: aluminum
-  - first:
-      33: 3300002
-    second: aluminum2
-  - first:
-      33: 3300004
-    second: dish_etc
-  - first:
-      33: 3300006
-    second: korpus
-  - first:
-      33: 3300008
-    second: solar_plane
-  - first:
-      33: 3300010
-    second: solar_plane1
-  - first:
-      43: 4300000
-    second: korpus
-  - first:
-      43: 4300002
-    second: aluminum
-  - first:
-      43: 4300004
-    second: dish_etc
-  - first:
-      43: 4300006
-    second: solar_plane
-  - first:
-      43: 4300008
-    second: aluminum2
-  - first:
-      43: 4300010
-    second: solar_plane1
+  internalIDToNameTable: []
   externalObjects: {}
   materials:
-    materialImportMode: 1
+    materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -128,7 +32,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1
@@ -136,13 +40,13 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importPhysicalCameras: 0
-    importVisibility: 0
+    importPhysicalCameras: 1
+    importVisibility: 1
     importBlendShapes: 1
-    importCameras: 0
-    importLights: 0
-    nodeNameCollisionStrategy: 0
-    fileIdsGeneration: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -159,7 +63,7 @@ ModelImporter:
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
-    secondaryUVMarginMethod: 0
+    secondaryUVMarginMethod: 1
     secondaryUVMinLightmapResolution: 40
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
@@ -169,8 +73,8 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
-    normalCalculationMode: 0
-    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
@@ -190,15 +94,15 @@ ModelImporter:
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
-    skeletonHasParents: 0
+    skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   avatarSetup: 0
-  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
-  importBlendShapeDeformPercent: 0
-  remapMaterialsIfMaterialImportModeIsNone: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
