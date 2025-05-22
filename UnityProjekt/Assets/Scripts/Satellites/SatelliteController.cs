@@ -22,7 +22,7 @@ namespace Satellites
         {
             OrbitPropagator = new Sgp4(tle);
             Tle = tle;
-            ShouldCalculateOrbit = this.name == "7646 STARLETTE";
+            ShouldCalculateOrbit = name == "7646 STARLETTE";
         }
 
         public void Update()
@@ -34,23 +34,34 @@ namespace Satellites
             }
         }
 
-        public void CalculateOrbit()
+        private void CalculateOrbit()
         {
-            if (!orbitGO)
-            {
-                orbitGO = new GameObject("OrbitPath");
+            CreateOrbitGo();
 
-                orbitRenderer = orbitGO.AddComponent<LineRenderer>();
+            var positions = CalculateNextPositions(TimeSpan.FromHours(12), TimeSpan.FromMinutes(1));
 
-                orbitRenderer.startWidth = 5000f;
-                orbitRenderer.endWidth = 5000f;
-                orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
-                orbitRenderer.startColor = Color.cyan;
-                orbitRenderer.endColor = Color.cyan;
-            }
+            orbitRenderer.positionCount = positions.Count;
+            orbitRenderer.SetPositions(positions.ToArray());
+        }
 
+        private void CreateOrbitGo()
+        {
+            if (orbitGO) return;
+            orbitGO = new GameObject("OrbitPath");
+
+            orbitRenderer = orbitGO.AddComponent<LineRenderer>();
+
+            orbitRenderer.startWidth = 5000f;
+            orbitRenderer.endWidth = 5000f;
+            orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            orbitRenderer.startColor = Color.cyan;
+            orbitRenderer.endColor = Color.cyan;
+        }
+
+        public List<Vector3> CalculateNextPositions(TimeSpan until, TimeSpan stepSize)
+        {
             var positions = new List<Vector3>();
-            for (TimeSpan i = TimeSpan.Zero; i < TimeSpan.FromHours(12); i = i.Add(TimeSpan.FromMinutes(1)))
+            for (TimeSpan i = TimeSpan.Zero; i < until; i = i.Add(stepSize))
             {
                 var pos = OrbitPropagator.FindPosition(SatelliteManager.Instance.CurrentSimulatedTime.Add(i))
                     .ToSphericalEcef();
@@ -59,8 +70,7 @@ namespace Satellites
                 positions.Add(position.ToVector());
             }
 
-            orbitRenderer.positionCount = positions.Count;
-            orbitRenderer.SetPositions(positions.ToArray());
+            return positions;
         }
     }
 }

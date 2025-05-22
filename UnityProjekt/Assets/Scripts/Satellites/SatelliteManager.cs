@@ -32,7 +32,8 @@ namespace Satellites
         [Header("TLE Source")]
         public string tleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
 
-        [Header("Prefabs & References")] public GameObject satellitePrefab;
+        [Header("Prefabs & References")] 
+        public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
 
         [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
@@ -44,7 +45,7 @@ namespace Satellites
 
         private readonly List<SatelliteController> _satellites = new();
         private JobHandle _handle;
-        private bool _multiplierChanged = false;
+        private bool _multiplierChanged;
         // private SatelliteController _satelliteExample;
         private NativeArray<Sgp4> _propagators;
         
@@ -109,8 +110,7 @@ namespace Satellites
 
         private void Update()
         {
-            simulationTimeSeconds += Time.deltaTime * timeMultiplier;
-            CurrentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
+            UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
             _handle.Complete();
 
@@ -122,6 +122,12 @@ namespace Satellites
             };
 
             _handle = job.ScheduleByRef(_transformAccessArray, _handle);
+        }
+
+        private void UpdateCurrentTime()
+        {
+            simulationTimeSeconds += Time.deltaTime * timeMultiplier;
+            CurrentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
         }
 
         private void OnDestroy()
