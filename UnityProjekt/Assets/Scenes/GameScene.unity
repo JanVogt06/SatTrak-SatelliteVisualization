@@ -9556,10 +9556,13 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -156486658544998735, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 5865586234719623449, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 3473123015285894068, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 8801679490653950251, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: -156486658544998735, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 5865586234719623449, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 3473123015285894068, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 8801679490653950251, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 4913426069162526988, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 8588245910270914291, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: -314706589591088707, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
   - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -9589,7 +9592,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888826446}
-  m_Mesh: {fileID: -2432090755550338912, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  m_Mesh: {fileID: -2432090755550338912, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
 --- !u!4 &1888826452
 Transform:
   m_ObjectHideFlags: 0
@@ -9632,10 +9635,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zoomController: {fileID: 1952269538}
   earthModeMaterials:
-  - {fileID: -156486658544998735, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 5865586234719623449, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 3473123015285894068, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 8801679490653950251, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
+  - {fileID: -156486658544998735, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 5865586234719623449, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 3473123015285894068, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 8801679490653950251, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 4913426069162526988, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: 8588245910270914291, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
+  - {fileID: -314706589591088707, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
   spaceMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   fovThreshold: 70
 --- !u!1 &1952269526
