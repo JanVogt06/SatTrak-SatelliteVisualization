@@ -178,33 +178,65 @@ namespace Satellites
 
         private void EnableGPUInstancingForAllMaterials()
         {
-            // Für die Modell-Prefabs
-            foreach (GameObject prefab in satelliteModelPrefabs)
-            {
-                if (prefab == null) continue;
+            int prefabCount = satelliteModelPrefabs?.Length ?? 0;
+            Debug.LogWarning($"GPU Instancing Check: {prefabCount} Modell-Prefabs gefunden");
 
-                MeshRenderer renderer = prefab.GetComponent<MeshRenderer>();
-                if (renderer != null)
+            // Für die Modell-Prefabs
+            if (satelliteModelPrefabs != null)
+            {
+                foreach (GameObject prefab in satelliteModelPrefabs)
                 {
-                    foreach (Material mat in renderer.sharedMaterials)
+                    if (prefab == null)
                     {
-                        if (mat != null && !mat.enableInstancing)
+                        Debug.LogWarning("Prefab ist null!");
+                        continue;
+                    }
+
+                    MeshRenderer renderer = prefab.GetComponent<MeshRenderer>();
+                    if (renderer == null)
+                    {
+                        Debug.LogWarning($"Prefab {prefab.name} hat keinen MeshRenderer!");
+                        continue;
+                    }
+
+                    Material[] mats = renderer.sharedMaterials;
+                    Debug.LogWarning($"Prefab {prefab.name} hat {mats.Length} Materialien");
+
+                    foreach (Material mat in mats)
+                    {
+                        if (mat == null)
+                        {
+                            Debug.LogWarning("Material ist null!");
+                            continue;
+                        }
+
+                        Debug.LogWarning($"Material {mat.name}: GPU Instancing ist {(mat.enableInstancing ? "bereits aktiviert" : "deaktiviert")}");
+
+                        if (!mat.enableInstancing)
                         {
                             mat.enableInstancing = true;
-                            Debug.Log($"GPU Instancing für Prefab-Material {mat.name} aktiviert");
+                            Debug.LogWarning($"GPU Instancing für Material {mat.name} wurde aktiviert");
                         }
                     }
                 }
             }
 
             // Für das Space-Material
-            if (globalSpaceMaterial != null && !globalSpaceMaterial.enableInstancing)
+            if (globalSpaceMaterial != null)
             {
-                globalSpaceMaterial.enableInstancing = true;
-                Debug.Log("GPU Instancing für globales Space-Material aktiviert");
+                Debug.LogWarning($"Space Material: GPU Instancing ist {(globalSpaceMaterial.enableInstancing ? "bereits aktiviert" : "deaktiviert")}");
+
+                if (!globalSpaceMaterial.enableInstancing)
+                {
+                    globalSpaceMaterial.enableInstancing = true;
+                    Debug.LogWarning("GPU Instancing für globales Space-Material wurde aktiviert");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Globales Space-Material ist nicht zugewiesen!");
             }
         }
-
         private void AllocateTransformAccessArray()
         {
             if (_satellites.Count == 0)
