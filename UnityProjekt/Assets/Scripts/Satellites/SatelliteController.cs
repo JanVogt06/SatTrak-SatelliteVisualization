@@ -22,6 +22,7 @@ namespace Satellites
         {
             OrbitPropagator = new Sgp4(tle);
             Tle = tle;
+            ShouldCalculateOrbit = this.name == "7646 STARLETTE";
         }
 
         public void Update()
