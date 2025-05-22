@@ -17,21 +17,21 @@ public class SatelliteMaterialController : MonoBehaviour
     [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
     public float fovThreshold = 70f;
     
-    private MeshRenderer meshRenderer;
-    private Material[] originalMaterials;
+    private MeshRenderer _meshRenderer;
     private bool lastMode = false; // false = space, true = earth
     
     void Start()
     {
-        meshRenderer = GetComponent<MeshRenderer>();
-        Debug.Log("SatelliteMaterialController: Start - MeshRenderer gefunden: " + (meshRenderer != null));
+        _meshRenderer = GetComponent<MeshRenderer>();
+        Debug.Log("SatelliteMaterialController: Start - MeshRenderer gefunden: " + (_meshRenderer != null));
         
-        if (meshRenderer)
+        if (_meshRenderer == null)
         {
-            originalMaterials = meshRenderer.sharedMaterials;
-            Debug.Log("Original-Materialien: " + originalMaterials.Length);
-            UpdateMaterial();
+            _meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            Debug.Log("MeshRenderer wurde hinzugefügt");
         }
+        
+        UpdateMaterial();
     }
     
     void Update()
@@ -41,26 +41,24 @@ public class SatelliteMaterialController : MonoBehaviour
             float currentFOV = zoomController.targetCamera.fieldOfView;
             bool isEarthMode = currentFOV < fovThreshold;
             
-            // Nur loggen wenn sich der Modus ändert
+            // Nur aktualisieren, wenn sich der Modus ändert
             if (isEarthMode != lastMode)
             {
                 Debug.Log("Modus geändert: " + (isEarthMode ? "Earth" : "Space") + 
                           " (FOV: " + currentFOV + ", Threshold: " + fovThreshold + ")");
                 lastMode = isEarthMode;
+                UpdateMaterial();
             }
-            
-            UpdateMaterial();
-        }
-        else
-        {
-            Debug.LogError("ZoomController oder Camera nicht gefunden!");
         }
     }
     
-    void UpdateMaterial()
+    public void UpdateMaterial()
     {
-        if (!zoomController || !zoomController.targetCamera || !meshRenderer)
+        if (!zoomController || !zoomController.targetCamera || !_meshRenderer)
+        {
+            Debug.LogError("Fehlende Komponenten für UpdateMaterial");
             return;
+        }
             
         bool isEarthMode = zoomController.targetCamera.fieldOfView < fovThreshold;
         
@@ -69,8 +67,13 @@ public class SatelliteMaterialController : MonoBehaviour
             // Earth-Modus
             if (earthModeMaterials != null && earthModeMaterials.Length > 0)
             {
-                meshRenderer.enabled = true;
-                meshRenderer.materials = earthModeMaterials;
+                _meshRenderer.enabled = true;
+                _meshRenderer.sharedMaterials = earthModeMaterials;
+                Debug.Log($"Earth-Materialien angewendet auf {gameObject.name} (Anzahl: {earthModeMaterials.Length})");
+            }
+            else
+            {
+                Debug.LogError($"Keine Earth-Materialien für {gameObject.name}");
             }
         }
         else
@@ -78,15 +81,15 @@ public class SatelliteMaterialController : MonoBehaviour
             // Space-Modus
             if (spaceMaterial != null)
             {
-                meshRenderer.enabled = true;
-                Material[] spaceMaterials = new Material[1];
-                spaceMaterials[0] = spaceMaterial;
-                meshRenderer.materials = spaceMaterials;
+                _meshRenderer.enabled = true;
+                Material[] spaceMaterials = new Material[1] { spaceMaterial };
+                _meshRenderer.sharedMaterials = spaceMaterials;
+                Debug.Log($"Space-Material angewendet: {spaceMaterial.name} auf {gameObject.name}");
             }
             else
             {
-                // Einfach ausblenden wenn kein Space-Material definiert ist
-                meshRenderer.enabled = false;
+                Debug.LogError($"Kein Space-Material für {gameObject.name}");
+                _meshRenderer.enabled = false;
             }
         }
     }

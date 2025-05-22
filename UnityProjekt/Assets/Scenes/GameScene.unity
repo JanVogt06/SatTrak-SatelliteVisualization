@@ -7668,6 +7668,7 @@ MonoBehaviour:
   - {fileID: 3031063579141103038, guid: f191e48d4e2ec4ebca557a1d6ddc2df7, type: 3}
   - {fileID: 4518586430155363886, guid: 6a9cdc7ceb113448b900de1cd43fd65e, type: 3}
   - {fileID: 1727886711872932186, guid: 8a879f2e1e2c24f96aeb4c354f5fa727, type: 3}
+  globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
 --- !u!4 &964490651
 Transform:
   m_ObjectHideFlags: 0
