@@ -61,6 +61,7 @@ namespace Satellites
             Debug.Log("SatelliteManager: Start");
             CurrentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
+            EnableGPUInstancingForAllMaterials();
             FetchTleData();
             AllocateTransformAccessArray();
         }
@@ -109,21 +110,18 @@ namespace Satellites
             // Zufälliges Modell aus Array wählen
             int randomIndex = UnityEngine.Random.Range(0, satelliteModelPrefabs.Length);
             GameObject modelPrefab = satelliteModelPrefabs[randomIndex];
-            Debug.Log($"Wende Modell {modelPrefab.name} auf {satellite.name} an");
 
             // Mesh und MeshRenderer vom Satelliten finden oder erstellen wenn nicht vorhanden
             MeshFilter meshFilter = satellite.GetComponent<MeshFilter>();
             if (meshFilter == null)
             {
                 meshFilter = satellite.AddComponent<MeshFilter>();
-                Debug.Log($"MeshFilter zu {satellite.name} hinzugefügt");
             }
 
             MeshRenderer meshRenderer = satellite.GetComponent<MeshRenderer>();
             if (meshRenderer == null)
             {
                 meshRenderer = satellite.AddComponent<MeshRenderer>();
-                Debug.Log($"MeshRenderer zu {satellite.name} hinzugefügt");
             }
 
             // Prefab laden, um Mesh und Materialien zu extrahieren
@@ -135,14 +133,12 @@ namespace Satellites
             {
                 // Mesh kopieren
                 meshFilter.mesh = modelMeshFilter.sharedMesh;
-                Debug.Log($"Mesh {modelMeshFilter.sharedMesh.name} kopiert");
 
                 // Material-Controller suchen oder hinzufügen
                 SatelliteMaterialController materialController = satellite.GetComponent<SatelliteMaterialController>();
                 if (materialController == null)
                 {
                     materialController = satellite.AddComponent<SatelliteMaterialController>();
-                    Debug.Log($"SatelliteMaterialController zu {satellite.name} hinzugefügt");
                 }
 
                 // Zoom-Controller Referenz setzen
@@ -151,23 +147,10 @@ namespace Satellites
 
                 // Earth-Mode Materialien setzen
                 Material[] materials = modelMeshRenderer.sharedMaterials;
-                Debug.Log($"Material-Count: {materials.Length}");
                 materialController.earthModeMaterials = materials;
 
-                // Space-Material zuweisen
-                if (globalSpaceMaterial != null)
-                {
-                    materialController.spaceMaterial = globalSpaceMaterial;
-                    Debug.Log($"Global Space Material zugewiesen an {satellite.name}");
-                }
-                else
-                {
-                    // Fallback: Erstelle ein einfaches Material
-                    Material fallbackMaterial = new Material(Shader.Find("Mobile/Diffuse"));
-                    fallbackMaterial.color = Color.gray;
-                    materialController.spaceMaterial = fallbackMaterial;
-                    Debug.LogWarning("Fallback Space Material verwendet - bitte globalSpaceMaterial zuweisen!");
-                }
+                // Space-Material direkt zuweisen ohne Überprüfung und Logging
+                materialController.spaceMaterial = globalSpaceMaterial;
 
                 // Stelle sicher, dass der Renderer aktiviert ist
                 meshRenderer.enabled = true;
@@ -175,7 +158,7 @@ namespace Satellites
                 // Wende sofort das richtige Material an
                 if (zoomController && zoomController.targetCamera)
                 {
-                    materialController.UpdateMaterial(); // Rufe UpdateMaterial auf
+                    materialController.UpdateMaterial();
                 }
                 else
                 {
@@ -188,13 +171,37 @@ namespace Satellites
             }
             else
             {
-                string errorMsg = "Fehler beim Anwenden des Modells: ";
-                if (modelMeshFilter == null) errorMsg += "MeshFilter fehlt. ";
-                if (modelMeshRenderer == null) errorMsg += "MeshRenderer fehlt. ";
-                if (modelMeshFilter != null && modelMeshFilter.sharedMesh == null) errorMsg += "Mesh fehlt. ";
-                Debug.LogError(errorMsg);
                 Destroy(tempModel);
                 return false;
+            }
+        }
+
+        private void EnableGPUInstancingForAllMaterials()
+        {
+            // Für die Modell-Prefabs
+            foreach (GameObject prefab in satelliteModelPrefabs)
+            {
+                if (prefab == null) continue;
+
+                MeshRenderer renderer = prefab.GetComponent<MeshRenderer>();
+                if (renderer != null)
+                {
+                    foreach (Material mat in renderer.sharedMaterials)
+                    {
+                        if (mat != null && !mat.enableInstancing)
+                        {
+                            mat.enableInstancing = true;
+                            Debug.Log($"GPU Instancing für Prefab-Material {mat.name} aktiviert");
+                        }
+                    }
+                }
+            }
+
+            // Für das Space-Material
+            if (globalSpaceMaterial != null && !globalSpaceMaterial.enableInstancing)
+            {
+                globalSpaceMaterial.enableInstancing = true;
+                Debug.Log("GPU Instancing für globales Space-Material aktiviert");
             }
         }
 
