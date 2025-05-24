@@ -7,16 +7,16 @@ namespace Satellites
         [Header("Referenzen")]
         public CesiumZoomController zoomController;
     
-        [Header("Materials")]
-        [Tooltip("Das komplexe Material, das nur im Earth-Modus verwendet wird")]
-        public Material[] earthModeMaterials;
-    
-        [Tooltip("Einfaches/leeres Material für den Space-Modus")]
-        public Material spaceMaterial;
-    
         [Header("Einstellungen")]
         [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
         public float fovThreshold = 70f;
+        
+        [Header("Materials")]
+        [Tooltip("Das komplexe Material, das nur im Earth-Modus verwendet wird")]
+        private Material[] earthModeMaterials;
+    
+        [Tooltip("Einfaches/leeres Material für den Space-Modus")]
+        private Material spaceMaterial;
     
         private MeshRenderer _meshRenderer;
         private bool lastMode = false; // false = space, true = earth
@@ -49,6 +49,13 @@ namespace Satellites
                     UpdateMaterial();
                 }
             }
+        }
+        
+        public void Initialize(Material[] sharedMaterials, Material globalSpaceMaterial)
+        {
+            zoomController = FindObjectOfType<CesiumZoomController>();
+            earthModeMaterials = sharedMaterials;
+            spaceMaterial = globalSpaceMaterial;
         }
     
         public void UpdateMaterial()

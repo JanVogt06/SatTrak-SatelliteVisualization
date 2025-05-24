@@ -67,17 +67,21 @@ namespace Satellites
         private void CopyMeshAndMaterials(MeshFilter modelMeshFilter, MeshRenderer modelMeshRenderer,
             Material globalSpaceMaterial)
         {
-            var meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
-            var meshRenderer = GetComponent<MeshRenderer>() ?? gameObject.AddComponent<MeshRenderer>();
+            var meshFilter = GetComponent<MeshFilter>() != null
+                ? GetComponent<MeshFilter>()
+                : gameObject.AddComponent<MeshFilter>();
+
+            var meshRenderer = GetComponent<MeshRenderer>() != null
+                ? GetComponent<MeshRenderer>()
+                : gameObject.AddComponent<MeshRenderer>();
 
             meshFilter.mesh = modelMeshFilter.sharedMesh;
             NormalizeSatelliteSize(modelMeshFilter.sharedMesh);
 
-            var materialController = GetComponent<SatelliteMaterialController>() ??
-                                     gameObject.AddComponent<SatelliteMaterialController>();
-            materialController.zoomController = FindObjectOfType<CesiumZoomController>();
-            materialController.earthModeMaterials = modelMeshRenderer.sharedMaterials;
-            materialController.spaceMaterial = globalSpaceMaterial;
+            var materialController = GetComponent<SatelliteMaterialController>() != null
+                ? GetComponent<SatelliteMaterialController>()
+                : gameObject.AddComponent<SatelliteMaterialController>();
+            materialController.Initialize(modelMeshRenderer.sharedMaterials, globalSpaceMaterial);
 
             meshRenderer.enabled = true;
             if (materialController.zoomController && materialController.zoomController.targetCamera)
