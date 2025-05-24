@@ -9867,6 +9867,7 @@ GameObject:
   - component: {fileID: 1888826452}
   - component: {fileID: 1888826453}
   - component: {fileID: 1888826454}
+  - component: {fileID: 1888826455}
   m_Layer: 0
   m_Name: Satellite
   m_TagString: Untagged
@@ -9901,7 +9902,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92393eb8bf081ad45ada9a826b0bf0fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShouldCalculateOrbit: 0
+  shouldCalculateOrbit: 0
+  nextPositions: []
 --- !u!114 &1888826454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9916,6 +9918,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zoomController: {fileID: 1952269538}
   fovThreshold: 70
+--- !u!114 &1888826455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888826446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa71f8412944b44389885fa9c0edac2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orbit: {fileID: 1888826453}
+  materialController: {fileID: 1888826454}
 --- !u!1 &1952269526
 GameObject:
   m_ObjectHideFlags: 0

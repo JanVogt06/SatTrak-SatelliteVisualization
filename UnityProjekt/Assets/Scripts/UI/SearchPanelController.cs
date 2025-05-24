@@ -31,7 +31,7 @@ public class SearchPanelController : MonoBehaviour
     [Tooltip("Wie weit hinter dem Sat auf der Erd-Sat-Kameraachse die Kamera stehen soll (in Metern)")]
     public float cameraDistanceOffset = 100000f;
 
-    private SatelliteController trackedSatellite;
+    private Satellite trackedSatellite;
     private bool isTracking = false;
 
     void Start()

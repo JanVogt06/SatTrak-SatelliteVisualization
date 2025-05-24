@@ -11,29 +11,23 @@ using UnityEngine.Serialization;
 
 namespace Satellites
 {
-    public class SatelliteController : MonoBehaviour
+    public class SatelliteOrbit : MonoBehaviour
     {
-        public Sgp4 OrbitPropagator;
-        public Tle Tle;
         public bool shouldCalculateOrbit;
-        private GameObject _orbitGo;
+        private Sgp4 _orbitPropagator;
         private LineRenderer _orbitRenderer;
+        public List<Vector3> nextPositions;
 
-        public void Initialize(Tle tle)
+        public void Initialize(Sgp4 propagator)
         {
-            name = tle.NoradNumber + " " + tle.Name;
-            OrbitPropagator = new Sgp4(tle);
-            Tle = tle;
+            _orbitPropagator = propagator;
             shouldCalculateOrbit = name == "7646 STARLETTE";
         }
 
         public void Update()
         {
             if (shouldCalculateOrbit) CalculateOrbit();
-            else if (_orbitGo)
-            {
-                Destroy(_orbitGo);
-            }
+            else if (_orbitRenderer) Destroy(_orbitRenderer);
         }
 
         private void CalculateOrbit()
@@ -48,10 +42,8 @@ namespace Satellites
 
         private void CreateOrbitGo()
         {
-            if (_orbitGo) return;
-            _orbitGo = new GameObject("OrbitPath");
-
-            _orbitRenderer = _orbitGo.AddComponent<LineRenderer>();
+            if (_orbitRenderer) return;
+            _orbitRenderer = gameObject.AddComponent<LineRenderer>();
 
             _orbitRenderer.startWidth = 5000f;
             _orbitRenderer.endWidth = 5000f;
@@ -60,17 +52,19 @@ namespace Satellites
             _orbitRenderer.endColor = Color.cyan;
         }
 
-        public List<Vector3> CalculateNextPositions(TimeSpan until, TimeSpan stepSize)
+        private List<Vector3> CalculateNextPositions(TimeSpan until, TimeSpan stepSize)
         {
             var positions = new List<Vector3>();
             for (TimeSpan i = TimeSpan.Zero; i < until; i = i.Add(stepSize))
             {
-                var pos = OrbitPropagator.FindPosition(SatelliteManager.Instance.CurrentSimulatedTime.Add(i))
+                var pos = _orbitPropagator.FindPosition(SatelliteManager.Instance.CurrentSimulatedTime.Add(i))
                     .ToSphericalEcef();
                 var position = math.mul(SatelliteManager.Instance.cesiumGeoreference.ecefToLocalMatrix,
                     new double4(pos.ToDouble(), 1.0)).xyz;
                 positions.Add(position.ToVector());
             }
+
+            nextPositions = positions;
 
             return positions;
         }

@@ -47,7 +47,7 @@ namespace Satellites
         private double _simulationTimeSeconds;
 
         // --- Satellitenverwaltung ---
-        private readonly List<SatelliteController> _satellites = new();
+        private readonly List<Satellite> _satellites = new();
 
         // --- Jobs & NativeArrays ---
         private TransformAccessArray _transformAccessArray;
@@ -115,7 +115,7 @@ namespace Satellites
             return _satellites.Select(s => s.gameObject.name).ToList();
         }
 
-        public SatelliteController GetSatelliteByName(string name)
+        public Satellite GetSatelliteByName(string name)
         {
             return _satellites.FirstOrDefault(s => s.gameObject.name == name);
         }
@@ -146,14 +146,12 @@ namespace Satellites
 
         private bool CreateSatellite(Tle tle)
         {
-            var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
-            var con = sat.GetComponent<SatelliteController>();
-            var matCon = sat.GetComponent<SatelliteMaterialController>();
+            var satelliteGo = Instantiate(satellitePrefab, cesiumGeoreference.transform);
+            var satellite = satelliteGo.GetComponent<Satellite>();
             
-            con.Initialize(tle);
-            _satellites.Add(con);
-            
-            return matCon.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
+            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial);
+            _satellites.Add(satellite);
+            return modelApplied;
         }
 
         private void EnableGpuInstancing()
