@@ -141,7 +141,10 @@ namespace Satellites
                     var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
                     sat.name = tle.NoradNumber + " " + tle.Name;
                     var con = sat.GetComponent<SatelliteController>();
-                    var modelApplied = con.Initialize(tle, satelliteModelPrefabs, globalSpaceMaterial);
+                    var matCon = sat.GetComponent<SatelliteMaterialController>();
+                    con.Initialize(tle);
+                    var modelApplied = matCon.Initialize(satelliteModelPrefabs, globalSpaceMaterial);
+                    
 
                     // Zufälliges Modell auswählen und anhängen
                     if (modelApplied) modelledSatellites++;

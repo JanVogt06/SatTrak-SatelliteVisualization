@@ -18,92 +18,11 @@ namespace Satellites
         private GameObject orbitGO;
         private LineRenderer orbitRenderer;
 
-        public bool Initialize(Tle tle, GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial)
+        public void Initialize(Tle tle)
         {
             OrbitPropagator = new Sgp4(tle);
             Tle = tle;
             ShouldCalculateOrbit = name == "7646 STARLETTE";
-            return ApplyRandomModel(satelliteModelPrefabs, globalSpaceMaterial);
-        }
-
-        public bool ApplyRandomModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial)
-        {
-            if (!TryGetRandomModelPrefab(satelliteModelPrefabs, out var modelPrefab))
-                return false;
-
-            if (!TryApplyModel(modelPrefab, globalSpaceMaterial))
-                return false;
-
-            return true;
-        }
-
-        private bool TryGetRandomModelPrefab(GameObject[] prefabs, out GameObject prefab)
-        {
-            prefab = null;
-            if (prefabs == null || prefabs.Length == 0)
-            {
-                Debug.LogWarning("Keine Satelliten-Modelle konfiguriert!");
-                return false;
-            }
-
-            int randomIndex = UnityEngine.Random.Range(0, prefabs.Length);
-            prefab = prefabs[randomIndex];
-            return prefab != null;
-        }
-
-        private bool TryApplyModel(GameObject modelPrefab, Material globalSpaceMaterial)
-        {
-            var tempModel = Instantiate(modelPrefab);
-            var modelMeshFilter = tempModel.GetComponent<MeshFilter>();
-            var modelMeshRenderer = tempModel.GetComponent<MeshRenderer>();
-            if (modelMeshFilter == null || modelMeshRenderer == null || modelMeshFilter.sharedMesh == null)
-                return false;
-
-            CopyMeshAndMaterials(modelMeshFilter, modelMeshRenderer, globalSpaceMaterial);
-            Destroy(tempModel);
-            return true;
-        }
-
-        private void CopyMeshAndMaterials(MeshFilter modelMeshFilter, MeshRenderer modelMeshRenderer,
-            Material globalSpaceMaterial)
-        {
-            var meshFilter = GetComponent<MeshFilter>() != null
-                ? GetComponent<MeshFilter>()
-                : gameObject.AddComponent<MeshFilter>();
-
-            var meshRenderer = GetComponent<MeshRenderer>() != null
-                ? GetComponent<MeshRenderer>()
-                : gameObject.AddComponent<MeshRenderer>();
-
-            meshFilter.mesh = modelMeshFilter.sharedMesh;
-            NormalizeSatelliteSize(modelMeshFilter.sharedMesh);
-
-            var materialController = GetComponent<SatelliteMaterialController>() != null
-                ? GetComponent<SatelliteMaterialController>()
-                : gameObject.AddComponent<SatelliteMaterialController>();
-            materialController.Initialize(modelMeshRenderer.sharedMaterials, globalSpaceMaterial);
-
-            meshRenderer.enabled = true;
-            if (materialController.zoomController && materialController.zoomController.targetCamera)
-                materialController.UpdateMaterial();
-            else
-                meshRenderer.materials = modelMeshRenderer.sharedMaterials;
-        }
-
-        private void NormalizeSatelliteSize(Mesh mesh)
-        {
-            // Zielgröße für alle Satelliten (anpassen nach Bedarf)
-            float targetSize = 40000f;
-
-            // Berechne die größte Dimension des aktuellen Meshes
-            Bounds bounds = mesh.bounds;
-            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-
-            // Berechne den Skalierungsfaktor
-            float scaleFactor = targetSize / maxDimension;
-
-            // Wende die Skalierung an
-            gameObject.transform.localScale = Vector3.one * scaleFactor; // Semikolon hinzugefügt
         }
 
         public void Update()
