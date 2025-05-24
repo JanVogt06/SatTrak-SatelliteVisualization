@@ -14,6 +14,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Jobs;
+using UnityEngine.Serialization;
 
 namespace Satellites
 {
@@ -27,6 +28,7 @@ namespace Satellites
         [Header("Prefabs & References")] 
         public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
+        public HeatmapController heatmapController;
 
         [Header("Simulation Time Settings")] 
         public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
@@ -38,9 +40,6 @@ namespace Satellites
         [Header("Materials")] 
         [Tooltip("Material für Satelliten im Space-Modus")]
         public Material globalSpaceMaterial;
-
-        // --- Heatmap ---
-        [SerializeField] private HeatmapController _heatmapController;
 
         // --- Laufzeitdaten ---
         public DateTime CurrentSimulatedTime { get; private set; }
@@ -83,7 +82,7 @@ namespace Satellites
             UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
             _handle.Complete();
-            _heatmapController.UpdateHeatmap(_currentPositions);
+            heatmapController.UpdateHeatmap(_currentPositions);
 
             var job = new MoveSatelliteJobParallelForTransform
             {

@@ -7832,9 +7832,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2323664ff93dbb42bc34186f120737a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tleUrl: https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE
   satellitePrefab: {fileID: 1888826446}
   cesiumGeoreference: {fileID: 1786786860}
+  heatmapController: {fileID: 2058484569}
   timeMultiplier: 1
   satelliteModelPrefabs:
   - {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
@@ -7846,7 +7846,6 @@ MonoBehaviour:
   - {fileID: 8164078558771037576, guid: d8252f6a03d14cf4a8708af985f53608, type: 3}
   - {fileID: 8164078558771037576, guid: ecb0bef0e1fdcd44f944721973130dfc, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
-  _heatmapController: {fileID: 2058484569}
 --- !u!4 &964490651
 Transform:
   m_ObjectHideFlags: 0
@@ -8939,8 +8938,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1330124192}
   m_HandleRect: {fileID: 1330124191}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10576,7 +10575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41c01c7a033ff5b46a913d6cd0e4e184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsVisible: 0
+  isVisible: 0
 --- !u!1 &2071671136
 GameObject:
   m_ObjectHideFlags: 0
