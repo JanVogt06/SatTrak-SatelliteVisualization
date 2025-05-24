@@ -43,8 +43,8 @@ namespace Satellites
 
         // --- Laufzeitdaten ---
         public DateTime CurrentSimulatedTime { get; private set; }
-        private DateTime simulationStartTime = DateTime.Now; // beliebiger Start
-        private double simulationTimeSeconds;
+        private readonly DateTime _simulationStartTime = DateTime.Now; // beliebiger Start
+        private double _simulationTimeSeconds;
 
         // --- Satellitenverwaltung ---
         private readonly List<SatelliteController> _satellites = new();
@@ -54,9 +54,6 @@ namespace Satellites
         private NativeArray<Sgp4> _propagators;
         private NativeArray<Vector3> _currentPositions;
         private JobHandle _handle;
-
-        // --- Statusflags ---
-        private bool _multiplierChanged;
 
         // --- Unity Lifecycle ---
         void Awake()
@@ -70,8 +67,8 @@ namespace Satellites
         void Start()
         {
             Debug.Log("SatelliteManager: Start");
-            CurrentSimulatedTime = simulationStartTime;
-            simulationTimeSeconds = 0.0;
+            CurrentSimulatedTime = _simulationStartTime;
+            _simulationTimeSeconds = 0.0;
             EnableGpuInstancing();
             FetchTleData();
             AllocateTransformAccessArray();
@@ -110,9 +107,7 @@ namespace Satellites
 
         public void OnTimeMultiplierChanged(float value)
         {
-            _multiplierChanged = true;
             timeMultiplier = value;
-            _multiplierChanged = false;
         }
 
         public List<string> GetSatelliteNames()
@@ -143,7 +138,7 @@ namespace Satellites
                     var con = sat.GetComponent<SatelliteController>();
                     var matCon = sat.GetComponent<SatelliteMaterialController>();
                     con.Initialize(tle);
-                    var modelApplied = matCon.Initialize(satelliteModelPrefabs, globalSpaceMaterial);
+                    var modelApplied = matCon.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
                     
 
                     // Zufälliges Modell auswählen und anhängen
@@ -238,8 +233,8 @@ namespace Satellites
 
         private void UpdateCurrentTime()
         {
-            simulationTimeSeconds += Time.deltaTime * timeMultiplier;
-            CurrentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
+            _simulationTimeSeconds += Time.deltaTime * timeMultiplier;
+            CurrentSimulatedTime = _simulationStartTime.AddSeconds(_simulationTimeSeconds);
         }
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine;
 using Satellites.SGP;
 using Satellites.SGP.Propagation;
 using Satellites.SGP.TLE;
+using UnityEngine.Serialization;
 
 namespace Satellites
 {
@@ -14,23 +15,23 @@ namespace Satellites
     {
         public Sgp4 OrbitPropagator;
         public Tle Tle;
-        public bool ShouldCalculateOrbit;
-        private GameObject orbitGO;
-        private LineRenderer orbitRenderer;
+        public bool shouldCalculateOrbit;
+        private GameObject _orbitGo;
+        private LineRenderer _orbitRenderer;
 
         public void Initialize(Tle tle)
         {
             OrbitPropagator = new Sgp4(tle);
             Tle = tle;
-            ShouldCalculateOrbit = name == "7646 STARLETTE";
+            shouldCalculateOrbit = name == "7646 STARLETTE";
         }
 
         public void Update()
         {
-            if (ShouldCalculateOrbit) CalculateOrbit();
-            else if (orbitGO)
+            if (shouldCalculateOrbit) CalculateOrbit();
+            else if (_orbitGo)
             {
-                Destroy(orbitGO);
+                Destroy(_orbitGo);
             }
         }
 
@@ -40,22 +41,22 @@ namespace Satellites
 
             var positions = CalculateNextPositions(TimeSpan.FromHours(12), TimeSpan.FromMinutes(1));
 
-            orbitRenderer.positionCount = positions.Count;
-            orbitRenderer.SetPositions(positions.ToArray());
+            _orbitRenderer.positionCount = positions.Count;
+            _orbitRenderer.SetPositions(positions.ToArray());
         }
 
         private void CreateOrbitGo()
         {
-            if (orbitGO) return;
-            orbitGO = new GameObject("OrbitPath");
+            if (_orbitGo) return;
+            _orbitGo = new GameObject("OrbitPath");
 
-            orbitRenderer = orbitGO.AddComponent<LineRenderer>();
+            _orbitRenderer = _orbitGo.AddComponent<LineRenderer>();
 
-            orbitRenderer.startWidth = 5000f;
-            orbitRenderer.endWidth = 5000f;
-            orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            orbitRenderer.startColor = Color.cyan;
-            orbitRenderer.endColor = Color.cyan;
+            _orbitRenderer.startWidth = 5000f;
+            _orbitRenderer.endWidth = 5000f;
+            _orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            _orbitRenderer.startColor = Color.cyan;
+            _orbitRenderer.endColor = Color.cyan;
         }
 
         public List<Vector3> CalculateNextPositions(TimeSpan until, TimeSpan stepSize)
