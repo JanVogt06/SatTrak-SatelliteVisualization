@@ -132,19 +132,8 @@ namespace Satellites
                 int modelledSatellites = 0;
                 foreach (var tle in data.Values)
                 {
-                    // Basis-Satellit erstellen
-                    var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
-                    sat.name = tle.NoradNumber + " " + tle.Name;
-                    var con = sat.GetComponent<SatelliteController>();
-                    var matCon = sat.GetComponent<SatelliteMaterialController>();
-                    con.Initialize(tle);
-                    var modelApplied = matCon.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
-                    
-
-                    // Zufälliges Modell auswählen und anhängen
+                    var modelApplied = CreateSatellite(tle);
                     if (modelApplied) modelledSatellites++;
-
-                    _satellites.Add(con);
                 }
 
                 Debug.Log($"Initialisiert: {_satellites.Count} Satelliten, {modelledSatellites} mit Modellen");
@@ -153,6 +142,18 @@ namespace Satellites
             {
                 Debug.LogError("Parsing-Fehler: " + e.Message);
             }
+        }
+
+        private bool CreateSatellite(Tle tle)
+        {
+            var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
+            var con = sat.GetComponent<SatelliteController>();
+            var matCon = sat.GetComponent<SatelliteMaterialController>();
+            
+            con.Initialize(tle);
+            _satellites.Add(con);
+            
+            return matCon.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
         }
 
         private void EnableGpuInstancing()

@@ -21,6 +21,7 @@ namespace Satellites
 
         public void Initialize(Tle tle)
         {
+            name = tle.NoradNumber + " " + tle.Name;
             OrbitPropagator = new Sgp4(tle);
             Tle = tle;
             shouldCalculateOrbit = name == "7646 STARLETTE";
