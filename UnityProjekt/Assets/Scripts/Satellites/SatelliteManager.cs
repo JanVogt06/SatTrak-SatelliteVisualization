@@ -19,8 +19,47 @@ namespace Satellites
 {
     public class SatelliteManager : MonoBehaviour
     {
+        // --- Singleton ---
         public static SatelliteManager Instance { get; private set; }
 
+        private const string TleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
+
+        [Header("Prefabs & References")] 
+        public GameObject satellitePrefab;
+        public CesiumGeoreference cesiumGeoreference;
+
+        [Header("Simulation Time Settings")] 
+        public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
+
+        [Header("Satellite Models")] 
+        [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
+        public GameObject[] satelliteModelPrefabs;
+
+        [Header("Materials")] 
+        [Tooltip("Material für Satelliten im Space-Modus")]
+        public Material globalSpaceMaterial;
+
+        // --- Heatmap ---
+        [SerializeField] private HeatmapController _heatmapController;
+
+        // --- Laufzeitdaten ---
+        public DateTime CurrentSimulatedTime { get; private set; }
+        private DateTime simulationStartTime = DateTime.Now; // beliebiger Start
+        private double simulationTimeSeconds;
+
+        // --- Satellitenverwaltung ---
+        private readonly List<SatelliteController> _satellites = new();
+
+        // --- Jobs & NativeArrays ---
+        private TransformAccessArray _transformAccessArray;
+        private NativeArray<Sgp4> _propagators;
+        private NativeArray<Vector3> _currentPositions;
+        private JobHandle _handle;
+
+        // --- Statusflags ---
+        private bool _multiplierChanged;
+
+        // --- Unity Lifecycle ---
         void Awake()
         {
             if (Instance != null && Instance != this)
@@ -29,48 +68,70 @@ namespace Satellites
                 Instance = this;
         }
 
-        [Header("TLE Source")]
-        public string tleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
-
-        [Header("Prefabs & References")] public GameObject satellitePrefab;
-        public CesiumGeoreference cesiumGeoreference;
-
-        [Header("Simulation Time Settings")] public DateTime simulationStartTime = DateTime.Now; // beliebiger Start
-        public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
-
-        [Header("Satellite Models")] [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
-        public GameObject[] satelliteModelPrefabs;
-
-        [Header("Materials")] [Tooltip("Material für Satelliten im Space-Modus")]
-        public Material globalSpaceMaterial;
-
-        [SerializeField] private HeatmapController _heatmapController;
-        public DateTime CurrentSimulatedTime { get; private set; }
-        private double simulationTimeSeconds;
-        private TransformAccessArray _transformAccessArray;
-
-        private readonly List<SatelliteController> _satellites = new();
-        private JobHandle _handle;
-        private bool _multiplierChanged;
-        private NativeArray<Sgp4> _propagators;
-        private NativeArray<Vector3> _currentPositions;
-
         void Start()
         {
             Debug.Log("SatelliteManager: Start");
             CurrentSimulatedTime = simulationStartTime;
             simulationTimeSeconds = 0.0;
-            EnableGPUInstancingForAllMaterials();
+            EnableGpuInstancing();
             FetchTleData();
             AllocateTransformAccessArray();
         }
 
-        void FetchTleData()
+        private void Update()
+        {
+            UpdateCurrentTime();
+            if (!_handle.IsCompleted) return;
+            _handle.Complete();
+            _heatmapController.UpdateHeatmap(_currentPositions);
+
+            var job = new MoveSatelliteJobParallelForTransform
+            {
+                CurrentTime = CurrentSimulatedTime,
+                EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
+                OrbitPropagator = _propagators,
+                Positions = _currentPositions
+            };
+
+            _handle = job.ScheduleByRef(_transformAccessArray);
+        }
+
+        private void OnDestroy()
+        {
+            if (_transformAccessArray.isCreated)
+                _transformAccessArray.Dispose();
+
+            if (_propagators.IsCreated)
+                _propagators.Dispose();
+
+            // _currentPositions auch dispose
+            if (_currentPositions.IsCreated)
+                _currentPositions.Dispose();
+        }
+
+        public void OnTimeMultiplierChanged(float value)
+        {
+            _multiplierChanged = true;
+            timeMultiplier = value;
+            _multiplierChanged = false;
+        }
+
+        public List<string> GetSatelliteNames()
+        {
+            return _satellites.Select(s => s.gameObject.name).ToList();
+        }
+
+        public SatelliteController GetSatelliteByName(string name)
+        {
+            return _satellites.FirstOrDefault(s => s.gameObject.name == name);
+        }
+
+        private void FetchTleData()
         {
             try
             {
                 var provider =
-                    new CachingRemoteTleProvider(true, TimeSpan.FromHours(12), "cacheTle.txt", new Uri(tleUrl));
+                    new CachingRemoteTleProvider(true, TimeSpan.FromHours(12), "cacheTle.txt", new Uri(TleUrl));
                 var data = provider.GetTles();
                 Debug.Log($"TLE Data: Gefunden: {data.Count} Satelliten");
 
@@ -81,10 +142,9 @@ namespace Satellites
                     var sat = Instantiate(satellitePrefab, cesiumGeoreference.transform);
                     sat.name = tle.NoradNumber + " " + tle.Name;
                     var con = sat.GetComponent<SatelliteController>();
-                    con.Initialize(tle);
+                    var modelApplied = con.Initialize(tle, satelliteModelPrefabs, globalSpaceMaterial);
 
                     // Zufälliges Modell auswählen und anhängen
-                    bool modelApplied = ApplyRandomModel(sat);
                     if (modelApplied) modelledSatellites++;
 
                     _satellites.Add(con);
@@ -98,157 +158,55 @@ namespace Satellites
             }
         }
 
-        private bool ApplyRandomModel(GameObject satellite)
+        private void EnableGpuInstancing()
         {
-            if (satelliteModelPrefabs == null || satelliteModelPrefabs.Length == 0)
+            EnableInstancingForPrefabs(satelliteModelPrefabs);
+            EnableInstancingForMaterial(globalSpaceMaterial);
+        }
+
+        private void EnableInstancingForPrefabs(GameObject[] prefabs)
+        {
+            if (prefabs == null) return;
+            Debug.LogWarning($"GPU Instancing Check: {prefabs.Length} Modell-Prefabs gefunden");
+
+            foreach (var prefab in prefabs)
             {
-                Debug.LogWarning("Keine Satelliten-Modelle konfiguriert!");
-                return false;
-            }
-
-            // Zufälliges Modell aus Array wählen
-            int randomIndex = UnityEngine.Random.Range(0, satelliteModelPrefabs.Length);
-            GameObject modelPrefab = satelliteModelPrefabs[randomIndex];
-            
-            // Mesh und MeshRenderer vom Satelliten finden oder erstellen wenn nicht vorhanden
-            MeshFilter meshFilter = satellite.GetComponent<MeshFilter>();
-            if (meshFilter == null)
-            {
-                meshFilter = satellite.AddComponent<MeshFilter>();
-            }
-
-            MeshRenderer meshRenderer = satellite.GetComponent<MeshRenderer>();
-            if (meshRenderer == null)
-            {
-                meshRenderer = satellite.AddComponent<MeshRenderer>();
-            }
-
-            // Prefab laden, um Mesh und Materialien zu extrahieren
-            GameObject tempModel = Instantiate(modelPrefab);
-            MeshFilter modelMeshFilter = tempModel.GetComponent<MeshFilter>();
-            MeshRenderer modelMeshRenderer = tempModel.GetComponent<MeshRenderer>();
-
-            if (modelMeshFilter != null && modelMeshRenderer != null && modelMeshFilter.sharedMesh != null)
-            {
-                // Mesh kopieren
-                meshFilter.mesh = modelMeshFilter.sharedMesh;
-
-                // Einheitliche Größe anwenden
-                NormalizeSatelliteSize(satellite, modelMeshFilter.sharedMesh);
-
-                // Material-Controller suchen oder hinzufügen
-                SatelliteMaterialController materialController = satellite.GetComponent<SatelliteMaterialController>();
-                if (materialController == null)
+                if (prefab == null)
                 {
-                    materialController = satellite.AddComponent<SatelliteMaterialController>();
+                    Debug.LogWarning("Prefab ist null!");
+                    continue;
                 }
 
-                // Zoom-Controller Referenz setzen
-                CesiumZoomController zoomController = FindObjectOfType<CesiumZoomController>();
-                materialController.zoomController = zoomController;
-
-                // Earth-Mode Materialien setzen
-                Material[] materials = modelMeshRenderer.sharedMaterials;
-                materialController.earthModeMaterials = materials;
-
-                // Space-Material direkt zuweisen
-                materialController.spaceMaterial = globalSpaceMaterial;
-
-                // Stelle sicher, dass der Renderer aktiviert ist
-                meshRenderer.enabled = true;
-
-                // Wende sofort das richtige Material an
-                if (zoomController && zoomController.targetCamera)
+                var renderer = prefab.GetComponent<MeshRenderer>();
+                if (renderer == null)
                 {
-                    materialController.UpdateMaterial();
-                }
-                else
-                {
-                    meshRenderer.materials = materials;
+                    Debug.LogWarning($"Prefab {prefab.name} hat keinen MeshRenderer!");
+                    continue;
                 }
 
-                Destroy(tempModel);
-                return true;
+                foreach (var mat in renderer.sharedMaterials)
+                {
+                    EnableInstancingForMaterial(mat);
+                }
+            }
+        }
+
+        private void EnableInstancingForMaterial(Material mat)
+        {
+            if (mat == null)
+            {
+                Debug.LogWarning("Material ist null!");
+                return;
+            }
+
+            if (!mat.enableInstancing)
+            {
+                mat.enableInstancing = true;
+                Debug.LogWarning($"GPU Instancing für Material {mat.name} wurde aktiviert");
             }
             else
             {
-                Destroy(tempModel);
-                return false;
-            }
-        }
-        
-        private void NormalizeSatelliteSize(GameObject satellite, Mesh mesh)
-        {
-            // Zielgröße für alle Satelliten (anpassen nach Bedarf)
-            float targetSize = 40000f;
-    
-            // Berechne die größte Dimension des aktuellen Meshes
-            Bounds bounds = mesh.bounds;
-            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-    
-            // Berechne den Skalierungsfaktor
-            float scaleFactor = targetSize / maxDimension;
-    
-            // Wende die Skalierung an
-            satellite.transform.localScale = Vector3.one * scaleFactor; // Semikolon hinzugefügt
-        }
-        private void EnableGPUInstancingForAllMaterials()
-        {
-            int prefabCount = satelliteModelPrefabs?.Length ?? 0;
-            Debug.LogWarning($"GPU Instancing Check: {prefabCount} Modell-Prefabs gefunden");
-
-            // Für die Modell-Prefabs
-            if (satelliteModelPrefabs != null)
-            {
-                foreach (GameObject prefab in satelliteModelPrefabs)
-                {
-                    if (prefab == null)
-                    {
-                        Debug.LogWarning("Prefab ist null!");
-                        continue;
-                    }
-
-                    MeshRenderer renderer = prefab.GetComponent<MeshRenderer>();
-                    if (renderer == null)
-                    {
-                        Debug.LogWarning($"Prefab {prefab.name} hat keinen MeshRenderer!");
-                        continue;
-                    }
-
-                    Material[] mats = renderer.sharedMaterials;
-
-                    foreach (Material mat in mats)
-                    {
-                        if (mat == null)
-                        {
-                            Debug.LogWarning("Material ist null!");
-                            continue;
-                        }
-
-                        if (!mat.enableInstancing)
-                        {
-                            mat.enableInstancing = true;
-                            Debug.LogWarning($"GPU Instancing für Material {mat.name} wurde aktiviert");
-                        }
-                    }
-                }
-            }
-
-            // Für das Space-Material
-            if (globalSpaceMaterial != null)
-            {
-                Debug.LogWarning(
-                    $"Space Material: GPU Instancing ist {(globalSpaceMaterial.enableInstancing ? "bereits aktiviert" : "deaktiviert")}");
-
-                if (!globalSpaceMaterial.enableInstancing)
-                {
-                    globalSpaceMaterial.enableInstancing = true;
-                    Debug.LogWarning("GPU Instancing für globales Space-Material wurde aktiviert");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Globales Space-Material ist nicht zugewiesen!");
+                Debug.LogWarning($"GPU Instancing für Material {mat.name} ist bereits aktiviert");
             }
         }
 
@@ -276,58 +234,10 @@ namespace Satellites
             Debug.Log("TransformAccessArray erfolgreich initialisiert");
         }
 
-        public void OnTimeMultiplierChanged(float value)
-        {
-            _multiplierChanged = true;
-            timeMultiplier = value;
-            _multiplierChanged = false;
-        }
-
-        private void Update()
-        {
-            UpdateCurrentTime();
-            if (!_handle.IsCompleted) return;
-            _handle.Complete();
-            _heatmapController.UpdateHeatmap(_currentPositions);
-
-            var job = new MoveSatelliteJobParallelForTransform
-            {
-                CurrentTime = CurrentSimulatedTime,
-                EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
-                OrbitPropagator = _propagators,
-                Positions = _currentPositions
-            };
-
-            _handle = job.ScheduleByRef(_transformAccessArray);
-        }
-
         private void UpdateCurrentTime()
         {
             simulationTimeSeconds += Time.deltaTime * timeMultiplier;
             CurrentSimulatedTime = simulationStartTime.AddSeconds(simulationTimeSeconds);
-        }
-
-        private void OnDestroy()
-        {
-            if (_transformAccessArray.isCreated)
-                _transformAccessArray.Dispose();
-
-            if (_propagators.IsCreated)
-                _propagators.Dispose();
-        
-            // _currentPositions auch dispose
-            if (_currentPositions.IsCreated)
-                _currentPositions.Dispose();
-        }
-
-        public List<string> GetSatelliteNames()
-        {
-            return _satellites.Select(s => s.gameObject.name).ToList();
-        }
-
-        public SatelliteController GetSatelliteByName(string name)
-        {
-            return _satellites.FirstOrDefault(s => s.gameObject.name == name);
         }
     }
 }

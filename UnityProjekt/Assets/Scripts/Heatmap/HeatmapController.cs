@@ -3,12 +3,13 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Heatmap
 {
     public class HeatmapController : MonoBehaviour
     {
-        public bool IsVisible = false;
+        public bool isVisible = false;
         
         private Mesh _mesh;
         private MeshRenderer _meshRenderer;
@@ -19,18 +20,18 @@ namespace Heatmap
         {
             _mesh = GetComponent<MeshFilter>().mesh;
             _meshRenderer = GetComponent<MeshRenderer>();
-            _meshRenderer.enabled = IsVisible;
+            _meshRenderer.enabled = isVisible;
         }
 
         public void ChangeVisibility(bool value)
         {
-            IsVisible = value;
+            isVisible = value;
             _meshRenderer.enabled = value;
         }
 
         public void UpdateHeatmap(NativeArray<Vector3> satellitePositions)
         {
-            if (!IsVisible) return;
+            if (!isVisible) return;
 
             // Daten vorbereiten
             Vector3[] meshVertices = _mesh.vertices;
