@@ -25,12 +25,17 @@
                 This method will be called for each package that is rendered in NugetForUnity window.
             </summary>
             <param name="package">Package being renderer, either online package or installed package.</param>
-            <param name="installedPackage">If package is installed this represents the installed version, otherwise it is null.</param>
-            <param name="existsInUnity">True if package installation should be disabled because it is already included in Unity.</param>
+            <param name="installedPackage">If package is installed this represents the installed version, otherwise it
+                is null.
+            </param>
+            <param name="existsInUnity">True if package installation should be disabled because it is already included
+                in Unity.
+            </param>
         </member>
         <member name="T:NugetForUnity.PluginAPI.ExtensionPoints.IPackageInstallFileHandler">
             <summary>
-                Implement this interface to add additional handling of files being extracted from nupkg during installation.
+                Implement this interface to add additional handling of files being extracted from nupkg during
+                installation.
             </summary>
         </member>
         <member name="M:NugetForUnity.PluginAPI.ExtensionPoints.IPackageInstallFileHandler.GetPackageFolderName(NugetForUnity.PluginAPI.Models.INugetPackageIdentifier,System.String)">
@@ -48,7 +53,9 @@
             <param name="package">Package that is being installed.</param>
             <param name="entry">Zip entry that is about to be processed.</param>
             <param name="extractDirectory">The directory where the package is being installed.</param>
-            <returns>True if this method handled the entry and doesn't want default handling to be executed, false otherwise.</returns>
+            <returns>True if this method handled the entry and doesn't want default handling to be executed, false
+                otherwise.
+            </returns>
         </member>
         <member name="T:NugetForUnity.PluginAPI.ExtensionPoints.IPackageUninstallHandler">
             <summary>
@@ -57,7 +64,8 @@
         </member>
         <member name="M:NugetForUnity.PluginAPI.ExtensionPoints.IPackageUninstallHandler.HandleUninstall(NugetForUnity.PluginAPI.Models.INugetPackage,NugetForUnity.PluginAPI.PackageUninstallReason)">
             <summary>
-                This method will be called for each package being uninstalled. Note that uninstall is also done for old version
+                This method will be called for each package being uninstalled. Note that uninstall is also done for old
+                version
                 when package is being updated.
             </summary>
             <param name="package">The package being uninstalled.</param>
@@ -84,7 +92,8 @@
         </member>
         <member name="T:NugetForUnity.PluginAPI.INugetPluginRegistry">
             <summary>
-                NugetForUnity will pass an instance of this interface to INugetPlugin.Register method that plugins can use
+                NugetForUnity will pass an instance of this interface to INugetPlugin.Register method that plugins can
+                use
                 to register additional functionalities.
             </summary>
         </member>
@@ -100,13 +109,15 @@
         </member>
         <member name="M:NugetForUnity.PluginAPI.INugetPluginRegistry.RegisterPackageButtonDrawer(NugetForUnity.PluginAPI.ExtensionPoints.IPackageButtonsHandler)">
             <summary>
-                Register a class that will be used to draw additional buttons for each package in NugetForUnity editor window.
+                Register a class that will be used to draw additional buttons for each package in NugetForUnity editor
+                window.
             </summary>
             <param name="packageButtonsHandler">The package buttons handler to register.</param>
         </member>
         <member name="M:NugetForUnity.PluginAPI.INugetPluginRegistry.RegisterPackageInstallFileHandler(NugetForUnity.PluginAPI.ExtensionPoints.IPackageInstallFileHandler)">
             <summary>
-                Register a class that will be called for each file that is extracted from the nupkg that is being installed.
+                Register a class that will be called for each file that is extracted from the nupkg that is being
+                installed.
             </summary>
             <param name="packageInstallFileHandler">The file handler to register.</param>
         </member>
@@ -129,7 +140,8 @@
         </member>
         <member name="P:NugetForUnity.PluginAPI.Models.INugetPackage.Title">
             <summary>
-                Gets the title (not ID) of the package. This is the "friendly" name that only appears in GUIs and on web-pages.
+                Gets the title (not ID) of the package. This is the "friendly" name that only appears in GUIs and on
+                web-pages.
             </summary>
         </member>
         <member name="P:NugetForUnity.PluginAPI.Models.INugetPackage.ProjectUrl">
@@ -156,7 +168,8 @@
         <member name="P:NugetForUnity.PluginAPI.Models.INugetPackageIdentifier.Version">
             <summary>
                 Gets or sets the normalized version number of the NuGet package.
-                This is the normalized version number without build-metadata e.g. <b>1.0.0+b3a8</b> is normalized to <b>1.0.0</b>.
+                This is the normalized version number without build-metadata e.g. <b>1.0.0+b3a8</b> is normalized to <b>
+                1.0.0</b>.
             </summary>
         </member>
         <member name="M:NugetForUnity.PluginAPI.Models.INugetPackageIdentifier.GetPackageInstallPath(System.String)">
@@ -197,7 +210,9 @@
             <summary>
                 Allows plugin to create a new nuspec file on the given location.
             </summary>
-            <param name="destinationDirectory">Either the absolute path within project to an existing directory or path relative to project's Asset folder.</param>
+            <param name="destinationDirectory">Either the absolute path within project to an existing directory or path
+                relative to project's Asset folder.
+            </param>
         </member>
         <member name="M:NugetForUnity.PluginAPI.Models.INugetPluginService.LogError(System.String)">
             <summary>
@@ -276,19 +291,23 @@
         </member>
         <member name="P:NugetForUnity.PluginAPI.Models.INuspecFile.Icon">
             <summary>
-                Gets the path to a icon file. The path is relative to the root folder of the package. This is a alternative to using a URL <see cref="P:NugetForUnity.PluginAPI.Models.INuspecFile.IconUrl" />
+                Gets the path to a icon file. The path is relative to the root folder of the package. This is a
+                alternative to using a URL
+                <see cref="P:NugetForUnity.PluginAPI.Models.INuspecFile.IconUrl"/>
                 .
             </summary>
         </member>
         <member name="P:NugetForUnity.PluginAPI.Models.INuspecFile.IconFilePath">
             <summary>
-                Gets the full path to a icon file. This is only set if the .nuspec file contains a <see cref="P:NugetForUnity.PluginAPI.Models.INuspecFile.Icon" />. This is a alternative to using a URL
-                <see cref="P:NugetForUnity.PluginAPI.Models.INuspecFile.IconUrl" />.
+                Gets the full path to a icon file. This is only set if the .nuspec file contains a<see
+                    cref="P:NugetForUnity.PluginAPI.Models.INuspecFile.Icon"/>. This is a alternative to using a URL
+                <see cref="P:NugetForUnity.PluginAPI.Models.INuspecFile.IconUrl"/>.
             </summary>
         </member>
         <member name="P:NugetForUnity.PluginAPI.Models.INuspecFile.RequireLicenseAcceptance">
             <summary>
-                Gets or sets a value indicating whether the license of the NuGet package needs to be accepted in order to use it.
+                Gets or sets a value indicating whether the license of the NuGet package needs to be accepted in order
+                to use it.
             </summary>
         </member>
         <member name="P:NugetForUnity.PluginAPI.Models.INuspecFile.ReleaseNotes">

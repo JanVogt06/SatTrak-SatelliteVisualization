@@ -109,7 +109,7 @@ namespace Satellites
             // Zufälliges Modell aus Array wählen
             int randomIndex = UnityEngine.Random.Range(0, satelliteModelPrefabs.Length);
             GameObject modelPrefab = satelliteModelPrefabs[randomIndex];
-
+            
             // Mesh und MeshRenderer vom Satelliten finden oder erstellen wenn nicht vorhanden
             MeshFilter meshFilter = satellite.GetComponent<MeshFilter>();
             if (meshFilter == null)
@@ -133,6 +133,9 @@ namespace Satellites
                 // Mesh kopieren
                 meshFilter.mesh = modelMeshFilter.sharedMesh;
 
+                // Einheitliche Größe anwenden
+                NormalizeSatelliteSize(satellite, modelMeshFilter.sharedMesh);
+
                 // Material-Controller suchen oder hinzufügen
                 SatelliteMaterialController materialController = satellite.GetComponent<SatelliteMaterialController>();
                 if (materialController == null)
@@ -148,7 +151,7 @@ namespace Satellites
                 Material[] materials = modelMeshRenderer.sharedMaterials;
                 materialController.earthModeMaterials = materials;
 
-                // Space-Material direkt zuweisen ohne Überprüfung und Logging
+                // Space-Material direkt zuweisen
                 materialController.spaceMaterial = globalSpaceMaterial;
 
                 // Stelle sicher, dass der Renderer aktiviert ist
@@ -161,7 +164,6 @@ namespace Satellites
                 }
                 else
                 {
-                    // Fallback: Starte mit Earth-Materialien
                     meshRenderer.materials = materials;
                 }
 
@@ -174,7 +176,22 @@ namespace Satellites
                 return false;
             }
         }
-
+        
+        private void NormalizeSatelliteSize(GameObject satellite, Mesh mesh)
+        {
+            // Zielgröße für alle Satelliten (anpassen nach Bedarf)
+            float targetSize = 40000f;
+    
+            // Berechne die größte Dimension des aktuellen Meshes
+            Bounds bounds = mesh.bounds;
+            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+    
+            // Berechne den Skalierungsfaktor
+            float scaleFactor = targetSize / maxDimension;
+    
+            // Wende die Skalierung an
+            satellite.transform.localScale = Vector3.one * scaleFactor; // Semikolon hinzugefügt
+        }
         private void EnableGPUInstancingForAllMaterials()
         {
             int prefabCount = satelliteModelPrefabs?.Length ?? 0;
@@ -297,6 +314,10 @@ namespace Satellites
 
             if (_propagators.IsCreated)
                 _propagators.Dispose();
+        
+            // _currentPositions auch dispose
+            if (_currentPositions.IsCreated)
+                _currentPositions.Dispose();
         }
 
         public List<string> GetSatelliteNames()
