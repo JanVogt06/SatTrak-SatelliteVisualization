@@ -5034,9 +5034,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1888826452}
+  - component: {fileID: 1888826455}
   - component: {fileID: 1888826453}
   - component: {fileID: 1888826454}
-  - component: {fileID: 1888826455}
   m_Layer: 0
   m_Name: Satellite
   m_TagString: Untagged
@@ -5100,7 +5100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orbit: {fileID: 1888826453}
-  materialController: {fileID: 1888826454}
+  modelController: {fileID: 1888826454}
 --- !u!1 &1952269526
 GameObject:
   m_ObjectHideFlags: 0

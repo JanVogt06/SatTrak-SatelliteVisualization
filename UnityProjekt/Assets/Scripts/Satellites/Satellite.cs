@@ -9,7 +9,7 @@ namespace Satellites
     public class Satellite : MonoBehaviour
     {
         [FormerlySerializedAs("controller")] public SatelliteOrbit orbit;
-        public SatelliteMaterialController materialController;
+        [FormerlySerializedAs("materialController")] public SatelliteModelController modelController;
         public Sgp4 OrbitPropagator;
         public Tle Tle;
         
@@ -19,7 +19,7 @@ namespace Satellites
             Tle = tle;
             OrbitPropagator = new Sgp4(tle);
             orbit.Initialize(OrbitPropagator);
-            return materialController.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
+            return modelController.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
         }
 
         // Start is called before the first frame update

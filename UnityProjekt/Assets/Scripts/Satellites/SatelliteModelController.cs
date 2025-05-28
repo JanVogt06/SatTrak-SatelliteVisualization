@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Satellites
 {
-    public class SatelliteMaterialController : MonoBehaviour
+    public class SatelliteModelController : MonoBehaviour
     {
         [Header("Referenzen")] public CesiumZoomController zoomController;
 
