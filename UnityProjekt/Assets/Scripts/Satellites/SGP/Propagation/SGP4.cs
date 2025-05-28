@@ -370,8 +370,8 @@ namespace Satellites.SGP.Propagation
             /*
              * fix tolerance for error recognition
              */
-            if (e <= -0.001)
-                throw new SatellitePropagationException("Error: (e <= -0.001)");
+            // if (e <= -0.001)
+            //     throw new SatellitePropagationException("Error: (e <= -0.001)");
             if (e < 1.0e-6)
                 e = 1.0e-6;
             else if (e > 1.0 - 1.0e-6)
