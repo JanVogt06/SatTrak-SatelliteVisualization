@@ -3015,6 +3015,7 @@ MonoBehaviour:
   - {fileID: 8164078558771037576, guid: dfc2c680e0f955c4cb72d60bd554cd06, type: 3}
   - {fileID: 8164078558771037576, guid: d8252f6a03d14cf4a8708af985f53608, type: 3}
   - {fileID: 8164078558771037576, guid: ecb0bef0e1fdcd44f944721973130dfc, type: 3}
+  - {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
 --- !u!4 &964490651
 Transform:
