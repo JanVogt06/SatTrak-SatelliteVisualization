@@ -28,6 +28,7 @@ namespace Satellites
         [Header("Prefabs & References")] 
         public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
+        public GameObject satelliteParent;
         public HeatmapController heatmapController;
 
         [Header("Simulation Time Settings")] 
@@ -146,7 +147,7 @@ namespace Satellites
 
         private bool CreateSatellite(Tle tle)
         {
-            var satelliteGo = Instantiate(satellitePrefab, cesiumGeoreference.transform);
+            var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
             
             var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial);
