@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Satellites;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
@@ -88,6 +89,13 @@ public class FreeFlyCamera : MonoBehaviour
     private Vector3 _initPosition;
     private Vector3 _initRotation;
 
+    public GameObject crosshairUI;
+
+    [SerializeField] private SatelliteLabelUI satelliteLabelUI;
+    [SerializeField] private float maxSelectionAngle = 0.2f;
+    [SerializeField] private float maxDistance = 1000000f;
+
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -98,6 +106,11 @@ public class FreeFlyCamera : MonoBehaviour
 
     private void Start()
     {
+        if (crosshairUI != null)
+        {
+            crosshairUI.SetActive(false);
+        }
+            
         modeText.text = "Mode: Inspector";
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
@@ -117,15 +130,46 @@ public class FreeFlyCamera : MonoBehaviour
             if (_cursorLocked == false)
             {
                 modeText.text = "Mode: Inspector";
+                crosshairUI.SetActive(false);
             }
             else
             {
                 modeText.text = "Mode: Camera";
+                crosshairUI.SetActive(true);
             }
             Cursor.lockState = _cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !_cursorLocked;
         }
     }
+
+    private Satellite FindNearestLookingAtSatellite()
+    {
+        var allSats = SatelliteManager.Instance.GetAllSatellites();
+        Vector3 camPos = Camera.main.transform.position;
+        Vector3 camFwd = Camera.main.transform.forward;
+
+        Satellite closest = null;
+        float closestAngle = maxSelectionAngle;
+
+        foreach (var sat in allSats)
+        {
+            if (!sat.gameObject.activeInHierarchy) continue;
+
+            Vector3 dirToSat = (sat.transform.position - camPos);
+            float distance = dirToSat.magnitude;
+            if (distance > maxDistance) continue;
+
+            float angle = Vector3.Angle(camFwd, dirToSat.normalized);
+            if (angle < closestAngle)
+            {
+                closestAngle = angle;
+                closest = sat;
+            }
+        }
+
+        return closest;
+    }
+
 
     private void CalculateCurrentIncrease(bool moving)
     {
@@ -185,6 +229,24 @@ public class FreeFlyCamera : MonoBehaviour
             transform.position = _initPosition;
             transform.eulerAngles = _initRotation;
         }
+
+        if (_cursorLocked)
+        {
+            Satellite target = FindNearestLookingAtSatellite();
+
+            if (target != null)
+            {
+                if (satelliteLabelUI.target != target.transform)
+                {
+                    satelliteLabelUI.SetTarget(target.transform, target.name);
+                }
+            }
+            else
+            {
+                satelliteLabelUI.Hide();
+            }
+        }
+
     }
 
 

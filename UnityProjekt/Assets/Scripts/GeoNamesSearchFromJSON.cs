@@ -172,6 +172,5 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
             go.SetActive(false);
             _buttonPool.Push(go);
         }
-        suggestionPanel.DetachChildren();
     }
 }

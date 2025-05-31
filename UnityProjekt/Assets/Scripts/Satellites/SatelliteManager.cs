@@ -56,6 +56,8 @@ namespace Satellites
         private NativeArray<Vector3> _currentPositions;
         private JobHandle _handle;
 
+        public bool satellitesActive = true;
+
         // --- Unity Lifecycle ---
         void Awake()
         {
@@ -77,6 +79,11 @@ namespace Satellites
 
         private void Update()
         {
+            if (!satellitesActive)
+            {
+                return;
+            }     
+
             UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
             _handle.Complete();
@@ -120,6 +127,12 @@ namespace Satellites
         {
             return _satellites.FirstOrDefault(s => s.gameObject.name == name);
         }
+
+        public List<Satellite> GetAllSatellites()
+        {
+            return _satellites;
+        }
+
 
         private void FetchTleData()
         {
