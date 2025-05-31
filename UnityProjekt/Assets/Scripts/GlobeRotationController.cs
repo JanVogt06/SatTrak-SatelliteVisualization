@@ -16,7 +16,6 @@ public class GlobeRotationController : MonoBehaviour
     public float maxPitchDown;
 
     [Header("Smoothing")]
-    [Tooltip("Wie stark die Kamera der Zielrotation nachgleitet")]
     public float smoothFactor = 5f;
 
     private Vector2 lastMouse;
@@ -28,21 +27,11 @@ public class GlobeRotationController : MonoBehaviour
     private float currentYaw, currentPitch;
     private float distance;
 
+    private Transform currentTarget; // NEU: aktives Ziel (z.B. Satellit oder null für Erde)
+
     void Start()
     {
-        UpdatePivot();
-        Vector3 dir = (transform.position - pivot);
-        distance = dir.magnitude;
-        Quaternion init = transform.rotation;
-        Vector3 e = init.eulerAngles;
-        targetYaw = currentYaw = e.y;
-        targetPitch = currentPitch = e.x;
-    }
-
-    void UpdatePivot()
-    {
-        var u = georeference.TransformEarthCenteredEarthFixedPositionToUnity(new double3(0, 0, 0));
-        pivot = new Vector3((float)u.x, (float)u.y, (float)u.z);
+        SetPivotToEarth();
     }
 
     void Update()
@@ -52,6 +41,9 @@ public class GlobeRotationController : MonoBehaviour
         freeFlyCamera.enabled = !spaceMode;
         if (!spaceMode)
             return;
+
+        if (currentTarget != null)
+            pivot = currentTarget.position;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -95,7 +87,10 @@ public class GlobeRotationController : MonoBehaviour
 
     public void InitializeOrbit()
     {
-        UpdatePivot();
+        if (currentTarget != null)
+            pivot = currentTarget.position;
+        else
+            UpdatePivotToEarth();
 
         Vector3 dir = transform.position - pivot;
         distance = dir.magnitude;
@@ -103,5 +98,24 @@ public class GlobeRotationController : MonoBehaviour
         Vector3 e = transform.rotation.eulerAngles;
         targetYaw = currentYaw = e.y;
         targetPitch = currentPitch = e.x;
+    }
+
+    private void UpdatePivotToEarth()
+    {
+        var u = georeference.TransformEarthCenteredEarthFixedPositionToUnity(new double3(0, 0, 0));
+        pivot = new Vector3((float)u.x, (float)u.y, (float)u.z);
+    }
+
+    public void SetPivotToEarth()
+    {
+        currentTarget = null;
+        UpdatePivotToEarth();
+        InitializeOrbit();
+    }
+
+    public void SetPivotTo(Transform newPivot)
+    {
+        currentTarget = newPivot;
+        InitializeOrbit();
     }
 }

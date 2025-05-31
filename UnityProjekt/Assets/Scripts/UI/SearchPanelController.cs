@@ -8,7 +8,8 @@ using TMPro;
 using Satellites;                     
 using CesiumForUnity;                 
 using DefaultNamespace;               
-using Unity.Mathematics;              
+using Unity.Mathematics;
+using System.Collections;
 
 public class SearchPanelController : MonoBehaviour
 {
@@ -95,31 +96,34 @@ public class SearchPanelController : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent);
     }
 
-    void OnItemSelected(string itemName)
+    public void OnItemSelected(string itemName)
     {
+        StartCoroutine(zoomController.FadeToBlack());
         panel.SetActive(false);
+
+        StartCoroutine(TheLoop(itemName));
+    }
+
+    public IEnumerator TheLoop(string itemName)
+    {
+        yield return new WaitForSeconds(1.2f);
 
         // gewählten SatelliteController speichern
         trackedSatellite = satelliteManager.GetSatelliteByName(itemName);
         if (trackedSatellite == null)
         {
             isTracking = false;
-            return;
         }
 
         // sofortiger Sprung zur aktuellen Position
-        Vector3 sphVec = trackedSatellite.transform.position;          // ConversionExtensions :contentReference[oaicite:1]{index=1}
+        Vector3 sphVec = trackedSatellite.transform.position;
 
-        georeference.latitude  = sphVec.y;
+        georeference.latitude = sphVec.y;
         georeference.longitude = sphVec.x;
-        georeference.height    = sphVec.z;
+        georeference.height = sphVec.z;
 
         // ZoomToEarth erwartet (lon, lat, height)
-        zoomController.ZoomToEarth(new double3(
-            sphVec.x,
-            sphVec.y,
-            sphVec.z
-        ));
+        zoomController.SnapToSatellit(trackedSatellite);
 
         isTracking = true;
     }
