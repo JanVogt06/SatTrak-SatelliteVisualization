@@ -127,4 +127,10 @@ public class SearchPanelController : MonoBehaviour
 
         isTracking = true;
     }
+
+    public void StopTracking()
+    {
+        isTracking = false;
+        trackedSatellite = null;
+    }
 }

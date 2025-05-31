@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine.UI;
 using Satellites;
 using UnityEngine.Experimental.GlobalIllumination;
+using TMPro;
 
 public class CesiumZoomController : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class CesiumZoomController : MonoBehaviour
     public FreeFlyCamera freeFlyCameraScript;
 
     public CesiumGeoreference georeference;
+
+    public SearchPanelController searchPanelController;
 
     public Light directionalLight;
 
@@ -71,6 +74,8 @@ public class CesiumZoomController : MonoBehaviour
 
     public void ZoomToSpace()
     {
+        spaceButton.interactable = false;
+
         if (insideSat)
         {
             StartCoroutine(FadeToBlack());
@@ -78,8 +83,8 @@ public class CesiumZoomController : MonoBehaviour
         }
         else
         {
+            directionalLight.intensity = 25;
             search.SetActive(false);
-            spaceButton.interactable = false;
             if (zoomRoutine != null) StopCoroutine(zoomRoutine);
             zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation), true, 2.3f));
             georeference.latitude = 51.21796;
@@ -92,6 +97,10 @@ public class CesiumZoomController : MonoBehaviour
     public IEnumerator BlackSpace()
     {
         yield return new WaitForSeconds(1.2f);
+
+        directionalLight.intensity = 25;
+
+        searchPanelController.StopTracking();
 
         search.SetActive(false);
         spaceButton.interactable = false;
@@ -167,7 +176,7 @@ public class CesiumZoomController : MonoBehaviour
 
     public IEnumerator SpaceButton(bool space)
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
 
         spaceButton.interactable = true;
     }

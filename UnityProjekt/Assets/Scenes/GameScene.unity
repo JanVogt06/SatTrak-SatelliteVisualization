@@ -1632,7 +1632,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1067395613}
   m_HandleRect: {fileID: 1067395612}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4499,8 +4499,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1330124192}
   m_HandleRect: {fileID: 1330124191}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.9999998
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6140,7 +6140,7 @@ MonoBehaviour:
   _initPositonButton: 114
   crosshairUI: {fileID: 120635981}
   satelliteLabelUI: {fileID: 580128758}
-  maxSelectionAngle: 5
+  maxSelectionAngle: 4.5
   maxDistance: 1993850
 --- !u!114 &1952269537
 MonoBehaviour:
@@ -6191,7 +6191,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globeAnchor: {fileID: 1952269537}
-  zoomDuration: 2.3
   spaceView:
     x: 11.666985
     y: 51.217959
@@ -6207,6 +6206,7 @@ MonoBehaviour:
   search: {fileID: 806567998}
   freeFlyCameraScript: {fileID: 1952269535}
   georeference: {fileID: 1786786860}
+  searchPanelController: {fileID: 1005729871}
   directionalLight: {fileID: 410087040}
   fadePanel: {fileID: 1834950563}
 --- !u!114 &1952269539
