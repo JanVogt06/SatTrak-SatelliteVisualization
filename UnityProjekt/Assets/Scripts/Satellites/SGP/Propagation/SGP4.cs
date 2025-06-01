@@ -553,11 +553,11 @@ namespace Satellites.SGP.Propagation
             var zdot = (rdotk * uz + rfdotk * vz) * SgpConstants.EarthRadiusKm / 60.0;
             var velocity = new Vector3(xdot, ydot, zdot);
 
-            if (rk < 1.0)
-                throw new DecayedException(
-                    Orbit.Epoch.AddMinutes(tsince),
-                    position,
-                    velocity);
+            // if (rk < 1.0)
+            //     throw new DecayedException(
+            //         Orbit.Epoch.AddMinutes(tsince),
+            //         position,
+            //         velocity);
 
             return new EciCoordinate(Orbit.Epoch.AddMinutes(tsince), position, velocity);
         }
