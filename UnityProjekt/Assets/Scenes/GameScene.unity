@@ -3347,6 +3347,9 @@ MonoBehaviour:
   - {fileID: -1401270577561610751, guid: 2afde290528af44dd96a5912ea0ede3d, type: 3}
   - {fileID: 4419922976013616421, guid: c595c9307d92449eb9c0560f569a79e6, type: 3}
   - {fileID: 4419922976013616421, guid: 5f04e502fa2fa418484832ffb96932e9, type: 3}
+  - {fileID: 4499123344997166499, guid: aab7f7bc48b5f42a4ad0376757977ca1, type: 3}
+  - {fileID: 1950197463038390584, guid: 81e8b41058be64133a9404e0d95a9c9c, type: 3}
+  - {fileID: 1950197463038390584, guid: 830549a9a594d4aa89a1657c1c9c1021, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   satellitesActive: 1
 --- !u!4 &964490651
@@ -5921,6 +5924,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zoomController: {fileID: 1952269538}
   fovThreshold: 70
+  sphereSize: 20000
 --- !u!114 &1888826455
 MonoBehaviour:
   m_ObjectHideFlags: 0
