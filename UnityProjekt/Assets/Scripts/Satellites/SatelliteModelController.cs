@@ -1,34 +1,28 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Satellites
 {
     public class SatelliteModelController : MonoBehaviour
     {
-        [Header("Referenzen")] public CesiumZoomController zoomController;
+        [Header("Referenzen")] 
+        public CesiumZoomController zoomController;
 
-        [Header("Einstellungen")] [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
+        [Header("Einstellungen")] 
+        [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
         public float fovThreshold = 70f;
 
-        private Material[] _earthModeMaterials;
+        private GameObject _modelInstance;
         private Material _spaceMaterial;
-        private MeshRenderer _meshRenderer;
-        private MeshFilter _meshFilter;
         private bool _lastMode;
-
-        void Awake()
-        {
-            _meshRenderer = GetComponent<MeshRenderer>() != null
-                ? GetComponent<MeshRenderer>()
-                : gameObject.AddComponent<MeshRenderer>();
-            
-            _meshFilter = GetComponent<MeshFilter>() != null
-                ? GetComponent<MeshFilter>()
-                : gameObject.AddComponent<MeshFilter>();
-        }
+        
+        // Speichere Original-Materialien pro Renderer
+        private Dictionary<MeshRenderer, Material[]> _originalMaterials = new Dictionary<MeshRenderer, Material[]>();
 
         void Start()
         {
-            UpdateMaterial();
+            if (_modelInstance != null)
+                UpdateMaterial();
         }
 
         void Update()
@@ -61,66 +55,116 @@ namespace Satellites
 
         private bool TryApplyModel(GameObject modelPrefab, Material globalSpaceMaterial)
         {
-            var tempModel = Instantiate(modelPrefab);
-            var modelMeshFilter = tempModel.GetComponent<MeshFilter>();
-            var modelMeshRenderer = tempModel.GetComponent<MeshRenderer>();
-            if (modelMeshFilter == null || modelMeshRenderer == null || modelMeshFilter.sharedMesh == null)
+            // Lösche altes Modell falls vorhanden
+            if (_modelInstance != null)
             {
-                Destroy(tempModel);
+                Destroy(_modelInstance);
+                _originalMaterials.Clear();
+            }
+            
+            // Instanziiere das komplette Modell als Child
+            _modelInstance = Instantiate(modelPrefab, transform);
+            _modelInstance.transform.localPosition = Vector3.zero;
+            _modelInstance.transform.localRotation = Quaternion.identity;
+            
+            // Prüfe ob es Renderer gibt
+            var renderers = _modelInstance.GetComponentsInChildren<MeshRenderer>();
+            if (renderers.Length == 0)
+            {
+                Destroy(_modelInstance);
                 return false;
             }
-
-            _meshFilter.mesh = modelMeshFilter.sharedMesh;
-            NormalizeSatelliteSize(modelMeshFilter.sharedMesh);
-
-            _earthModeMaterials = modelMeshRenderer.sharedMaterials;
+            
+            // Speichere Original-Materialien
+            foreach (var renderer in renderers)
+            {
+                _originalMaterials[renderer] = renderer.sharedMaterials;
+                
+                // Falls keine Materialien vorhanden, erstelle Standard-Material
+                if (renderer.sharedMaterials.Length == 0 || renderer.sharedMaterials[0] == null)
+                {
+                    renderer.sharedMaterial = new Material(Shader.Find("Standard"));
+                    _originalMaterials[renderer] = new Material[] { renderer.sharedMaterial };
+                }
+            }
+            
             _spaceMaterial = globalSpaceMaterial;
-            _meshRenderer.enabled = true;
-
-            if (zoomController && zoomController.targetCamera)
-                UpdateMaterial();
-            else
-                _meshRenderer.materials = modelMeshRenderer.sharedMaterials;
-
-            Destroy(tempModel);
+            
+            // Skaliere das gesamte Modell
+            NormalizeSatelliteSize();
+            
             return true;
+        }
+
+        private void NormalizeSatelliteSize()
+        {
+            float targetSize = 40000f; // Erhöhe auf 100000f wenn zu klein
+            
+            // Berechne Bounds über alle Renderer
+            var renderers = _modelInstance.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0) return;
+            
+            Bounds bounds = renderers[0].bounds;
+            foreach (var renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+            
+            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            if (maxDimension > 0)
+            {
+                float scaleFactor = targetSize / maxDimension;
+                _modelInstance.transform.localScale = Vector3.one * scaleFactor;
+            }
         }
 
         private void UpdateMaterial()
         {
-            if (!_meshRenderer)
-                return;
-
+            if (_modelInstance == null) return;
+            
+            var renderers = _modelInstance.GetComponentsInChildren<MeshRenderer>();
             bool isEarthMode = zoomController && zoomController.targetCamera &&
                                zoomController.targetCamera.fieldOfView < fovThreshold;
 
-            if (isEarthMode)
+            foreach (var renderer in renderers)
             {
-                if (_earthModeMaterials == null || _earthModeMaterials.Length <= 0) return;
-                _meshRenderer.enabled = true;
-                _meshRenderer.sharedMaterials = _earthModeMaterials;
-            }
-            else
-            {
-                if (_spaceMaterial != null)
+                if (!_originalMaterials.ContainsKey(renderer)) continue;
+                
+                if (isEarthMode)
                 {
-                    _meshRenderer.enabled = true;
-                    _meshRenderer.sharedMaterials = new[] { _spaceMaterial };
+                    // Restore Original-Materialien
+                    renderer.sharedMaterials = _originalMaterials[renderer];
+                    renderer.enabled = true;
                 }
                 else
                 {
-                    _meshRenderer.enabled = false;
+                    // Space-Modus
+                    if (_spaceMaterial != null)
+                    {
+                        // Ersetze alle Materialien mit Space-Material
+                        var materials = new Material[renderer.sharedMaterials.Length];
+                        for (int i = 0; i < materials.Length; i++)
+                        {
+                            materials[i] = _spaceMaterial;
+                        }
+                        renderer.sharedMaterials = materials;
+                        renderer.enabled = true;
+                    }
+                    else
+                    {
+                        renderer.enabled = false;
+                    }
                 }
             }
         }
 
-        private void NormalizeSatelliteSize(Mesh mesh)
+        void OnDestroy()
         {
-            float targetSize = 40000f;
-            Bounds bounds = mesh.bounds;
-            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-            float scaleFactor = targetSize / maxDimension;
-            gameObject.transform.localScale = Vector3.one * scaleFactor;
+            if (_modelInstance != null)
+            {
+                Destroy(_modelInstance);
+            }
+            _originalMaterials.Clear();
         }
     }
 }

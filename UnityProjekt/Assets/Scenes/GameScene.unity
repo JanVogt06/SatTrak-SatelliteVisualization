@@ -3342,13 +3342,9 @@ MonoBehaviour:
   heatmapController: {fileID: 2058484569}
   timeMultiplier: 1
   satelliteModelPrefabs:
-  - {fileID: 8164078558771037576, guid: e2e880888f2ea4cc8851cafc0576365d, type: 3}
-  - {fileID: 8164078558771037576, guid: 6d6be1ccbed3043af81cabef64ef4d2b, type: 3}
-  - {fileID: 8164078558771037576, guid: ad2e221fa32804c58a71ac65b7288b2e, type: 3}
-  - {fileID: 8164078558771037576, guid: dfc2c680e0f955c4cb72d60bd554cd06, type: 3}
-  - {fileID: 8164078558771037576, guid: d8252f6a03d14cf4a8708af985f53608, type: 3}
-  - {fileID: 8164078558771037576, guid: ecb0bef0e1fdcd44f944721973130dfc, type: 3}
-  - {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
+  - {fileID: 8771091787928289351, guid: 08e567c099d494975a467eefea83f881, type: 3}
+  - {fileID: -1401270577561610751, guid: 84dece156fbf7454d9a6b47726ef22c5, type: 3}
+  - {fileID: -1401270577561610751, guid: 2afde290528af44dd96a5912ea0ede3d, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   satellitesActive: 1
 --- !u!4 &964490651
