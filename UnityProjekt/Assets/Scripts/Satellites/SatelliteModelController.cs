@@ -97,24 +97,24 @@ namespace Satellites
     		_spaceSphere.transform.SetParent(transform);
     		_spaceSphere.transform.localPosition = Vector3.zero;
     
-    // WICHTIG: Verwende eine viel kleinere Größe!
-    _spaceSphere.transform.localScale = Vector3.one;
-    
-    // Entferne Collider für Performance
-    var collider = _spaceSphere.GetComponent<Collider>();
-    if (collider != null)
-        Destroy(collider);
-    
-    // Setze Material wenn vorhanden
-    if (_spaceMaterial != null)
-    {
-        var renderer = _spaceSphere.GetComponent<MeshRenderer>();
-        renderer.sharedMaterial = _spaceMaterial;
-    }
-    
-    // Initial verstecken
-    _spaceSphere.SetActive(false);
-}
+            // WICHTIG: Verwende eine viel kleinere Größe!
+            _spaceSphere.transform.localScale = Vector3.one;
+            
+            // Entferne Collider für Performance
+            var collider = _spaceSphere.GetComponent<Collider>();
+            if (collider != null)
+                Destroy(collider);
+            
+            // Setze Material wenn vorhanden
+            if (_spaceMaterial != null)
+            {
+                var renderer = _spaceSphere.GetComponent<MeshRenderer>();
+                renderer.sharedMaterial = _spaceMaterial;
+            }
+            
+            // Initial verstecken
+            _spaceSphere.SetActive(false);
+        }
 
         private void NormalizeSatelliteSize()
         {
