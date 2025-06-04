@@ -3345,6 +3345,8 @@ MonoBehaviour:
   - {fileID: 8771091787928289351, guid: 08e567c099d494975a467eefea83f881, type: 3}
   - {fileID: -1401270577561610751, guid: 84dece156fbf7454d9a6b47726ef22c5, type: 3}
   - {fileID: -1401270577561610751, guid: 2afde290528af44dd96a5912ea0ede3d, type: 3}
+  - {fileID: 4419922976013616421, guid: c595c9307d92449eb9c0560f569a79e6, type: 3}
+  - {fileID: 4419922976013616421, guid: 5f04e502fa2fa418484832ffb96932e9, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   satellitesActive: 1
 --- !u!4 &964490651
