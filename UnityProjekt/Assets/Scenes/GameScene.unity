@@ -3628,7 +3628,6 @@ MonoBehaviour:
   - {fileID: -8148156210950934553, guid: a3d1f2d030dcf420e84272a245d4047c, type: 3}
   - {fileID: -8148156210950934553, guid: 93322d92829c8442c9398c4568713f8d, type: 3}
   - {fileID: -8148156210950934553, guid: 7a49e392697064d1b912596702befad4, type: 3}
-  - {fileID: -4320558180572046448, guid: 2477c4576dc6f4afaa118561e40d6bc7, type: 3}
   issModelPrefab: {fileID: 8771091787928289351, guid: 731c7786f65424293a1683636aa845d7,
     type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
