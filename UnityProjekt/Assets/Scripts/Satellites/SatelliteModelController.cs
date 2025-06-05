@@ -21,6 +21,8 @@ namespace Satellites
         private Material _spaceMaterial;
         private bool _lastMode;
 
+        private bool _isISS;
+        
         void Start()
         {
             CreateSpaceSphere();
@@ -37,8 +39,10 @@ namespace Satellites
             UpdateVisibility();
         }
 
-        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial)
+        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, bool isISS = false)
         {
+            _isISS = isISS;
+    
             if (!TryGetRandomModelPrefab(satelliteModelPrefabs, out var modelPrefab))
                 return false;
             if (!TryApplyModel(modelPrefab, globalSpaceMaterial))
@@ -90,28 +94,42 @@ namespace Satellites
         }
 
         private void CreateSpaceSphere()
-		{
-    		// Erstelle eine simple Kugel
-    		_spaceSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-   			_spaceSphere.name = "SpaceSphere";
-    		_spaceSphere.transform.SetParent(transform);
-    		_spaceSphere.transform.localPosition = Vector3.zero;
+        {
+            // Erstelle eine simple Kugel
+            _spaceSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _spaceSphere.name = "SpaceSphere";
+            _spaceSphere.transform.SetParent(transform);
+            _spaceSphere.transform.localPosition = Vector3.zero;
     
-            // WICHTIG: Verwende eine viel kleinere Größe!
-            _spaceSphere.transform.localScale = Vector3.one;
-            
+            // ISS größer machen
+            float size = _isISS ? 200f : 5f;  // ISS doppelt so groß
+            _spaceSphere.transform.localScale = Vector3.one * size;
+    
             // Entferne Collider für Performance
             var collider = _spaceSphere.GetComponent<Collider>();
             if (collider != null)
                 Destroy(collider);
-            
-            // Setze Material wenn vorhanden
+    
+            // Setze Material - für ISS evtl. anderes Material
             if (_spaceMaterial != null)
             {
                 var renderer = _spaceSphere.GetComponent<MeshRenderer>();
-                renderer.sharedMaterial = _spaceMaterial;
+        
+                if (_isISS)
+                {
+                    // Erstelle ein helles Material für die ISS
+                    Material issMaterial = new Material(_spaceMaterial);
+                    issMaterial.color = Color.blue;
+                    issMaterial.SetFloat("_Metallic", 1f);
+                    issMaterial.SetFloat("_Smoothness", 1f);
+                    renderer.sharedMaterial = issMaterial;
+                }
+                else
+                {
+                    renderer.sharedMaterial = _spaceMaterial;
+                }
             }
-            
+    
             // Initial verstecken
             _spaceSphere.SetActive(false);
         }
