@@ -3354,6 +3354,10 @@ MonoBehaviour:
   - {fileID: -8148156210950934553, guid: e46e84da7906545bd9332fe73ff0982c, type: 3}
   - {fileID: -8148156210950934553, guid: aac544ef610df4ab5a307b86db19cb2f, type: 3}
   - {fileID: -8148156210950934553, guid: 2cdf65eec699143b58970b3d618d49a6, type: 3}
+  - {fileID: -8148156210950934553, guid: 4dba06ae0c6554ef996bfc159795ba5a, type: 3}
+  - {fileID: -8148156210950934553, guid: a3d1f2d030dcf420e84272a245d4047c, type: 3}
+  - {fileID: -8148156210950934553, guid: 93322d92829c8442c9398c4568713f8d, type: 3}
+  - {fileID: -8148156210950934553, guid: 7a49e392697064d1b912596702befad4, type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   satellitesActive: 1
 --- !u!4 &964490651
