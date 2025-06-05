@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.atteneder.draco": "https://github.com/atteneder/DracoUnity.git",
     "com.atteneder.gltfast": "https://github.com/atteneder/glTFast.git",
     "com.cesium.unity": "1.15.5",
     "com.unity.collab-proxy": "2.7.1",
