@@ -15,7 +15,7 @@ namespace Satellites
         
         public bool IsISS { get; private set; }
         
-        public bool Init(Tle tle, GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial)
+        public bool Init(Tle tle, GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, GameObject issModelPrefab = null)
         {
             name = tle.NoradNumber + " " + tle.Name;
             Tle = tle;
@@ -25,7 +25,10 @@ namespace Satellites
         
             OrbitPropagator = new Sgp4(tle);
             orbit.Initialize(OrbitPropagator);
-            return modelController.SetModel(satelliteModelPrefabs, globalSpaceMaterial, IsISS);
+            
+            // Übergebe ISS-Modell wenn es die ISS ist
+            return modelController.SetModel(satelliteModelPrefabs, globalSpaceMaterial, IsISS, issModelPrefab);
+
         }
 
         // Start is called before the first frame update

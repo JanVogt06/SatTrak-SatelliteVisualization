@@ -39,28 +39,42 @@ namespace Satellites
             UpdateVisibility();
         }
 
-        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, bool isISS = false)
-        {
-            _isISS = isISS;
+    	public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, bool isISS = false, GameObject issModelPrefab = null)
+		{
+    		_isISS = isISS;
     
-            if (!TryGetRandomModelPrefab(satelliteModelPrefabs, out var modelPrefab))
-                return false;
-            if (!TryApplyModel(modelPrefab, globalSpaceMaterial))
-                return false;
-            return true;
-        }
+    		GameObject modelToUse;
+    
+    		// Wenn es die ISS ist und ein spezielles Modell vorhanden ist
+    		if (_isISS && issModelPrefab != null)
+    		{
+        		modelToUse = issModelPrefab;
+        		Debug.Log("ISS verwendet spezielles Modell!");
+    		}
+    		else
+    		{
+       			// Sonst zufälliges Modell
+        		if (!TryGetRandomModelPrefab(satelliteModelPrefabs, out modelToUse))
+            		return false;
+    		}
+    
+  			if (!TryApplyModel(modelToUse, globalSpaceMaterial))
+        		return false;
+        
+    			return true;
+			}
 
-        private bool TryGetRandomModelPrefab(GameObject[] prefabs, out GameObject prefab)
-        {
-            prefab = null;
-            if (prefabs == null || prefabs.Length == 0)
-                return false;
-            int randomIndex = Random.Range(0, prefabs.Length);
-            prefab = prefabs[randomIndex];
-            return prefab != null;
-        }
+        	private bool TryGetRandomModelPrefab(GameObject[] prefabs, out GameObject prefab)
+        	{
+            	prefab = null;
+            	if (prefabs == null || prefabs.Length == 0)
+                	return false;
+            	int randomIndex = Random.Range(0, prefabs.Length);
+            	prefab = prefabs[randomIndex];
+            	return prefab != null;
+        	}
 
-        private bool TryApplyModel(GameObject modelPrefab, Material globalSpaceMaterial)
+        	private bool TryApplyModel(GameObject modelPrefab, Material globalSpaceMaterial)
         {
             // Lösche altes Modell falls vorhanden
             if (_modelInstance != null)
@@ -102,7 +116,7 @@ namespace Satellites
     		_spaceSphere.transform.localPosition = Vector3.zero;
     
     		// ISS größer machen
-    		float size = _isISS ? 200f : 2f;
+    		float size = _isISS ? 50f : 2f;
     		_spaceSphere.transform.localScale = Vector3.one * size;
     
     		// Entferne Collider für Performance

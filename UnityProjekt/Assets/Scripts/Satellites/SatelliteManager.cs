@@ -37,6 +37,9 @@ namespace Satellites
         [Header("Satellite Models")] 
         [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
         public GameObject[] satelliteModelPrefabs;
+        
+        [Tooltip("Spezielles Modell für die ISS")]
+        public GameObject issModelPrefab;
 
         [Header("Materials")] 
         [Tooltip("Material für Satelliten im Space-Modus")]
@@ -162,8 +165,9 @@ namespace Satellites
         {
             var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
-            
-            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial);
+    
+            // Übergebe ISS-Modell falls vorhanden
+            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial, issModelPrefab);
             _satellites.Add(satellite);
             return modelApplied;
         }
