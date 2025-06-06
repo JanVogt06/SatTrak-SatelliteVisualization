@@ -40,6 +40,8 @@ namespace Satellites
 
         [Tooltip("Spezielles Modell für die ISS")]
         public GameObject issModelPrefab;
+        private readonly List<int> _tooNearIss = new() { 63520, 49044, 62030, 63129, 63204 };
+
 
         [Header("Materials")]
         [Tooltip("Material für Satelliten im Space-Modus")]
@@ -163,6 +165,7 @@ namespace Satellites
 
         private bool CreateSatellite(Tle tle)
         {
+            if (_tooNearIss.Contains((int)tle.NoradNumber)) return true;
             var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
 

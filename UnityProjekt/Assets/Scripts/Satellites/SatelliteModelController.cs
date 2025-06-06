@@ -101,7 +101,6 @@ namespace Satellites
             NormalizeSatelliteSize();
 
             // Erstelle/Update Space Sphere
-            if (_spaceSphere == null)
                 CreateSpaceSphere();
 
             return true;
@@ -109,6 +108,8 @@ namespace Satellites
 
         private void CreateSpaceSphere()
         {
+            if (_spaceSphere != null)
+                return;
             // Erstelle eine simple Kugel
             _spaceSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _spaceSphere.name = "SpaceSphere";
