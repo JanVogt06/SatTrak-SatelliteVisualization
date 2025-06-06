@@ -25,23 +25,23 @@ namespace Satellites
 
         private const string TleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
 
-        [Header("Prefabs & References")] 
+        [Header("Prefabs & References")]
         public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
         public GameObject satelliteParent;
         public HeatmapController heatmapController;
 
-        [Header("Simulation Time Settings")] 
+        [Header("Simulation Time Settings")]
         public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
 
-        [Header("Satellite Models")] 
+        [Header("Satellite Models")]
         [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
         public GameObject[] satelliteModelPrefabs;
-        
+
         [Tooltip("Spezielles Modell für die ISS")]
         public GameObject issModelPrefab;
 
-        [Header("Materials")] 
+        [Header("Materials")]
         [Tooltip("Material für Satelliten im Space-Modus")]
         public Material globalSpaceMaterial;
 
@@ -85,7 +85,7 @@ namespace Satellites
             if (!satellitesActive)
             {
                 return;
-            }     
+            }
 
             UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
@@ -165,7 +165,7 @@ namespace Satellites
         {
             var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
-    
+
             // Übergebe ISS-Modell falls vorhanden
             var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial, issModelPrefab);
             _satellites.Add(satellite);
