@@ -47,6 +47,8 @@ namespace Satellites
         [Tooltip("Material für Satelliten im Space-Modus")]
         public Material globalSpaceMaterial;
 
+        public DoubleSlider.Scripts.DoubleSlider altitudeSlider;
+
         // --- Laufzeitdaten ---
         public DateTime CurrentSimulatedTime { get; private set; }
         private readonly DateTime _simulationStartTime = DateTime.Now; // beliebiger Start
@@ -121,6 +123,19 @@ namespace Satellites
         public void OnTimeMultiplierChanged(float value)
         {
             timeMultiplier = value;
+        }
+
+        public void OnAltitudeSliderChanged(float min, float max)
+        {
+            foreach (var satellite in _satellites)
+            {
+                var time = (CurrentSimulatedTime - satellite.OrbitPropagator.Orbit.Epoch).TotalMinutes;
+                var geoCoord = satellite.OrbitPropagator.FindPosition(time).ToGeodetic();
+                if (geoCoord.Altitude < min || (altitudeSlider._maxValue != max && geoCoord.Altitude > max))
+                    satellite.gameObject.SetActive(false);
+                else if (!satellite.gameObject.activeSelf)
+                    satellite.gameObject.SetActive(true);
+            }
         }
 
         public List<string> GetSatelliteNames()

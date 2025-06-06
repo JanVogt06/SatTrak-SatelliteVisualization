@@ -1,6 +1,7 @@
 using System;
 using Satellites.SGP.Propagation;
 using Satellites.SGP.TLE;
+using Satellites.SGP.Util;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -34,7 +35,6 @@ namespace Satellites
         // Start is called before the first frame update
         void Start()
         {
-        
         }
 
         // Update is called once per frame
