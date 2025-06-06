@@ -73,7 +73,15 @@ namespace DoubleSlider.Scripts
         protected virtual void UpdateLabel()
         {
             if (_label == null) { return; }
-            _label.Text = Value.ToString();
+
+            if (Mathf.Approximately(Value, 1000))
+            {
+                _label.Text = "Unbegrenzt";
+            }
+            else
+            {
+                _label.Text = Value.ToString() + " km";
+            }
         }
     }
 }
