@@ -131,7 +131,7 @@ namespace Satellites
             {
                 var time = (CurrentSimulatedTime - satellite.OrbitPropagator.Orbit.Epoch).TotalMinutes;
                 var geoCoord = satellite.OrbitPropagator.FindPosition(time).ToGeodetic();
-                if (geoCoord.Altitude < min || (altitudeSlider._maxValue != max && geoCoord.Altitude > max))
+                if (geoCoord.Altitude < min || (!Mathf.Approximately(altitudeSlider._maxValue, max) && geoCoord.Altitude > max))
                     satellite.gameObject.SetActive(false);
                 else if (!satellite.gameObject.activeSelf)
                     satellite.gameObject.SetActive(true);
