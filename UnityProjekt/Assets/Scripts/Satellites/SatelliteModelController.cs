@@ -149,8 +149,8 @@ namespace Satellites
         }
 
         private void NormalizeSatelliteSize()
-        {
-            float targetSize = 40000f;
+        {        
+			float targetSize = _isISS ? 100000f : 40000f;
 
             var renderers = _modelInstance.GetComponentsInChildren<Renderer>();
             if (renderers.Length == 0) return;
