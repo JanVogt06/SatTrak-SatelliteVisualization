@@ -42,9 +42,15 @@ public class CesiumZoomController : MonoBehaviour
 
     private bool insideSat;
 
+    public Slider zoomSlider;
+
 
     private void Start()
     {
+        zoomSlider.gameObject.SetActive(false);
+        zoomSlider.onValueChanged.AddListener(OnSliderZoomChanged);
+        zoomSlider.value = targetCamera.fieldOfView;
+
         insideSat = false;
         directionalLight.transform.eulerAngles = new Vector3(90f, 0f, 0f);
         directionalLight.intensity = 25;
@@ -61,6 +67,21 @@ public class CesiumZoomController : MonoBehaviour
         zoomRoutine = StartCoroutine(ZoomToPosition(earthView, Quaternion.Euler(earthRotation), false, 2.3f));
         StartCoroutine(AnimateFOV(spaceFov, earthFov));
     }
+
+    public void ResetSlider()
+    {
+        targetCamera.fieldOfView = 49;
+        zoomSlider.value = 49;
+    }
+
+    public void OnSliderZoomChanged(float value)
+    {
+        if (insideSat)
+        {
+            targetCamera.fieldOfView = value;
+        }
+    }
+
 
     public void SnapToSatellit(Satellite view)
     {
@@ -83,6 +104,7 @@ public class CesiumZoomController : MonoBehaviour
         }
         else
         {
+            zoomSlider.gameObject.SetActive(false);
             directionalLight.intensity = 25;
             search.SetActive(false);
             if (zoomRoutine != null) StopCoroutine(zoomRoutine);
@@ -97,6 +119,8 @@ public class CesiumZoomController : MonoBehaviour
     public IEnumerator BlackSpace()
     {
         yield return new WaitForSeconds(1.2f);
+
+        zoomSlider.gameObject.SetActive(false);
 
         directionalLight.intensity = 25;
 
@@ -165,6 +189,10 @@ public class CesiumZoomController : MonoBehaviour
         insideSat = true;
 
         yield return new WaitForSeconds(1f);
+
+        zoomSlider.gameObject.SetActive(true);
+
+        ResetSlider();
 
         StartCoroutine(FadeFromBlack());
 
