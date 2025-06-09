@@ -158,10 +158,17 @@ namespace Satellites
         {
             try
             {
-                var provider =
-                    new CachingRemoteTleProvider(true, TimeSpan.FromHours(12), "cacheTle.txt", new Uri(TleUrl));
+                Debug.Log($"[SatelliteManager] Starte TLE-Download von: {TleUrl}");
+        
+                var provider = new CachingRemoteTleProvider(true, TimeSpan.FromHours(12), "cacheTle.txt", new Uri(TleUrl));
                 var data = provider.GetTles();
-                Debug.Log($"TLE Data: Gefunden: {data.Count} Satelliten");
+        
+                Debug.Log($"[SatelliteManager] TLE Data: Gefunden: {data.Count} Satelliten");
+        
+                if (data.Count == 0)
+                {
+                    Debug.LogError("[SatelliteManager] FEHLER: Keine TLE-Daten erhalten!");
+                }
 
                 int modelledSatellites = 0;
                 foreach (var tle in data.Values)
@@ -174,7 +181,7 @@ namespace Satellites
             }
             catch (Exception e)
             {
-                Debug.LogError("Parsing-Fehler: " + e.Message);
+                Debug.LogError($"[SatelliteManager] FEHLER beim TLE-Download: {e.Message}\n{e.StackTrace}");
             }
         }
 
