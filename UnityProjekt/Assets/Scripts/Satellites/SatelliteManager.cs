@@ -109,16 +109,19 @@ namespace Satellites
 
         private void OnDestroy()
         {
+            Debug.Log("[SatelliteManager] OnDestroy: Completing JobHandle before disposing NativeArrays.");
+            _handle.Complete();
+
             if (_transformAccessArray.isCreated)
                 _transformAccessArray.Dispose();
 
             if (_propagators.IsCreated)
                 _propagators.Dispose();
 
-            // _currentPositions auch dispose
             if (_currentPositions.IsCreated)
                 _currentPositions.Dispose();
         }
+
 
         public void OnTimeMultiplierChanged(float value)
         {
