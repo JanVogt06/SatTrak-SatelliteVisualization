@@ -1,6 +1,7 @@
 using System;
 using Satellites.SGP.Propagation;
 using Satellites.SGP.TLE;
+using Satellites.SGP.Util;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,19 +14,27 @@ namespace Satellites
         public Sgp4 OrbitPropagator;
         public Tle Tle;
         
-        public bool Init(Tle tle, GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial)
+        public bool IsISS { get; private set; }
+        
+        public bool Init(Tle tle, GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, GameObject issModelPrefab = null)
         {
             name = tle.NoradNumber + " " + tle.Name;
             Tle = tle;
+        
+            // ISS identifizieren
+            IsISS = tle.NoradNumber == 25544;
+        
             OrbitPropagator = new Sgp4(tle);
             orbit.Initialize(OrbitPropagator);
-            return modelController.SetModel(satelliteModelPrefabs, globalSpaceMaterial);
+            
+            // Übergebe ISS-Modell wenn es die ISS ist
+            return modelController.SetModel(satelliteModelPrefabs, globalSpaceMaterial, IsISS, issModelPrefab);
+
         }
 
         // Start is called before the first frame update
         void Start()
         {
-        
         }
 
         // Update is called once per frame

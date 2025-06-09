@@ -1,0 +1,75 @@
+fileFormatVersion: 2
+guid: 01ae1faba2fdb45fc81a6d8a378c8800
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 0
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies: []
+  reportItems:
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_specular
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_ior
+  - type: 2
+    code: 20
+    messages:
+    - EXT_texture_webp
+  - type: 0
+    code: 26
+    messages:
+    - 0
+    - 
+  - type: 0
+    code: 26
+    messages:
+    - 2
+    - 
+  - type: 0
+    code: 26
+    messages:
+    - 4
+    - 
+  - type: 0
+    code: 26
+    messages:
+    - 6
+    - 
+  - type: 0
+    code: 26
+    messages:
+    - 8
+    - 
+  - type: 0
+    code: 26
+    messages:
+    - 10
+    - 
+  - type: 0
+    code: 26
+    messages:
+    - 12
+    - 

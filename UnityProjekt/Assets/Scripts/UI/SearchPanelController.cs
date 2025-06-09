@@ -88,7 +88,17 @@ public class SearchPanelController : MonoBehaviour
             var txt = row.GetComponentInChildren<TextMeshProUGUI>();
             var btn = row.GetComponent<Button>();
 
-            txt.text = name;
+            // ISS hervorheben
+            if (name.Contains("25544"))
+            {
+                txt.text = "🛸 " + name + " (ISS)";
+                txt.color = Color.yellow;
+            }
+            else
+            {
+                txt.text = name;
+            }
+    
             btn.onClick.AddListener(() => OnItemSelected(name));
         }
 

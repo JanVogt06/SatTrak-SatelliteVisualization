@@ -25,22 +25,29 @@ namespace Satellites
 
         private const string TleUrl = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=TLE";
 
-        [Header("Prefabs & References")] 
+        [Header("Prefabs & References")]
         public GameObject satellitePrefab;
         public CesiumGeoreference cesiumGeoreference;
         public GameObject satelliteParent;
         public HeatmapController heatmapController;
 
-        [Header("Simulation Time Settings")] 
+        [Header("Simulation Time Settings")]
         public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
 
-        [Header("Satellite Models")] 
+        [Header("Satellite Models")]
         [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
         public GameObject[] satelliteModelPrefabs;
 
-        [Header("Materials")] 
+        [Tooltip("Spezielles Modell für die ISS")]
+        public GameObject issModelPrefab;
+        private readonly List<int> _tooNearIss = new() { 63520, 49044, 62030, 63129, 63204 };
+
+
+        [Header("Materials")]
         [Tooltip("Material für Satelliten im Space-Modus")]
         public Material globalSpaceMaterial;
+
+        public DoubleSlider.Scripts.DoubleSlider altitudeSlider;
 
         // --- Laufzeitdaten ---
         public DateTime CurrentSimulatedTime { get; private set; }
@@ -82,7 +89,7 @@ namespace Satellites
             if (!satellitesActive)
             {
                 return;
-            }     
+            }
 
             UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
@@ -116,6 +123,19 @@ namespace Satellites
         public void OnTimeMultiplierChanged(float value)
         {
             timeMultiplier = value;
+        }
+
+        public void OnAltitudeSliderChanged(float min, float max)
+        {
+            foreach (var satellite in _satellites)
+            {
+                var time = (CurrentSimulatedTime - satellite.OrbitPropagator.Orbit.Epoch).TotalMinutes;
+                var geoCoord = satellite.OrbitPropagator.FindPosition(time).ToGeodetic();
+                if (geoCoord.Altitude < min || (!Mathf.Approximately(altitudeSlider._maxValue, max) && geoCoord.Altitude > max))
+                    satellite.gameObject.SetActive(false);
+                else if (!satellite.gameObject.activeSelf)
+                    satellite.gameObject.SetActive(true);
+            }
         }
 
         public List<string> GetSatelliteNames()
@@ -160,10 +180,12 @@ namespace Satellites
 
         private bool CreateSatellite(Tle tle)
         {
+            if (_tooNearIss.Contains((int)tle.NoradNumber)) return true;
             var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
-            
-            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial);
+
+            // Übergebe ISS-Modell falls vorhanden
+            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial, issModelPrefab);
             _satellites.Add(satellite);
             return modelApplied;
         }

@@ -1,34 +1,33 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Satellites
 {
     public class SatelliteModelController : MonoBehaviour
     {
-        [Header("Referenzen")] public CesiumZoomController zoomController;
+        [Header("Referenzen")]
+        public CesiumZoomController zoomController;
 
-        [Header("Einstellungen")] [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
+        [Header("Einstellungen")]
+        [Tooltip("FOV-Schwellenwert zum Umschalten zwischen den Modi")]
         public float fovThreshold = 70f;
 
-        private Material[] _earthModeMaterials;
+        [Header("Space Mode")]
+        [Tooltip("Größe der Kugel im Space-Modus")]
+        public float sphereSize = 20000f;
+
+        private GameObject _modelInstance;
+        private GameObject _spaceSphere;
         private Material _spaceMaterial;
-        private MeshRenderer _meshRenderer;
-        private MeshFilter _meshFilter;
         private bool _lastMode;
 
-        void Awake()
-        {
-            _meshRenderer = GetComponent<MeshRenderer>() != null
-                ? GetComponent<MeshRenderer>()
-                : gameObject.AddComponent<MeshRenderer>();
-            
-            _meshFilter = GetComponent<MeshFilter>() != null
-                ? GetComponent<MeshFilter>()
-                : gameObject.AddComponent<MeshFilter>();
-        }
+        private bool _isISS;
 
         void Start()
         {
-            UpdateMaterial();
+            CreateSpaceSphere();
+            if (_modelInstance != null)
+                UpdateVisibility();
         }
 
         void Update()
@@ -37,15 +36,31 @@ namespace Satellites
             bool isEarthMode = zoomController.targetCamera.fieldOfView < fovThreshold;
             if (isEarthMode == _lastMode) return;
             _lastMode = isEarthMode;
-            UpdateMaterial();
+            UpdateVisibility();
         }
 
-        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial)
+        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, bool isISS = false, GameObject issModelPrefab = null)
         {
-            if (!TryGetRandomModelPrefab(satelliteModelPrefabs, out var modelPrefab))
+            _isISS = isISS;
+
+            GameObject modelToUse;
+
+            // Wenn es die ISS ist und ein spezielles Modell vorhanden ist
+            if (_isISS && issModelPrefab != null)
+            {
+                modelToUse = issModelPrefab;
+                Debug.Log("ISS verwendet spezielles Modell!");
+            }
+            else
+            {
+                // Sonst zufälliges Modell
+                if (!TryGetRandomModelPrefab(satelliteModelPrefabs, out modelToUse))
+                    return false;
+            }
+
+            if (!TryApplyModel(modelToUse, globalSpaceMaterial))
                 return false;
-            if (!TryApplyModel(modelPrefab, globalSpaceMaterial))
-                return false;
+
             return true;
         }
 
@@ -61,66 +76,118 @@ namespace Satellites
 
         private bool TryApplyModel(GameObject modelPrefab, Material globalSpaceMaterial)
         {
-            var tempModel = Instantiate(modelPrefab);
-            var modelMeshFilter = tempModel.GetComponent<MeshFilter>();
-            var modelMeshRenderer = tempModel.GetComponent<MeshRenderer>();
-            if (modelMeshFilter == null || modelMeshRenderer == null || modelMeshFilter.sharedMesh == null)
+            // Lösche altes Modell falls vorhanden
+            if (_modelInstance != null)
             {
-                Destroy(tempModel);
+                Destroy(_modelInstance);
+            }
+
+            // Instanziiere das komplette Modell als Child
+            _modelInstance = Instantiate(modelPrefab, transform);
+            _modelInstance.transform.localPosition = Vector3.zero;
+            _modelInstance.transform.localRotation = Quaternion.identity;
+
+            // Prüfe ob es Renderer gibt
+            var renderers = _modelInstance.GetComponentsInChildren<MeshRenderer>();
+            if (renderers.Length == 0)
+            {
+                Destroy(_modelInstance);
                 return false;
             }
 
-            _meshFilter.mesh = modelMeshFilter.sharedMesh;
-            NormalizeSatelliteSize(modelMeshFilter.sharedMesh);
-
-            _earthModeMaterials = modelMeshRenderer.sharedMaterials;
             _spaceMaterial = globalSpaceMaterial;
-            _meshRenderer.enabled = true;
 
-            if (zoomController && zoomController.targetCamera)
-                UpdateMaterial();
-            else
-                _meshRenderer.materials = modelMeshRenderer.sharedMaterials;
+            // Skaliere das gesamte Modell
+            NormalizeSatelliteSize();
 
-            Destroy(tempModel);
+            // Erstelle/Update Space Sphere
+                CreateSpaceSphere();
+
             return true;
         }
 
-        private void UpdateMaterial()
+        private void CreateSpaceSphere()
         {
-            if (!_meshRenderer)
+            if (_spaceSphere != null)
                 return;
+            // Erstelle eine simple Kugel
+            _spaceSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _spaceSphere.name = "SpaceSphere";
+            _spaceSphere.transform.SetParent(transform);
+            _spaceSphere.transform.localPosition = Vector3.zero;
+
+            // ISS größer machen
+            float size = _isISS ? 50f : 2f;
+            _spaceSphere.transform.localScale = Vector3.one * size;
+
+            // Entferne Collider für Performance
+            var collider = _spaceSphere.GetComponent<Collider>();
+            if (collider != null)
+                Destroy(collider);
+
+            // Material setzen
+            var renderer = _spaceSphere.GetComponent<MeshRenderer>();
+            if (_isISS)
+            {
+                // Erstelle ein neues Material für die ISS
+                Material issMaterial = new Material(Shader.Find("Standard"));
+                issMaterial.color = Color.yellow;
+                issMaterial.EnableKeyword("_EMISSION");
+                issMaterial.SetColor("_EmissionColor", Color.yellow * 0.5f); // Leuchten
+                renderer.sharedMaterial = issMaterial;
+            }
+            else if (_spaceMaterial != null)
+            {
+                renderer.sharedMaterial = _spaceMaterial;
+            }
+            else
+            {
+                // Fallback Material
+                renderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            }
+            // Initial verstecken
+            _spaceSphere.SetActive(false);
+        }
+
+        private void NormalizeSatelliteSize()
+        {        
+			float targetSize = _isISS ? 100000f : 40000f;
+
+            var renderers = _modelInstance.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0) return;
+
+            Bounds bounds = renderers[0].bounds;
+            foreach (var renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+
+            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            if (maxDimension > 0)
+            {
+                float scaleFactor = targetSize / maxDimension;
+                _modelInstance.transform.localScale = Vector3.one * scaleFactor;
+            }
+        }
+
+        private void UpdateVisibility()
+        {
+            if (_modelInstance == null || _spaceSphere == null) return;
 
             bool isEarthMode = zoomController && zoomController.targetCamera &&
                                zoomController.targetCamera.fieldOfView < fovThreshold;
 
-            if (isEarthMode)
-            {
-                if (_earthModeMaterials == null || _earthModeMaterials.Length <= 0) return;
-                _meshRenderer.enabled = true;
-                _meshRenderer.sharedMaterials = _earthModeMaterials;
-            }
-            else
-            {
-                if (_spaceMaterial != null)
-                {
-                    _meshRenderer.enabled = true;
-                    _meshRenderer.sharedMaterials = new[] { _spaceMaterial };
-                }
-                else
-                {
-                    _meshRenderer.enabled = false;
-                }
-            }
+            // Einfach GameObject an/aus schalten
+            _modelInstance.SetActive(isEarthMode);
+            _spaceSphere.SetActive(!isEarthMode);
         }
 
-        private void NormalizeSatelliteSize(Mesh mesh)
+        void OnDestroy()
         {
-            float targetSize = 40000f;
-            Bounds bounds = mesh.bounds;
-            float maxDimension = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-            float scaleFactor = targetSize / maxDimension;
-            gameObject.transform.localScale = Vector3.one * scaleFactor;
+            if (_modelInstance != null)
+                Destroy(_modelInstance);
+            if (_spaceSphere != null)
+                Destroy(_spaceSphere);
         }
     }
 }

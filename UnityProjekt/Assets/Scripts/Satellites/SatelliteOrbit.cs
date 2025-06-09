@@ -45,8 +45,8 @@ namespace Satellites
             if (_orbitRenderer) return;
             _orbitRenderer = gameObject.AddComponent<LineRenderer>();
 
-            _orbitRenderer.startWidth = 5000f;
-            _orbitRenderer.endWidth = 5000f;
+            _orbitRenderer.startWidth = 7500f;
+            _orbitRenderer.endWidth = 7500f;
             _orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
             _orbitRenderer.startColor = Color.cyan;
             _orbitRenderer.endColor = Color.cyan;
