@@ -130,7 +130,7 @@ namespace Satellites
             if (_isISS)
             {
                 // Erstelle ein neues Material für die ISS
-                Material issMaterial = new Material(Shader.Find("Standard"));
+                Material issMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
                 issMaterial.color = Color.yellow;
                 issMaterial.EnableKeyword("_EMISSION");
                 issMaterial.SetColor("_EmissionColor", Color.yellow * 0.5f); // Leuchten
