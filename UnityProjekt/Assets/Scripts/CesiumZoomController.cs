@@ -53,7 +53,7 @@ public class CesiumZoomController : MonoBehaviour
 
         insideSat = false;
         directionalLight.transform.eulerAngles = new Vector3(90f, 0f, 0f);
-        directionalLight.intensity = 25;
+        directionalLight.intensity = 100;
         search.SetActive(true);
         spaceButton.interactable = false;
         ZoomToSpace();
@@ -255,13 +255,13 @@ public class CesiumZoomController : MonoBehaviour
         {
             spaceButton.interactable = true;
             insideSat = false;
-            directionalLight.intensity = 5;
+            directionalLight.intensity = 25;
             directionalLight.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
         }
         else
         {
             insideSat = false;
-            directionalLight.intensity = 25;
+            directionalLight.intensity = 50;
             directionalLight.transform.eulerAngles = new Vector3(90f, 0f, 0f);
         }
 
