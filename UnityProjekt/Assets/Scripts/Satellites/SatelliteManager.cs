@@ -30,9 +30,8 @@ namespace Satellites
         public CesiumGeoreference cesiumGeoreference;
         public GameObject satelliteParent;
         public HeatmapController heatmapController;
+        public TimeSlider.TimeSlider time;
 
-        [Header("Simulation Time Settings")]
-        public float timeMultiplier = 1f; // 60 = 1 Sekunde echte Zeit = 1 Minute simulierte Zeit
 
         [Header("Satellite Models")]
         [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
@@ -48,11 +47,6 @@ namespace Satellites
         public Material globalSpaceMaterial;
 
         public DoubleSlider.Scripts.DoubleSlider altitudeSlider;
-
-        // --- Laufzeitdaten ---
-        public DateTime CurrentSimulatedTime { get; private set; }
-        private readonly DateTime _simulationStartTime = DateTime.Now; // beliebiger Start
-        private double _simulationTimeSeconds;
 
         // --- Satellitenverwaltung ---
         private readonly List<Satellite> _satellites = new();
@@ -77,8 +71,6 @@ namespace Satellites
         void Start()
         {
             Debug.Log("SatelliteManager: Start");
-            CurrentSimulatedTime = _simulationStartTime;
-            _simulationTimeSeconds = 0.0;
             EnableGpuInstancing();
             FetchTleData();
             AllocateTransformAccessArray();
@@ -91,14 +83,13 @@ namespace Satellites
                 return;
             }
 
-            UpdateCurrentTime();
             if (!_handle.IsCompleted) return;
             _handle.Complete();
             heatmapController.UpdateHeatmap(_currentPositions);
 
             var job = new MoveSatelliteJobParallelForTransform
             {
-                CurrentTime = CurrentSimulatedTime,
+                CurrentTime = time.CurrentSimulatedTime,
                 EcefToLocalMatrix = cesiumGeoreference.ecefToLocalMatrix,
                 OrbitPropagator = _propagators,
                 Positions = _currentPositions
@@ -122,18 +113,12 @@ namespace Satellites
                 _currentPositions.Dispose();
         }
 
-
-        public void OnTimeMultiplierChanged(float value)
-        {
-            timeMultiplier = value;
-        }
-
         public void OnAltitudeSliderChanged(float min, float max)
         {
             foreach (var satellite in _satellites)
             {
-                var time = (CurrentSimulatedTime - satellite.OrbitPropagator.Orbit.Epoch).TotalMinutes;
-                var geoCoord = satellite.OrbitPropagator.FindPosition(time).ToGeodetic();
+                var timeInMinutes = (time.CurrentSimulatedTime - satellite.OrbitPropagator.Orbit.Epoch).TotalMinutes;
+                var geoCoord = satellite.OrbitPropagator.FindPosition(timeInMinutes).ToGeodetic();
                 if (geoCoord.Altitude < min || (!Mathf.Approximately(altitudeSlider._maxValue, max) && geoCoord.Altitude > max))
                     satellite.gameObject.SetActive(false);
                 else if (!satellite.gameObject.activeSelf)
@@ -274,12 +259,6 @@ namespace Satellites
 
             _transformAccessArray = new TransformAccessArray(transforms);
             Debug.Log("TransformAccessArray erfolgreich initialisiert");
-        }
-
-        private void UpdateCurrentTime()
-        {
-            _simulationTimeSeconds += Time.deltaTime * timeMultiplier;
-            CurrentSimulatedTime = _simulationStartTime.AddSeconds(_simulationTimeSeconds);
         }
     }
 }

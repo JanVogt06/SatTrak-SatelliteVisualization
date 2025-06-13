@@ -16,6 +16,7 @@ namespace Satellites
         public bool shouldCalculateOrbit;
         private Sgp4 _orbitPropagator;
         private LineRenderer _orbitRenderer;
+        public TimeSlider.TimeSlider time;
         public List<Vector3> nextPositions;
 
         public void Initialize(Sgp4 propagator)
@@ -57,7 +58,7 @@ namespace Satellites
             var positions = new List<Vector3>();
             for (TimeSpan i = TimeSpan.Zero; i < until; i = i.Add(stepSize))
             {
-                var pos = _orbitPropagator.FindPosition(SatelliteManager.Instance.CurrentSimulatedTime.Add(i))
+                var pos = _orbitPropagator.FindPosition(time.CurrentSimulatedTime.Add(i))
                     .ToSphericalEcef();
                 var position = math.mul(SatelliteManager.Instance.cesiumGeoreference.ecefToLocalMatrix,
                     new double4(pos.ToDouble(), 1.0)).xyz;

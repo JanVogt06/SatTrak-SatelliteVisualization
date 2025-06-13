@@ -19,8 +19,17 @@ namespace Satellites
         public void Execute(int index, TransformAccess transform)
         {
             double tsince = (CurrentTime - OrbitPropagator[index].Orbit.Epoch).TotalMinutes;
-            var pos = OrbitPropagator[index].FindPosition(tsince).ToSphericalEcef();
-            var position = (math.mul(EcefToLocalMatrix, new double4(pos.ToDouble(), 1.0)).xyz).ToVector();
+            Vector3 position;
+            try
+            {
+                var pos = OrbitPropagator[index].FindPosition(tsince).ToSphericalEcef();
+                position = (math.mul(EcefToLocalMatrix, new double4(pos.ToDouble(), 1.0)).xyz).ToVector();
+            }
+            catch (Exception e)
+            {
+                position = new Vector3(0, 0, 0);
+            }
+            
             Positions[index] = position;
             transform.position = position;
         }
