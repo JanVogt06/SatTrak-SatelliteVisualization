@@ -2,28 +2,13 @@ using System;
 using UnityEngine;
 using CesiumForUnity;
 using Unity.Mathematics;
+using UnityEngine.Serialization;
 
 public class DayNightCycle : MonoBehaviour
 {
     [Header("Sun Light")]
     [Tooltip("Das Directional Light das die Sonne repräsentiert")]
     public Light sunLight;
-    
-    [Header("Time Settings")]
-    [Tooltip("Nutze echte Zeit oder Simulations-Zeit")]
-    public bool useRealTime = false;
-    
-    [Tooltip("Geschwindigkeit der Simulation (1 = Echtzeit, 60 = 1 Min/Sek)")]
-    public float timeScale = 1f;
-    
-    [Header("Sun Position")]
-    [Tooltip("Aktuelle Tageszeit (0-24)")]
-    [Range(0, 24)]
-    public float currentHour = 12f;
-    
-    [Tooltip("Tag des Jahres (1-365)")]
-    [Range(1, 365)]
-    public int dayOfYear = 1;
     
     [Header("Visual Settings")]
     [Tooltip("Intensität des Sonnenlichts am Tag")]
@@ -45,11 +30,11 @@ public class DayNightCycle : MonoBehaviour
     [Tooltip("Ambient Light für Nacht")]
     public Color nightAmbient = new Color(0.3f, 0.3f, 0.5f);
     
-    [Header("References")]
+    [Header("References")] 
     public CesiumGeoreference georeference;
+    public TimeSlider.TimeSlider time;
     
     // Private Variablen
-    private float internalTime;
     private Vector3 earthCenter;
     
     void Start()
@@ -73,15 +58,6 @@ public class DayNightCycle : MonoBehaviour
             RenderSettings.ambientIntensity = 1.5f;
         }
         
-        // Setze initiale Zeit
-        if (useRealTime)
-        {
-            currentHour = DateTime.Now.Hour + DateTime.Now.Minute / 60f;
-            dayOfYear = DateTime.Now.DayOfYear;
-        }
-        
-        internalTime = currentHour;
-        
         // Finde Erdmittelpunkt
         if (georeference != null)
         {
@@ -92,41 +68,17 @@ public class DayNightCycle : MonoBehaviour
     
     void Update()
     {
-        UpdateTime();
         UpdateSunPosition();
         UpdateLighting();
-    }
-    
-    void UpdateTime()
-    {
-        if (useRealTime)
-        {
-            currentHour = DateTime.Now.Hour + DateTime.Now.Minute / 60f + DateTime.Now.Second / 3600f;
-            dayOfYear = DateTime.Now.DayOfYear;
-        }
-        else
-        {
-            // Simulierte Zeit
-            internalTime += Time.deltaTime * timeScale / 3600f; // Konvertiere zu Stunden
-            
-            if (internalTime >= 24f)
-            {
-                internalTime -= 24f;
-                dayOfYear++;
-                if (dayOfYear > 365) dayOfYear = 1;
-            }
-            
-            currentHour = internalTime;
-        }
     }
     
     void UpdateSunPosition()
     {
         // Berechne Sonnenposition basierend auf Zeit und Jahreszeit
-        float hourAngle = (currentHour - 12f) * 15f; // 15 Grad pro Stunde
+        float hourAngle = (time.CurrentSimulatedTime.Hour - 12f) * 15f; // 15 Grad pro Stunde
         
         // Deklination der Sonne (vereinfacht)
-        float declination = 23.45f * Mathf.Sin((360f * (dayOfYear - 81f) / 365f) * Mathf.Deg2Rad);
+        float declination = 23.45f * Mathf.Sin((360f * (time.CurrentSimulatedTime.DayOfYear - 81f) / 365f) * Mathf.Deg2Rad);
         
         // Setze Sonnenrichtung
         Quaternion hourRotation = Quaternion.Euler(0, -hourAngle, 0);
@@ -168,17 +120,11 @@ public class DayNightCycle : MonoBehaviour
     // Hilfsmethoden für externe Scripte
     public bool IsDay()
     {
-        return currentHour >= 6f && currentHour <= 18f;
+        return time.CurrentSimulatedTime.Hour >= 6f && time.CurrentSimulatedTime.Hour <= 18f;
     }
     
     public float GetDayProgress()
     {
-        return currentHour / 24f;
-    }
-    
-    public void SetTime(float hour)
-    {
-        currentHour = Mathf.Clamp(hour, 0f, 24f);
-        internalTime = currentHour;
+        return time.CurrentSimulatedTime.Hour / 24f;
     }
 }

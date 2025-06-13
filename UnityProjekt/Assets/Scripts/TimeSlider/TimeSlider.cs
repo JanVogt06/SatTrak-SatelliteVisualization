@@ -14,6 +14,8 @@ namespace TimeSlider
         public TMP_Text maxDateText;
         public TMP_Text currentDateText;
         public TMP_Text zoomLevelText;
+        public CanvasGroup Panel;
+        public GameObject OpenSettings;
 
         [Header("Simulation Time Settings")] public float timeMultiplier = 1f;
 
@@ -57,6 +59,15 @@ namespace TimeSlider
             UpdateVisuals();
         }
 
+        public void HideOrShow()
+        {
+            var visible = !Panel.interactable;
+            Panel.alpha = visible ? 1f : 0f;
+            Panel.interactable = visible;     // Benutzerinteraktionen aktiv
+            Panel.blocksRaycasts = visible;   // Blockiert weiterhin Klicks, wenn sichtbar
+            OpenSettings.SetActive(!visible);
+        }
+
         private void OnBeginDrag()
         {
             _isDragging = true;
@@ -67,6 +78,7 @@ namespace TimeSlider
             CurrentSimulatedTime = _currentZoom.SetDate(CurrentSimulatedTime, (int)dateSlider.value);
             _simulationStartTime = CurrentSimulatedTime;
             _simulationTimeSeconds = 0.0f;
+            _isDragging = false;
         }
         
         public void OnPointerEnter(PointerEventData eventData)
@@ -122,60 +134,6 @@ namespace TimeSlider
             dateSlider.value = _currentZoom.ToSliderValue(CurrentSimulatedTime);
             UpdateVisuals();
         }
-        
-        public void OnSliderValueChanged(float value)
-        {
-        }
-
-        // public void OnZoom(float zoomDelta)
-        // {
-        //     // Adjust zoom level
-        //     _currentZoomLevel =
-        //         Mathf.Clamp(_currentZoomLevel + zoomDelta * zoomSensitivity, minZoomLevel, maxZoomLevel);
-        //
-        //     // Calculate new date range centered around current time
-        //     double totalDays = (_currentMaxDate - _currentMinDate).TotalDays;
-        //     double visibleDays = totalDays / _currentZoomLevel;
-        //
-        //     // Calculate new min and max dates
-        //     DateTime newMin = CurrentSimulatedTime - TimeSpan.FromDays(visibleDays / 2);
-        //     DateTime newMax = CurrentSimulatedTime + TimeSpan.FromDays(visibleDays / 2);
-        //
-        //     // Ensure minimum 20 second range (10s on each side)
-        //     if (newMax - newMin < TimeSpan.FromSeconds(20))
-        //     {
-        //         visibleDays = TimeSpan.FromSeconds(20).TotalDays;
-        //         newMin = CurrentSimulatedTime - TimeSpan.FromDays(visibleDays / 2);
-        //         newMax = CurrentSimulatedTime + TimeSpan.FromDays(visibleDays / 2);
-        //     }
-        //
-        //     // Clamp to absolute min/max
-        //     newMin = DateTime.Compare(newMin, _absoluteMinDate) < 0 ? _absoluteMinDate : newMin;
-        //     newMax = DateTime.Compare(newMax, _absoluteMaxDate) > 0 ? _absoluteMaxDate : newMax;
-        //
-        //     _currentMinDate = newMin;
-        //     _currentMaxDate = newMax;
-        //
-        //     UpdateResolution();
-        //     UpdateVisuals();
-        // }
-        //
-        // private void UpdateResolution()
-        // {
-        //     if (_currentZoomLevel > 50) _currentResolution = TimeSpan.FromSeconds(1);
-        //     else if (_currentZoomLevel > 20) _currentResolution = TimeSpan.FromMinutes(1);
-        //     else if (_currentZoomLevel > 10) _currentResolution = TimeSpan.FromHours(1);
-        //     else if (_currentZoomLevel > 5) _currentResolution = TimeSpan.FromDays(1);
-        //     else if (_currentZoomLevel > 2) _currentResolution = TimeSpan.FromDays(30);
-        //     else _currentResolution = TimeSpan.FromDays(365);
-        // }
-        //
-        // private DateTime SnapToResolution(DateTime date)
-        // {
-        //     if (_currentResolution.TotalSeconds <= 1) return date;
-        //     long ticks = date.Ticks / _currentResolution.Ticks;
-        //     return new DateTime(ticks * _currentResolution.Ticks);
-        // }
 
         private void UpdateVisuals()
         {
