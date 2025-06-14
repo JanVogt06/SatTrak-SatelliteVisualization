@@ -50,6 +50,7 @@ namespace Satellites
 
         // --- Satellitenverwaltung ---
         private readonly List<Satellite> _satellites = new();
+        public event Action<List<Satellite>> OnSatellitesLoaded;
 
         // --- Jobs & NativeArrays ---
         private TransformAccessArray _transformAccessArray;
@@ -126,11 +127,6 @@ namespace Satellites
             }
         }
 
-        public List<string> GetSatelliteNames()
-        {
-            return _satellites.Select(s => s.gameObject.name).ToList();
-        }
-
         public Satellite GetSatelliteByName(string name)
         {
             return _satellites.FirstOrDefault(s => s.gameObject.name == name);
@@ -166,6 +162,7 @@ namespace Satellites
                 }
 
                 Debug.Log($"Initialisiert: {_satellites.Count} Satelliten, {modelledSatellites} mit Modellen");
+                OnSatellitesLoaded?.Invoke(_satellites);
             }
             catch (Exception e)
             {

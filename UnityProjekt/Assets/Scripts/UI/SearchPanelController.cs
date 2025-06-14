@@ -49,12 +49,17 @@ public class SearchPanelController : MonoBehaviour
         openButton.onClick.AddListener(() => panel.SetActive(true));
         closeButton.onClick.AddListener(() => panel.SetActive(false));
 
-        // Nur die ersten maxInitialItems laden
-        var allNames     = satelliteManager.GetSatelliteNames();
-        var initialNames = allNames.Take(maxInitialItems).ToList();
-        Debug.Log($"SearchPanelController: Zeige {initialNames.Count} von {allNames.Count} Satelliten");
+        satelliteManager.OnSatellitesLoaded += list =>
+        {
+            var allNames = list.Select(s => s.gameObject.name).ToList();
+            
+            // Nur die ersten maxInitialItems laden
+            var initialNames = allNames.Take(maxInitialItems).ToList();
         
-        PopulateList(initialNames);
+            Debug.Log($"SearchPanelController: Zeige {initialNames.Count} von {allNames.Count} Satelliten");
+        
+            PopulateList(initialNames);
+        };
     }
 
     void Update()
