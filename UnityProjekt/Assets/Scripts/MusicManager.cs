@@ -1,24 +1,26 @@
-using UnityEngine;
-using UnityEngine.Audio;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance;
 
-    [Header("Audio Settings")]
     public List<AudioClip> musicClips;
     public AudioSource audioSource;
 
-    [Range(0f, 1f)]
-    public float volume = 1f;
-    public bool isMuted = false;
+    [HideInInspector] public float volume = 1f;
+    [HideInInspector] public bool isMuted = false;
 
-    private void Awake()
+    private const string VolumeKey = "MusicVolume";
+    private const string MuteKey = "MusicMuted";
+
+    private float savedVolumeBeforeMute = 0.5f;
+
+    void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(gameObject); 
             return;
         }
 
@@ -30,41 +32,105 @@ public class MusicManager : MonoBehaviour
 
         audioSource.loop = false;
         audioSource.playOnAwake = false;
-        audioSource.volume = volume;
+
+        volume = PlayerPrefs.HasKey(VolumeKey) ? PlayerPrefs.GetFloat(VolumeKey) : 0.5f;
+        isMuted = PlayerPrefs.GetInt(MuteKey, 0) == 1;
+
+        savedVolumeBeforeMute = volume;
+        ApplyVolume();
     }
 
-    private void Start()
+
+    void Start()
     {
         PlayRandomTrack();
     }
 
     private void Update()
     {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                Debug.LogError("MusicManager: AudioSource konnte nicht wiederhergestellt werden!");
+                return;
+            }
+
+            audioSource.loop = false;
+            audioSource.playOnAwake = false;
+            ApplyVolume();
+        }
+
         if (!audioSource.isPlaying && musicClips.Count > 0)
         {
             PlayRandomTrack();
         }
 
+        ApplyVolume();
+    }
+
+
+    public void SetVolume(float value)
+    {
+        value = Mathf.Clamp01(value);
+        if (Mathf.Approximately(value, volume)) return;
+
+        volume = value;
+        savedVolumeBeforeMute = volume;
+
+        if (!isMuted)
+            ApplyVolume();
+
+        PlayerPrefs.SetFloat(VolumeKey, volume);
+        PlayerPrefs.Save();
+    }
+
+
+    public void ToggleMute()
+    {
+        isMuted = !isMuted;
+        PlayerPrefs.SetInt(MuteKey, isMuted ? 1 : 0);
+        PlayerPrefs.Save();
+
+        if (isMuted)
+        {
+            audioSource.volume = 0f;
+        }
+        else
+        {
+            if (Mathf.Approximately(savedVolumeBeforeMute, 0f))
+            {
+                savedVolumeBeforeMute = 0.2f;
+                volume = 0.2f;
+                PlayerPrefs.SetFloat(VolumeKey, 0.2f);
+                PlayerPrefs.Save();
+            }
+
+            volume = savedVolumeBeforeMute;
+            ApplyVolume();
+        }
+    }
+
+
+    public void ApplyVolume()
+    {
+        if (audioSource == null)
+        {
+            Debug.LogWarning("AudioSource ist null – MusicManager wurde vermutlich zerstört.");
+            return;
+        }
+
         audioSource.volume = isMuted ? 0f : volume;
     }
 
+
     public void PlayRandomTrack()
     {
-        if (musicClips.Count == 0)
-            return;
+        if (musicClips.Count == 0) return;
 
         int index = Random.Range(0, musicClips.Count);
         audioSource.clip = musicClips[index];
         audioSource.Play();
-    }
-
-    public void SetVolume(float value)
-    {
-        volume = Mathf.Clamp01(value);
-    }
-
-    public void ToggleMute(bool mute)
-    {
-        isMuted = mute;
     }
 }
