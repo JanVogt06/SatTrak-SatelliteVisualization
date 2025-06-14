@@ -53,6 +53,7 @@ auf einem virtuellen Globus zu verfolgen.
 - **Show/Hide Toggle**: Satelliten ein-/ausblenden
 - **Time Multiplier**: Simulationsgeschwindigkeit anpassen
 - **Altitude Slider**: Satelliten nach Höhe filtern
+- **Time Slider**: aktuell Simulierte Zeit darstellen und mithilfe Slider anpassen, außerdem Zoomen zur genaueren Einstellung möglich
 
 ## 🏗️ Projektstruktur
 
