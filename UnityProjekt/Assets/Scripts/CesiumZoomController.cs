@@ -44,6 +44,12 @@ public class CesiumZoomController : MonoBehaviour
 
     public Slider zoomSlider;
 
+    // Neues Flag
+    [Header("Day/Night System")]
+    public bool useDayNightSystem = true;
+    
+    private DayNightSystem dayNightSystem;
+
 
     private void Start()
     {
@@ -52,11 +58,37 @@ public class CesiumZoomController : MonoBehaviour
         zoomSlider.value = targetCamera.fieldOfView;
 
         insideSat = false;
-        directionalLight.transform.eulerAngles = new Vector3(90f, 0f, 0f);
-        directionalLight.intensity = 100;
+        
+        // Finde DayNightSystem
+        dayNightSystem = FindObjectOfType<DayNightSystem>();
+        
+        // Nur manuelle Kontrolle wenn KEIN Tag/Nacht-System
+        if (!useDayNightSystem || dayNightSystem == null)
+        {
+            directionalLight.transform.eulerAngles = new Vector3(45f, -30f, 0f);
+            directionalLight.intensity = 1.3f;
+        }
+        
         search.SetActive(true);
         spaceButton.interactable = false;
         ZoomToSpace();
+    }
+
+    // Helper-Methode
+    private void SetLightIntensity(float intensity)
+    {
+        if (!useDayNightSystem || dayNightSystem == null)
+        {
+            directionalLight.intensity = intensity;
+        }
+    }
+    
+    private void SetLightRotation(Quaternion rotation)
+    {
+        if (!useDayNightSystem || dayNightSystem == null)
+        {
+            directionalLight.transform.rotation = rotation;
+        }
     }
 
     public void ZoomToEarth(double3 earthView)
@@ -105,7 +137,7 @@ public class CesiumZoomController : MonoBehaviour
         else
         {
             zoomSlider.gameObject.SetActive(false);
-            directionalLight.intensity = 25;
+            SetLightIntensity(1.3f); // GEÄNDERT: Helper-Methode verwenden
             search.SetActive(false);
             if (zoomRoutine != null) StopCoroutine(zoomRoutine);
             zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation), true, 2.3f));
@@ -122,7 +154,7 @@ public class CesiumZoomController : MonoBehaviour
 
         zoomSlider.gameObject.SetActive(false);
 
-        directionalLight.intensity = 25;
+        SetLightIntensity(1.3f); // GEÄNDERT: Helper-Methode verwenden
 
         searchPanelController.StopTracking();
 
@@ -185,7 +217,7 @@ public class CesiumZoomController : MonoBehaviour
 
         search.SetActive(true);
 
-        directionalLight.intensity = 1.5f;
+        SetLightIntensity(1.5f); // GEÄNDERT: Helper-Methode verwenden
         insideSat = true;
 
         yield return new WaitForSeconds(1f);
@@ -213,7 +245,7 @@ public class CesiumZoomController : MonoBehaviour
     {
         if (insideSat == true)
         {
-            directionalLight.transform.rotation = targetCamera.transform.rotation;
+            SetLightRotation(targetCamera.transform.rotation); // GEÄNDERT: Helper-Methode verwenden
             search.SetActive(false);
         }
         else
@@ -255,14 +287,14 @@ public class CesiumZoomController : MonoBehaviour
         {
             spaceButton.interactable = true;
             insideSat = false;
-            directionalLight.intensity = 25;
-            directionalLight.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+            SetLightIntensity(1.3f); // GEÄNDERT: Helper-Methode verwenden
+            SetLightRotation(Quaternion.Euler(-90f, 0f, 0f)); // GEÄNDERT: Helper-Methode verwenden
         }
         else
         {
             insideSat = false;
-            directionalLight.intensity = 50;
-            directionalLight.transform.eulerAngles = new Vector3(90f, 0f, 0f);
+            SetLightIntensity(1.3f); // GEÄNDERT: Helper-Methode verwenden (reduziert von 50)
+            SetLightRotation(Quaternion.Euler(90f, 0f, 0f)); // GEÄNDERT: Helper-Methode verwenden
         }
 
         search.SetActive(true);

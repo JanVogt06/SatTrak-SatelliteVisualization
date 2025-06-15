@@ -5613,6 +5613,110 @@ RectTransform:
   m_AnchoredPosition: {x: -5.0000153, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1044133107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1044133109}
+  - component: {fileID: 1044133108}
+  m_Layer: 0
+  m_Name: EarthLightOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1044133108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044133107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 114416b572a92436991e8a04b248ce10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  georeference: {fileID: 1786786860}
+  dayNightSystem: {fileID: 1052321864}
+  overlayMaterial: {fileID: 2100000, guid: aa00c51cfd4ce4ec7a65a00d869dbe65, type: 2}
+  shadowStrength: 0.9
+  terminatorSoftness: 0.5
+  sphereScale: 1.05
+--- !u!4 &1044133109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044133107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1052321863
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1052321865}
+  - component: {fileID: 1052321864}
+  m_Layer: 0
+  m_Name: DayNightSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1052321864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052321863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 613aabc514065412a8b336e796bc8d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sunLight: {fileID: 410087040}
+  timeSlider: {fileID: 568983495}
+  earthMaterial: {fileID: 0}
+  sunIntensity: 1.3
+  sunColor: {r: 1, g: 0.95, b: 0.8, a: 1}
+  dayAmbientColor: {r: 0.5, g: 0.6, b: 0.7, a: 1}
+  nightAmbientColor: {r: 0.05, g: 0.05, b: 0.1, a: 1}
+  showTerminator: 0
+  terminatorPlane: {fileID: 0}
+  showDebugInfo: 0
+--- !u!4 &1052321865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052321863}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1063103443
 GameObject:
   m_ObjectHideFlags: 0
@@ -7292,59 +7396,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1526299738}
   m_CullTransparentMesh: 1
---- !u!1 &1559803476
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1559803478}
-  - component: {fileID: 1559803477}
-  m_Layer: 0
-  m_Name: DayNightController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1559803477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559803476}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 260cef231869145f09adbe6c2bcdf5ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sunLight: {fileID: 410087040}
-  dayIntensity: 25
-  nightIntensity: 5
-  dayColor: {r: 1, g: 0.95, b: 0.8, a: 1}
-  nightColor: {r: 0.3, g: 0.4, b: 0.7, a: 1}
-  dayAmbient: {r: 0.5, g: 0.7, b: 0.9, a: 1}
-  nightAmbient: {r: 0.1, g: 0.1, b: 0.2, a: 1}
-  georeference: {fileID: 1786786860}
-  time: {fileID: 568983495}
---- !u!4 &1559803478
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559803476}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1561891910
 GameObject:
   m_ObjectHideFlags: 0
@@ -9546,6 +9597,7 @@ MonoBehaviour:
   directionalLight: {fileID: 410087040}
   fadePanel: {fileID: 1834950563}
   zoomSlider: {fileID: 1429009996}
+  useDayNightSystem: 1
 --- !u!114 &1952269539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10152,4 +10204,5 @@ SceneRoots:
   - {fileID: 1080272861}
   - {fileID: 308697200}
   - {fileID: 33570803}
-  - {fileID: 1559803478}
+  - {fileID: 1052321865}
+  - {fileID: 1044133109}
