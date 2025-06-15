@@ -90,8 +90,6 @@ public class FreeFlyCamera : MonoBehaviour
     private Vector3 _initPosition;
     private Vector3 _initRotation;
 
-    public static GameObject crosshairUI;
-
     [SerializeField] private Image crosshairImage;
 
 
@@ -116,9 +114,9 @@ public class FreeFlyCamera : MonoBehaviour
                 crosshairImage.sprite = CrosshairSettings.selectedSprite;
                 crosshairImage.color = CrosshairSettings.selectedColor;
             }
-
-            crosshairUI.SetActive(false);
         }
+
+        crosshairImage.gameObject.SetActive(false);
 
         modeText.text = "Mode: Inspector";
         _initPosition = transform.position;
@@ -139,12 +137,12 @@ public class FreeFlyCamera : MonoBehaviour
             if (_cursorLocked == false)
             {
                 modeText.text = "Mode: Inspector";
-                crosshairUI.SetActive(false);
+                crosshairImage.gameObject.SetActive(false);
             }
             else
             {
                 modeText.text = "Mode: Camera";
-                crosshairUI.SetActive(true);
+                crosshairImage.gameObject.SetActive(true);
             }
             Cursor.lockState = _cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !_cursorLocked;

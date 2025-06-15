@@ -1,73 +1,257 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;                   
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using TMPro;
-using Satellites;                     
-using CesiumForUnity;                 
-using DefaultNamespace;               
-using Unity.Mathematics;
-using System.Collections;
+using UI.Pagination;
+using Satellites;
+using CesiumForUnity;
 
 public class SearchPanelController : MonoBehaviour
 {
+    /* ─────────── Inspector ─────────── */
     [Header("UI References")]
-    public GameObject     panel;
-    public Button         openButton;
-    public Button         closeButton;
-    public RectTransform  contentParent;
-    public GameObject     rowPrefab;
+    [SerializeField] GameObject panelRoot;
+    [SerializeField] CanvasGroup panelGroup;
+    [SerializeField] Button openButton;
+    [SerializeField] Button closeButton;
+    [SerializeField] Button loadBlockBtn;
+    [SerializeField] GameObject rowPrefab;
+    [SerializeField] TMP_InputField searchField;
 
-    [Header("External References")]
-    public SatelliteManager     satelliteManager;
-    public CesiumZoomController zoomController;
-    public CesiumGeoreference   georeference;
+    [Header("PagedRect")]
+    [SerializeField] PagedRect pagedRect;
+    [SerializeField] int itemsPerPage = 20;
+    [SerializeField] int blockSize = 10;
 
-    [Header("Settings")]
-    public int maxInitialItems = 50;    // Anzahl initialer Buttons
+    [Header("Extern")]
+    [SerializeField] SatelliteManager satelliteManager;
+    [SerializeField] CesiumZoomController zoomController;
+    [SerializeField] CesiumGeoreference georeference;
 
-    [Header("Camera Tracking Settings")]
-    [Tooltip("Wie weit hinter dem Sat auf der Erd-Sat-Kameraachse die Kamera stehen soll (in Metern)")]
-    public float cameraDistanceOffset = 100000f;
+    [Header("Tracking")]
+    [SerializeField] float cameraDistanceOffset = 1e5f;
+
+    /* ─────────── intern ─────────── */
+    List<string> allSatNames;
+    List<string> satNames;
+    int totalPages;
+    int pagesBuilt;
+
+    bool isPaused;
+    bool isRebuilding;
 
     private Satellite trackedSatellite;
     private bool isTracking = false;
 
+    /* ==================== Life-Cycle ==================== */
+    void Awake()
+    {
+        if (!panelGroup && panelRoot)
+            panelGroup = panelRoot.GetComponent<CanvasGroup>();
+    }
+
     void Start()
     {
-        // Falls im Inspector leer, per Code füllen:
-        if (satelliteManager == null)
-            satelliteManager = SatelliteManager.Instance;
-        if (zoomController   == null)
-            zoomController   = FindObjectOfType<CesiumZoomController>();
-        if (georeference     == null)
-            georeference     = FindObjectOfType<CesiumGeoreference>();
+        satelliteManager ??= SatelliteManager.Instance;
+        zoomController ??= FindObjectOfType<CesiumZoomController>();
+        georeference ??= FindObjectOfType<CesiumGeoreference>();
 
-        panel.SetActive(false);
-        openButton.onClick.AddListener(() => panel.SetActive(true));
-        closeButton.onClick.AddListener(() => panel.SetActive(false));
+        allSatNames = satelliteManager ? satelliteManager.GetSatelliteNames().ToList()
+                                       : new List<string>();
+        satNames = new List<string>(allSatNames);
+        CalcTotalPages();
 
-        satelliteManager.OnSatellitesLoaded += list =>
-        {
-            var allNames = list.Select(s => s.gameObject.name).ToList();
-            
-            // Nur die ersten maxInitialItems laden
-            var initialNames = allNames.Take(maxInitialItems).ToList();
-        
-            Debug.Log($"SearchPanelController: Zeige {initialNames.Count} von {allNames.Count} Satelliten");
-        
-            PopulateList(initialNames);
-        };
+        HidePanel();
+
+        if (openButton) openButton.onClick.AddListener(ShowPanel);
+        if (closeButton) closeButton.onClick.AddListener(HidePanel);
+        if (loadBlockBtn) loadBlockBtn.onClick.AddListener(BuildNextBlock);
+        if (searchField) searchField.onEndEdit.AddListener(OnSearchSubmit);
+
+        if (pagedRect?.PageChangedEvent != null)
+            pagedRect.PageChangedEvent.AddListener(OnPageChanged);
     }
+
+    /* ==================== Panel-Handling ==================== */
+    void ShowPanel()
+    {
+        if (!panelGroup) return;
+        panelGroup.alpha = 1f;
+        panelGroup.blocksRaycasts = panelGroup.interactable = true;
+        TryInit();
+    }
+
+    void HidePanel()
+    {
+        if (!panelGroup) return;
+        panelGroup.alpha = 0f;
+        panelGroup.blocksRaycasts = panelGroup.interactable = false;
+    }
+
+    /* ---------- Init ---------- */
+    void TryInit()
+    {
+        EnsureSatelliteList();
+
+        if (pagesBuilt == 0 && pagedRect)
+        {
+            ClearPages(keepTemplate: true);
+            BuildNextBlock();
+            pagedRect.UpdateDisplay();
+            pagedRect.ShowFirstPage();
+            SnapScrollToStart();
+        }
+    }
+
+    void EnsureSatelliteList()
+    {
+        satelliteManager ??= SatelliteManager.Instance;
+        allSatNames = satelliteManager ? satelliteManager.GetSatelliteNames().ToList()
+                                       : new List<string>();
+        ApplyFilter(searchField ? searchField.text : string.Empty, false);
+    }
+
+    /* ---------- Suche ---------- */
+    void OnSearchSubmit(string term) => ApplyFilter(term, true);
+
+    void ApplyFilter(string term, bool rebuild)
+    {
+        term = term?.Trim();
+        satNames = string.IsNullOrEmpty(term)
+            ? new List<string>(allSatNames)
+            : allSatNames.Where(n => n.IndexOf(term,
+                                               System.StringComparison.OrdinalIgnoreCase) >= 0)
+                         .ToList();
+        CalcTotalPages();
+
+        if (!rebuild) return;
+
+        /* ─── Rebuild aller Seiten ─── */
+        isRebuilding = true;
+
+        if (pagedRect?.PageChangedEvent != null)
+            pagedRect.PageChangedEvent.RemoveListener(OnPageChanged);
+
+        ClearPages(keepTemplate: true);
+        pagesBuilt = 0;
+        BuildNextBlock();
+        pagedRect.UpdateDisplay();
+
+        if (pagedRect?.PageChangedEvent != null)
+            pagedRect.PageChangedEvent.AddListener(OnPageChanged);
+
+        pagedRect.ShowFirstPage();
+        SnapScrollToStart();
+
+        isRebuilding = false;
+    }
+
+    void CalcTotalPages()
+        => totalPages = Mathf.CeilToInt(satNames.Count / (float)itemsPerPage);
+
+    /* ---------- Seiten-Aufbau ---------- */
+    void BuildNextBlock()
+    {
+        if (!pagedRect || pagesBuilt >= totalPages) return;
+
+        int toBuild = Mathf.Min(blockSize, totalPages - pagesBuilt);
+
+        for (int n = 0; n < toBuild; n++)
+        {
+            int pageIdx = pagesBuilt + n;
+
+            Page page;
+            if (pageIdx == 0 && pagedRect.Pages.Count > 0)
+            {
+                page = pagedRect.Pages[0];
+            }
+            else
+            {
+                page = pagedRect.AddPageUsingTemplate();
+            }
+
+            page.name = $"Page_{pageIdx + 1}";
+
+            foreach (Transform child in page.transform)
+                Destroy(child.gameObject);
+
+            var vlg = page.GetComponent<VerticalLayoutGroup>() ??
+                      page.gameObject.AddComponent<VerticalLayoutGroup>();
+            vlg.childControlHeight = true;
+            vlg.childForceExpandHeight = false;
+            vlg.spacing = 4f;
+
+            int start = pageIdx * itemsPerPage;
+            int end = Mathf.Min(start + itemsPerPage, satNames.Count);
+
+            for (int i = start; i < end; i++)
+            {
+                string sat = satNames[i];
+                var row = Instantiate(rowPrefab, page.transform, false);
+                row.GetComponentInChildren<TextMeshProUGUI>().text = sat;
+                row.GetComponent<Button>()
+                   .onClick.AddListener(() => OnItemSelected(sat));
+            }
+        }
+
+        pagesBuilt += toBuild;
+        pagedRect.UpdateDisplay();
+    }
+
+    /* ---------- Auto-Load Callback ---------- */
+    void OnPageChanged(Page prev, Page next)
+    {
+        if (isRebuilding) return;
+
+        int newPageNumber = pagedRect ? pagedRect.Pages.IndexOf(next) + 1 : 0;
+        if (pagesBuilt < totalPages && newPageNumber >= pagesBuilt - 1)
+            BuildNextBlock();
+    }
+
+    /* ---------- Helpers ---------- */
+    void ClearPages(bool keepTemplate)
+    {
+        if (pagedRect?.Pages == null) return;
+
+        Page template = keepTemplate && pagedRect.Pages.Count > 0
+            ? pagedRect.Pages[0]
+            : null;
+
+        foreach (var p in pagedRect.Pages.ToArray())
+        {
+            if (keepTemplate && p == template) continue;
+            pagedRect.RemovePage(p, true);
+        }
+
+        if (template)
+        {
+            foreach (Transform child in template.transform)
+                Destroy(child.gameObject);
+        }
+
+        pagedRect.UpdateDisplay();
+    }
+
+    /// <summary>ScrollRect gestoppt und ganz nach links/oben gesetzt.</summary>
+    void SnapScrollToStart()
+    {
+        if (!pagedRect?.ScrollRect) return;
+
+        pagedRect.ScrollRect.StopMovement();
+        pagedRect.ScrollRect.horizontalNormalizedPosition = 0f;
+        pagedRect.ScrollRect.verticalNormalizedPosition = 1f;
+        Canvas.ForceUpdateCanvases();
+    }
+
 
     void Update()
     {
         if (isTracking && trackedSatellite != null)
         {
             Vector3 satWorldPos = trackedSatellite.transform.position;
-        
+
             // 2) Richtung von Erdmitte zum Sat (Erdmitte ist bei Cesium meist (0,0,0) in Unity‐Space)
             Vector3 dir = satWorldPos.normalized;
 
@@ -80,41 +264,16 @@ public class SearchPanelController : MonoBehaviour
         }
     }
 
-    public void PopulateList(IEnumerable<string> items)
+    public void StopTracking()
     {
-        // Alte Einträge entfernen
-        foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
-
-        // Neue Buttons anlegen
-        foreach (var name in items)
-        {
-            var row = Instantiate(rowPrefab, contentParent);
-            var txt = row.GetComponentInChildren<TextMeshProUGUI>();
-            var btn = row.GetComponent<Button>();
-
-            // ISS hervorheben
-            if (name.Contains("25544"))
-            {
-                txt.text = "🛸 " + name + " (ISS)";
-                txt.color = Color.yellow;
-            }
-            else
-            {
-                txt.text = name;
-            }
-    
-            btn.onClick.AddListener(() => OnItemSelected(name));
-        }
-
-        // Layout aktualisieren
-        LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent);
+        isTracking = false;
+        trackedSatellite = null;
     }
 
     public void OnItemSelected(string itemName)
     {
         StartCoroutine(zoomController.FadeToBlack());
-        panel.SetActive(false);
+        panelRoot.SetActive(false);
 
         StartCoroutine(TheLoop(itemName));
     }
@@ -141,11 +300,5 @@ public class SearchPanelController : MonoBehaviour
         zoomController.SnapToSatellit(trackedSatellite);
 
         isTracking = true;
-    }
-
-    public void StopTracking()
-    {
-        isTracking = false;
-        trackedSatellite = null;
     }
 }

@@ -127,6 +127,11 @@ namespace Satellites
             }
         }
 
+        public List<string> GetSatelliteNames()
+        {
+            return _satellites.Select(s => s.gameObject.name).ToList();
+        }
+
         public Satellite GetSatelliteByName(string name)
         {
             return _satellites.FirstOrDefault(s => s.gameObject.name == name);
