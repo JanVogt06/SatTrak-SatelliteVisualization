@@ -1,15 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomCursor : MonoBehaviour
 {
-    public Texture2D customCursor;
     public Vector2 hotspot = Vector2.zero;
     public CursorMode cursorMode = CursorMode.Auto;
 
+    private Texture2D lastCursorTexture;
+
+
     void Start()
     {
-        Cursor.SetCursor(customCursor, hotspot, cursorMode);
+        ApplyCursor();
+    }
+
+    public void ApplyCursor()
+    {
+        if (CrosshairSettings.cursorTexture == null)
+        {
+            Debug.LogWarning("No cursor texture assigned!");
+            return;
+        }
+
+        // Färbe das Original ein
+        Texture2D coloredTexture = TintCursorTexture(CrosshairSettings.cursorTexture, CrosshairSettings.cursorColor);
+
+        // Setze den Cursor
+        Cursor.SetCursor(coloredTexture, hotspot, cursorMode);
+
+        // Speicher letztes Cursor-Texture um ggf. später zu löschen
+        if (lastCursorTexture != null)
+            Destroy(lastCursorTexture);
+        lastCursorTexture = coloredTexture;
+    }
+
+    Texture2D TintCursorTexture(Texture2D original, Color color)
+    {
+        Texture2D newTex = new Texture2D(original.width, original.height, TextureFormat.RGBA32, false);
+        newTex.filterMode = original.filterMode;
+        newTex.wrapMode = original.wrapMode;
+
+        Color[] pixels = original.GetPixels();
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = color * pixels[i];
+        }
+
+        newTex.SetPixels(pixels);
+        newTex.Apply();
+        return newTex;
+    }
+
+    private void OnDestroy()
+    {
+        if (lastCursorTexture != null)
+            Destroy(lastCursorTexture);
     }
 }

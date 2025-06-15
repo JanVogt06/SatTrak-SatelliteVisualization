@@ -1,6 +1,7 @@
 ﻿using Satellites;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Camera))]
 public class FreeFlyCamera : MonoBehaviour
@@ -91,10 +92,12 @@ public class FreeFlyCamera : MonoBehaviour
 
     public static GameObject crosshairUI;
 
+    [SerializeField] private Image crosshairImage;
+
+
     [SerializeField] private SatelliteLabelUI satelliteLabelUI;
     [SerializeField] private float maxSelectionAngle = 0.2f;
     [SerializeField] private float maxDistance = 1000000f;
-
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -106,11 +109,17 @@ public class FreeFlyCamera : MonoBehaviour
 
     private void Start()
     {
-        if (crosshairUI != null)
+        if (crosshairImage != null)
         {
+            if (CrosshairSettings.selectedSprite != null)
+            {
+                crosshairImage.sprite = CrosshairSettings.selectedSprite;
+                crosshairImage.color = CrosshairSettings.selectedColor;
+            }
+
             crosshairUI.SetActive(false);
         }
-            
+
         modeText.text = "Mode: Inspector";
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
