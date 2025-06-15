@@ -8,6 +8,10 @@ public class DefaultStuff : MonoBehaviour
     public TextMeshProUGUI fpsText;
     private float timer;
 
+    public GameObject ButtonOpenObject;
+
+    public Animator uiAnimator;
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -21,11 +25,30 @@ public class DefaultStuff : MonoBehaviour
 
     void Start()
     {
+        ButtonOpenObject.SetActive(true);
         Application.targetFrameRate = 240;
     }
 
     public void EndGame()
     {
         Application.Quit();
+    }
+
+    public void PlayAnimation()
+    {
+        ButtonOpenObject.SetActive(false);
+        if (uiAnimator != null)
+        {
+            uiAnimator.SetTrigger("Play");
+        }
+    }
+
+    public void PlayBackAnimation()
+    {
+        ButtonOpenObject.SetActive(true);
+        if (uiAnimator != null)
+        {
+            uiAnimator.SetTrigger("Back");
+        }
     }
 }
