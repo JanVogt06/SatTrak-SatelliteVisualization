@@ -2413,7 +2413,7 @@ MonoBehaviour:
   panel: {fileID: 665865296}
   openButton: {fileID: 611858466}
   closeButton: {fileID: 1125483312}
-  contentParent: {fileID: 792517186}
+  contentParent: {fileID: 665865297}
   rowPrefab: {fileID: 4299324611197597555, guid: 8a7bdb31a4826472d9d2b0234d1cf434,
     type: 3}
   satelliteManager: {fileID: 964490650}
@@ -2421,6 +2421,8 @@ MonoBehaviour:
   georeference: {fileID: 1786786860}
   maxInitialItems: 50
   cameraDistanceOffset: 100000
+  followSmoothTime: 0.3
+  lookSmoothSpeed: 3
 --- !u!1 &468674227
 GameObject:
   m_ObjectHideFlags: 0
@@ -5137,12 +5139,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba42a82ec3f07ad43ae01835e65b175e, type: 3}
---- !u!224 &792517186 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 22418848, guid: ba42a82ec3f07ad43ae01835e65b175e,
-    type: 3}
-  m_PrefabInstance: {fileID: 778751970}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &792525246 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 22427228, guid: ba42a82ec3f07ad43ae01835e65b175e,
@@ -7405,6 +7401,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 449546353}
   - {fileID: 1648118131}
   - {fileID: 664286997}
   - {fileID: 806567999}
@@ -7416,7 +7413,6 @@ RectTransform:
   - {fileID: 580128755}
   - {fileID: 1834950562}
   - {fileID: 722039452}
-  - {fileID: 449546353}
   - {fileID: 665865297}
   - {fileID: 468674228}
   - {fileID: 542028916}
@@ -9056,10 +9052,10 @@ MonoBehaviour:
   _enableSpeedAcceleration: 0
   _speedAccelerationFactor: 1.5
   _initPositonButton: 114
+  crosshairImage: {fileID: 120635983}
   satelliteLabelUI: {fileID: 580128758}
   maxSelectionAngle: 4.5
   maxDistance: 1993850
-  crosshairImage: {fileID: 120635983}
 --- !u!114 &1952269537
 MonoBehaviour:
   m_ObjectHideFlags: 0
