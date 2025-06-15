@@ -37,7 +37,7 @@ namespace Heatmap
             }
 
             float density = math.clamp((float)count / MaxDensityCount, 0f, 1f);
-            Colors[index] = Color.Lerp(new Color(0.278f,1.0f,0.349f), new Color(0.0f,0.561f,0.055f), density);
+            Colors[index] = Color.Lerp(Color.green, Color.red, density);
         }
     }
 }
