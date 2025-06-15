@@ -9056,10 +9056,10 @@ MonoBehaviour:
   _enableSpeedAcceleration: 0
   _speedAccelerationFactor: 1.5
   _initPositonButton: 114
-  crosshairUI: {fileID: 120635981}
   satelliteLabelUI: {fileID: 580128758}
   maxSelectionAngle: 4.5
   maxDistance: 1993850
+  crosshairImage: {fileID: 120635983}
 --- !u!114 &1952269537
 MonoBehaviour:
   m_ObjectHideFlags: 0
