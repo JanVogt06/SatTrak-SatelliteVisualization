@@ -7,6 +7,7 @@ public class MenuManager : MonoBehaviour
 {
     public GameObject mainMenu;
     public GameObject settingsMenu;
+    public GameObject creditsMenu;
 
     public Slider volumeSlider;
     public TextMeshProUGUI volumeText;
@@ -76,13 +77,22 @@ public class MenuManager : MonoBehaviour
     {
         mainMenu.SetActive(true);
         settingsMenu.SetActive(false);
+        creditsMenu.SetActive(false);
     }
 
     public void OpenSettingsMenu()
     {
         mainMenu.SetActive(false);
+        creditsMenu.SetActive(false);
         settingsMenu.SetActive(true);
         UpdateAudioUI();
+    }
+
+    public void OpenCreditsMenu()
+    {
+        mainMenu.SetActive(false);
+        creditsMenu.SetActive(true);
+        settingsMenu.SetActive(false);
     }
 
     void InitializeQualityDropdown()

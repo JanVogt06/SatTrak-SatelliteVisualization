@@ -25,23 +25,6 @@ public class CrosshairSelector : MonoBehaviour
 
     private void Start()
     {
-        // Vorschau-Sprites für Cursor aus Texturen erstellen
-        for (int i = 0; i < cursorPreviewImages.Length && i < cursorTextures.Length; i++)
-        {
-            Sprite previewSprite = Sprite.Create(
-                cursorTextures[i],
-                new Rect(0, 0, cursorTextures[i].width, cursorTextures[i].height),
-                new Vector2(0.5f, 0.5f)
-            );
-            cursorPreviewImages[i].sprite = previewSprite;
-        }
-
-        // Initialauswahl
-        SelectCrosshair(0);
-        SelectColor(0);
-        SelectCursorTexture(0);
-        SelectCursorColor(0);
-
         // Crosshair-Button-Bindings
         for (int i = 0; i < crosshairButtons.Length; i++)
         {
@@ -69,10 +52,30 @@ public class CrosshairSelector : MonoBehaviour
             int index = i;
             cursorColorButtons[i].onClick.AddListener(() => SelectCursorColor(index));
         }
+
+        // ---- Wiederherstellung ----
+
+        // Crosshair
+        int savedCrosshair = PlayerPrefs.GetInt("CrosshairIndex", 0);
+        SelectCrosshair(savedCrosshair);
+
+        int savedCrosshairColorIndex = PlayerPrefs.GetInt("CrosshairColorIndex", 0);
+        SelectColor(savedCrosshairColorIndex);
+
+        // Cursor
+        int savedCursorIndex = PlayerPrefs.GetInt("CursorIndex", 0);
+        SelectCursorTexture(savedCursorIndex);
+
+        int savedCursorColorIndex = PlayerPrefs.GetInt("CursorColorIndex", 0);
+        SelectCursorColor(savedCursorColorIndex);
     }
+
 
     void SelectCrosshair(int index)
     {
+        PlayerPrefs.SetInt("CrosshairIndex", index);
+        PlayerPrefs.Save();
+
         currentCrosshair = index;
         CrosshairSettings.selectedSprite = crosshairImages[index].sprite;
 
@@ -87,6 +90,8 @@ public class CrosshairSelector : MonoBehaviour
         if (colorIndex < 0 || colorIndex >= availableColors.Length)
             return;
 
+        PlayerPrefs.SetInt("CrosshairColorIndex", colorIndex);
+
         Color chosenColor = availableColors[colorIndex];
         chosenColor.a = 1f;
 
@@ -98,8 +103,12 @@ public class CrosshairSelector : MonoBehaviour
         }
     }
 
+
     public void SelectCursorTexture(int index)
     {
+        PlayerPrefs.SetInt("CursorIndex", index);
+        PlayerPrefs.Save();
+
         if (index < 0 || index >= cursorTextures.Length)
             return;
 
@@ -118,12 +127,13 @@ public class CrosshairSelector : MonoBehaviour
         if (colorIndex < 0 || colorIndex >= availableColors.Length)
             return;
 
+        PlayerPrefs.SetInt("CursorColorIndex", colorIndex);
+
         Color chosenColor = availableColors[colorIndex];
         chosenColor.a = 1f;
 
         CrosshairSettings.cursorColor = chosenColor;
 
-        // Vorschau einfärben
         foreach (var img in cursorPreviewImages)
         {
             img.color = chosenColor;
@@ -131,4 +141,5 @@ public class CrosshairSelector : MonoBehaviour
 
         custCursor.ApplyCursor();
     }
+
 }
