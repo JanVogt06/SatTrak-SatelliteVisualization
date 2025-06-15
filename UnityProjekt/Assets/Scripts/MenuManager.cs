@@ -12,7 +12,6 @@ public class MenuManager : MonoBehaviour
     public TextMeshProUGUI volumeText;
     public Button muteButton;
     public Image muteButtonImage;
-    public TextMeshProUGUI muteButtonLabel;
     public Sprite muteOnSprite;
     public Sprite muteOffSprite;
 
@@ -25,7 +24,6 @@ public class MenuManager : MonoBehaviour
 
 
     private MusicManager musicManager => MusicManager.Instance;
-
 
     void Start()
     {
@@ -67,9 +65,6 @@ public class MenuManager : MonoBehaviour
         volumeText.text = Mathf.RoundToInt(vol * 100f) + "%";
 
         bool muted = musicManager.isMuted;
-
-        muteButtonLabel.text = muted ? "Unmute" : "Mute";
-        muteButtonLabel.color = muted ? Color.red : Color.white;
 
         muteButtonImage.sprite = muted ? muteOffSprite : muteOnSprite;
         muteButtonImage.color = muted ? Color.red : Color.white;

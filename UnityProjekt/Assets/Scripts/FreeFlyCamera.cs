@@ -89,7 +89,7 @@ public class FreeFlyCamera : MonoBehaviour
     private Vector3 _initPosition;
     private Vector3 _initRotation;
 
-    public GameObject crosshairUI;
+    public static GameObject crosshairUI;
 
     [SerializeField] private SatelliteLabelUI satelliteLabelUI;
     [SerializeField] private float maxSelectionAngle = 0.2f;
