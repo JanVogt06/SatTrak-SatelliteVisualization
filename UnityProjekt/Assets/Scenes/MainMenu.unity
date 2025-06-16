@@ -5281,7 +5281,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Programmer '
+  m_text: Programmer
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a51d0fde7c5e5c545ad6d171a5bcc1d7, type: 2}
   m_sharedMaterial: {fileID: -7987593312712202835, guid: a51d0fde7c5e5c545ad6d171a5bcc1d7,
@@ -5746,7 +5746,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Programmer / Documentation
+  m_text: Programmer
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a51d0fde7c5e5c545ad6d171a5bcc1d7, type: 2}
   m_sharedMaterial: {fileID: -7987593312712202835, guid: a51d0fde7c5e5c545ad6d171a5bcc1d7,
@@ -6017,7 +6017,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Programmer '
+  m_text: Programmer / Documentation
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a51d0fde7c5e5c545ad6d171a5bcc1d7, type: 2}
   m_sharedMaterial: {fileID: -7987593312712202835, guid: a51d0fde7c5e5c545ad6d171a5bcc1d7,
