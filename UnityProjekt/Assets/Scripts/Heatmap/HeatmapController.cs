@@ -4,11 +4,16 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Heatmap
 {
     public class HeatmapController : MonoBehaviour
     {
+        public EarthDayNightOverlay EarthDayNightOverlay;
+        public DayNightSystem DayNightSystem;
+        public Toggle DayNightSystemToggle;
+        
         public bool isVisible = false;
         
         private Mesh _mesh;
@@ -27,6 +32,9 @@ namespace Heatmap
         {
             isVisible = value;
             _meshRenderer.enabled = value;
+            EarthDayNightOverlay.gameObject.SetActive(!value);
+            DayNightSystem.gameObject.SetActive(!value);
+            DayNightSystemToggle.isOn = !value;
         }
 
         public void UpdateHeatmap(NativeArray<Vector3> satellitePositions)

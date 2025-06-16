@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.UI;
 
 public class DayNightSystem : MonoBehaviour
 {

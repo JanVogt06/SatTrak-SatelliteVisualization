@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,6 +17,7 @@ namespace TimeSlider
         public TMP_Text zoomLevelText;
         public CanvasGroup Panel;
         public GameObject OpenSettings;
+        public TMP_InputField TimeMultiplicatorInput;
 
         [Header("Simulation Time Settings")] public float timeMultiplier = 1f;
 
@@ -75,12 +77,23 @@ namespace TimeSlider
 
         private void OnEndDrag()
         {
-            CurrentSimulatedTime = _currentZoom.SetDate(CurrentSimulatedTime, (int)dateSlider.value);
-            _simulationStartTime = CurrentSimulatedTime;
-            _simulationTimeSeconds = 0.0f;
+            var newDate = _currentZoom.SetDate(CurrentSimulatedTime, (int)dateSlider.value);
+            SetDate(newDate);
             _isDragging = false;
         }
-        
+
+        public void ResetDate()
+        {
+            SetDate(DateTime.Now);
+        }
+
+        private void SetDate(DateTime date)
+        {
+            CurrentSimulatedTime = date;
+            _simulationStartTime = CurrentSimulatedTime;
+            _simulationTimeSeconds = 0.0f;
+        }
+
         public void OnPointerEnter(PointerEventData eventData)
         {
             _isHovered = true;
@@ -94,6 +107,17 @@ namespace TimeSlider
         public void OnTimeMultiplierValueChanged(float value)
         {
             timeMultiplier = value;
+        }
+
+        public void OnTimeMultiplierInputValueChanged(string value)
+        {
+            if (!int.TryParse(value, out int newValue))
+            {
+                TimeMultiplicatorInput.text = "0";
+                return;
+            }
+
+            timeMultiplier = newValue;
         }
 
         private void Update()
@@ -130,13 +154,27 @@ namespace TimeSlider
             currentIndex -= (int)Mathf.Sign(scrollDelta); // Scroll up -> kleinerer Index -> gröber
 
             currentIndex = Mathf.Clamp(currentIndex, 0, _sliderSteps.Count - 1);
-            _currentZoom = _sliderSteps[currentIndex];
+            ChangeZoom(currentIndex);
+        }
+
+        public void ChangeZoomButton(int val)
+        {
+            int currentIndex = _sliderSteps.IndexOf(_currentZoom);
+            currentIndex += val;
+            currentIndex = Math.Clamp(currentIndex, 0, _sliderSteps.Count - 1);
+            ChangeZoom(currentIndex);
+        }
+
+        private void ChangeZoom(int index)
+        {
+            _currentZoom = _sliderSteps[index];
             dateSlider.value = _currentZoom.ToSliderValue(CurrentSimulatedTime);
             UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
+            TimeMultiplicatorInput.text = timeMultiplier.ToString(CultureInfo.CurrentCulture);
             dateSlider.minValue = _currentZoom.Min;
             dateSlider.maxValue = _currentZoom.Max;
             UpdateDateTexts();
