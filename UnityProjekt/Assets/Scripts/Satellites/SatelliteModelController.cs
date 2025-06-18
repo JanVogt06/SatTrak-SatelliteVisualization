@@ -117,7 +117,7 @@ namespace Satellites
             _spaceSphere.transform.localPosition = Vector3.zero;
 
             // ISS größer machen
-            float size = _isISS ? 50f : 2f;
+            float size = _isISS ? 50f : 5f;
             _spaceSphere.transform.localScale = Vector3.one * size;
 
             // Entferne Collider für Performance
