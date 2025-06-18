@@ -7,6 +7,7 @@ using TMPro;
 using Satellites;
 using CesiumForUnity;
 using Satellites.SGP.Propagation;
+using UnityEngine.Serialization;
 
 public class SearchPanelController : MonoBehaviour
 {
@@ -45,6 +46,7 @@ public class SearchPanelController : MonoBehaviour
     [Header("Info Panel")]
     public GameObject infoPanel;
     public TextMeshProUGUI infoText;
+    public Toggle OrbitToggle;
 
     void Start()
     {
@@ -72,6 +74,7 @@ public class SearchPanelController : MonoBehaviour
 
     private void ShowSatelliteInfo(Satellite satellite)
     {
+        OrbitToggle.isOn = satellite.orbit.shouldCalculateOrbit;
         if (satellite == null)
         {
             infoPanel.SetActive(false);
@@ -191,13 +194,19 @@ public class SearchPanelController : MonoBehaviour
     {
         isTracking = false;
         trackedSatellite = null;
+        infoPanel.SetActive(false);
+    }
+
+    public void ToggleOrbit(bool visible)
+    {
+        trackedSatellite.orbit.shouldCalculateOrbit = visible;
     }
 
     private Vector3 camVelocity = Vector3.zero;
     public float followSmoothTime = 0.3f;
     public float lookSmoothSpeed = 3f;
 
-    void Update()
+    void Update() 
     {
         if (isTracking && trackedSatellite != null)
         {
