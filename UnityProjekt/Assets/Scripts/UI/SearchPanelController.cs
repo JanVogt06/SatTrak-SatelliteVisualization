@@ -8,6 +8,7 @@ using Satellites;
 using CesiumForUnity;
 using Satellites.SGP.Propagation;
 using UnityEngine.Serialization;
+using Unity.Mathematics;          // notwendig für double4x4, math
 
 public class SearchPanelController : MonoBehaviour
 {
@@ -48,6 +49,18 @@ public class SearchPanelController : MonoBehaviour
     public TextMeshProUGUI infoText;
     public Toggle OrbitToggle;
 
+    [Header("Zoom-Slider-Einstellungen")]
+    public Slider zoomSlider;                 
+    public float minDistance;      
+    public float maxDistance;
+
+    private float defaultSliderPos = 0.03f;           
+
+    private float _targetDistance;                  
+    private float _currentVelocity;
+
+    private Satellite _highlightedSatellite;
+
     void Start()
     {
         if (satelliteManager == null)
@@ -71,6 +84,40 @@ public class SearchPanelController : MonoBehaviour
 
         searchInputField.onValueChanged.AddListener(ApplySearchFilter);
     }
+
+    private void Awake()
+    {
+        zoomSlider.minValue = 0f;
+        zoomSlider.maxValue = 1f;
+        zoomSlider.wholeNumbers = false;
+        zoomSlider.value = defaultSliderPos;
+        zoomSlider.onValueChanged.AddListener(UpdateCameraDistance);
+
+        _targetDistance = Mathf.Lerp(minDistance, maxDistance, defaultSliderPos);
+        cameraDistanceOffset = _targetDistance;
+    }
+
+    private void UpdateCameraDistance(float t)
+    {
+        _targetDistance = Mathf.Lerp(minDistance, maxDistance, t);
+
+        if (isTracking && trackedSatellite != null)
+            trackedSatellite.modelController.SetHighlight(t >= 0.4f);
+    }
+
+
+    public void ResetZoomSlider()
+    {
+        zoomSlider.SetValueWithoutNotify(defaultSliderPos);          
+        _targetDistance = Mathf.Lerp(minDistance, maxDistance, defaultSliderPos);
+        cameraDistanceOffset = _targetDistance;
+        _currentVelocity = 0f;
+
+        if (trackedSatellite != null)
+            trackedSatellite.modelController.SetHighlight(false);
+    }
+
+
 
     private void ShowSatelliteInfo(Satellite satellite)
     {
@@ -169,6 +216,9 @@ public class SearchPanelController : MonoBehaviour
     {
         yield return new WaitForSeconds(1.2f);
 
+        if (_highlightedSatellite != null)
+            _highlightedSatellite.modelController.SetHighlight(false);
+
         trackedSatellite = satelliteManager.GetSatelliteByName(itemName);
         if (trackedSatellite == null)
         {
@@ -187,12 +237,21 @@ public class SearchPanelController : MonoBehaviour
 
         ShowSatelliteInfo(trackedSatellite);
         isTracking = true;
+
+        ResetZoomSlider();
+
+        trackedSatellite.modelController.SetHighlight(true);
+        _highlightedSatellite = trackedSatellite;
     }
 
 
     public void StopTracking()
     {
         isTracking = false;
+        if (_highlightedSatellite != null)
+            _highlightedSatellite.modelController.SetHighlight(false);
+        _highlightedSatellite = null;
+
         trackedSatellite = null;
         infoPanel.SetActive(false);
     }
@@ -202,31 +261,38 @@ public class SearchPanelController : MonoBehaviour
         trackedSatellite.orbit.shouldCalculateOrbit = visible;
     }
 
-    private Vector3 camVelocity = Vector3.zero;
-    public float followSmoothTime = 0.3f;
-    public float lookSmoothSpeed = 3f;
-
-    void Update() 
+    private void LateUpdate()
     {
-        if (isTracking && trackedSatellite != null)
-        {
-            Vector3 satPos = trackedSatellite.transform.position;
-            Vector3 directionToSat = (satPos - Vector3.zero).normalized;
-            Vector3 targetCamPos = satPos + directionToSat * cameraDistanceOffset;
+        if (!isTracking || trackedSatellite == null) return;
 
-            Camera.main.transform.position = Vector3.SmoothDamp(
-                Camera.main.transform.position,
-                targetCamPos,
-                ref camVelocity,
-                followSmoothTime
-            );
+        // 1) Positionen
+        Vector3 satPos = trackedSatellite.transform.position;
 
-            Quaternion targetRotation = Quaternion.LookRotation(satPos - Camera.main.transform.position);
-            Camera.main.transform.rotation = Quaternion.Slerp(
-                Camera.main.transform.rotation,
-                targetRotation,
-                Time.deltaTime * lookSmoothSpeed
-            );
-        }
+        double4x4 ecefToLocal = georeference.ecefToLocalMatrix;
+        double3 earthD = math.transform(ecefToLocal, double3.zero);
+        Vector3 earth = new Vector3((float)earthD.x, (float)earthD.y, (float)earthD.z);
+
+        // 2) Radialvektor Erdmittelpunkt → Satellit
+        Vector3 radial = (satPos - earth).normalized;
+
+        // 3) Kameradistanz weich an Zielwert angleichen
+        cameraDistanceOffset = Mathf.SmoothDamp(
+                                  cameraDistanceOffset,
+                                  _targetDistance,
+                                  ref _currentVelocity,
+                                  0.25f);                     // Zeitkonstante [s]
+
+        // 4) Kameraposition
+        Vector3 camPos = satPos + radial * cameraDistanceOffset;
+        Camera.main.transform.position = camPos;
+
+        // 5) Up-Vektor robust bestimmen
+        Vector3 up = Vector3.Cross(radial, Vector3.right);
+        if (up.sqrMagnitude < 1e-6f)
+            up = Vector3.Cross(radial, Vector3.forward);
+        up.Normalize();
+
+        // 6) Ausrichtung: Blick auf den Satelliten
+        Camera.main.transform.rotation = Quaternion.LookRotation(satPos - camPos, up);
     }
 }

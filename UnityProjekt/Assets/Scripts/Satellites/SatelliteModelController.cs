@@ -23,6 +23,11 @@ namespace Satellites
 
         private bool _isISS;
 
+        [Header("Highlight")]
+        public Material highlightMaterial;         
+
+        private GameObject _highlightShell;        
+
         void Start()
         {
             CreateSpaceSphere();
@@ -38,6 +43,34 @@ namespace Satellites
             _lastMode = isEarthMode;
             UpdateVisibility();
         }
+
+        public void SetHighlight(bool state)
+        {
+            // bei erstem Aufruf Hülle erzeugen
+            if (_highlightShell == null) CreateHighlightShell();
+            _highlightShell.SetActive(state);
+        }
+
+        private void CreateHighlightShell()
+        {
+            _highlightShell = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _highlightShell.name = "HighlightShell";
+            _highlightShell.transform.SetParent(transform, false);
+            Destroy(_highlightShell.GetComponent<Collider>());
+
+            // fester Durchmesser 10 × 10 × 10
+            _highlightShell.transform.localScale = Vector3.one * 10f;
+
+            var mr = _highlightShell.GetComponent<MeshRenderer>();
+            mr.sharedMaterial = highlightMaterial;
+            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            mr.receiveShadows = false;
+            mr.material.renderQueue = 3100;   // immer im Vordergrund
+
+            _highlightShell.SetActive(false);
+        }
+
+
 
         public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, bool isISS = false, GameObject issModelPrefab = null)
         {

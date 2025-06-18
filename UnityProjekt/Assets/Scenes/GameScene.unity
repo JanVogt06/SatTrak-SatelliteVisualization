@@ -2931,8 +2931,9 @@ MonoBehaviour:
   infoPanel: {fileID: 387268836}
   infoText: {fileID: 387624896}
   OrbitToggle: {fileID: 1996242179}
-  followSmoothTime: 0.3
-  lookSmoothSpeed: 3
+  zoomSlider: {fileID: 1429009996}
+  minDistance: 50000
+  maxDistance: 5000000
 --- !u!1 &468674227
 GameObject:
   m_ObjectHideFlags: 0
@@ -9529,10 +9530,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1451684753}
   m_HandleRect: {fileID: 562066225}
   m_Direction: 1
-  m_MinValue: 30
-  m_MaxValue: 68
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 49
+  m_Value: 0.07
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -12236,6 +12237,7 @@ MonoBehaviour:
   zoomController: {fileID: 1952269538}
   fovThreshold: 70
   sphereSize: 20000
+  highlightMaterial: {fileID: 2100000, guid: d480b090f8d8fb84e8fbe44d91cbb991, type: 2}
 --- !u!114 &1888826455
 MonoBehaviour:
   m_ObjectHideFlags: 0

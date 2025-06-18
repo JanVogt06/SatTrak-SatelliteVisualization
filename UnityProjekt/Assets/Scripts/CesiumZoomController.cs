@@ -54,8 +54,6 @@ public class CesiumZoomController : MonoBehaviour
     private void Start()
     {
         zoomSlider.gameObject.SetActive(false);
-        zoomSlider.onValueChanged.AddListener(OnSliderZoomChanged);
-        zoomSlider.value = targetCamera.fieldOfView;
 
         insideSat = false;
         
@@ -99,21 +97,6 @@ public class CesiumZoomController : MonoBehaviour
         zoomRoutine = StartCoroutine(ZoomToPosition(earthView, Quaternion.Euler(earthRotation), false, 2.3f));
         StartCoroutine(AnimateFOV(spaceFov, earthFov));
     }
-
-    public void ResetSlider()
-    {
-        targetCamera.fieldOfView = 49;
-        zoomSlider.value = 49;
-    }
-
-    public void OnSliderZoomChanged(float value)
-    {
-        if (insideSat)
-        {
-            targetCamera.fieldOfView = value;
-        }
-    }
-
 
     public void SnapToSatellit(Satellite view)
     {
@@ -224,7 +207,7 @@ public class CesiumZoomController : MonoBehaviour
 
         zoomSlider.gameObject.SetActive(true);
 
-        ResetSlider();
+        searchPanelController.ResetZoomSlider();
 
         StartCoroutine(FadeFromBlack());
 
