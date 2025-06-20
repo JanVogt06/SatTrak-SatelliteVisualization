@@ -118,7 +118,7 @@ public class FreeFlyCamera : MonoBehaviour
 
         crosshairImage.gameObject.SetActive(false);
 
-        modeText.text = "Mode: Inspector";
+        modeText.text = "Inspector (Esc to switch)";
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
 
@@ -136,12 +136,12 @@ public class FreeFlyCamera : MonoBehaviour
             _cursorLocked = !_cursorLocked;
             if (_cursorLocked == false)
             {
-                modeText.text = "Mode: Inspector";
+                modeText.text = "Inspector (Esc to switch)";
                 crosshairImage.gameObject.SetActive(false);
             }
             else
             {
-                modeText.text = "Mode: Camera";
+                modeText.text = "Camera (Esc to switch)";
                 crosshairImage.gameObject.SetActive(true);
             }
             Cursor.lockState = _cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;

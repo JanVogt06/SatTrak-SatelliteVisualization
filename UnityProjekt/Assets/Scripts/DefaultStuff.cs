@@ -18,7 +18,7 @@ public class DefaultStuff : MonoBehaviour
         if (timer >= 0.2f)
         {
             float fps = 1f / Time.unscaledDeltaTime;
-            fpsText.text = $"FPS: {Mathf.RoundToInt(fps)}";
+            fpsText.text = $"{Mathf.RoundToInt(fps)} FPS";
             timer = 0;
         }
     }
@@ -45,10 +45,16 @@ public class DefaultStuff : MonoBehaviour
 
     public void PlayBackAnimation()
     {
-        ButtonOpenObject.SetActive(true);
         if (uiAnimator != null)
         {
             uiAnimator.SetTrigger("Back");
+            StartCoroutine(AnimationDelay());
         }
+    }
+
+    public IEnumerator AnimationDelay()
+    {
+        yield return new WaitForSeconds(0.3f);
+        ButtonOpenObject.SetActive(true);
     }
 }
