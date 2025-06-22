@@ -76,11 +76,11 @@ namespace DoubleSlider.Scripts
 
             if (Mathf.Approximately(Value, 1000))
             {
-                _label.Text = "Unbegrenzt";
+                _label.Text = "Unlimited";
             }
             else
             {
-                _label.Text = Value.ToString() + " km";
+                _label.Text = Value.ToString("F1") + " km";
             }
         }
     }

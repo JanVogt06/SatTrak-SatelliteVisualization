@@ -66,6 +66,9 @@ public class SearchPanelController : MonoBehaviour
     public Sprite normalCityButton;
     public Sprite disabledCityButton;
 
+    public GameObject theUI1;
+    public GameObject theUI2;
+
     void Start()
     {
         if (satelliteManager == null)
@@ -92,6 +95,9 @@ public class SearchPanelController : MonoBehaviour
 
     private void Awake()
     {
+        theUI1.SetActive(true);
+        theUI2.SetActive(true);
+
         zoomSlider.minValue = 0f;
         zoomSlider.maxValue = 1f;
         zoomSlider.wholeNumbers = false;

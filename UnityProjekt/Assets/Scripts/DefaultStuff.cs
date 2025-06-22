@@ -12,6 +12,10 @@ public class DefaultStuff : MonoBehaviour
 
     public Animator uiAnimator;
 
+    public Animator uiOneAnimator;
+
+    public Animator uiTwoAnimator;
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -49,6 +53,46 @@ public class DefaultStuff : MonoBehaviour
         {
             uiAnimator.SetTrigger("Back");
             StartCoroutine(AnimationDelay());
+        }
+    }
+
+    public void PlayUIOneOUT()
+    {
+        StartCoroutine(UIOneToTwo());
+    }
+
+    public void PlayUITwoOUT()
+    {
+        StartCoroutine(UITwoToOne());
+    }
+
+    public IEnumerator UIOneToTwo()
+    {
+        if (uiOneAnimator != null)
+        {
+            uiOneAnimator.SetTrigger("GoOut");
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        if (uiTwoAnimator != null)
+        {
+            uiTwoAnimator.SetTrigger("GetIn");
+        }
+    }
+
+    public IEnumerator UITwoToOne()
+    {
+        if (uiTwoAnimator != null)
+        {
+            uiTwoAnimator.SetTrigger("GetOut");
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        if (uiOneAnimator != null)
+        {
+            uiOneAnimator.SetTrigger("GoIn");
         }
     }
 
