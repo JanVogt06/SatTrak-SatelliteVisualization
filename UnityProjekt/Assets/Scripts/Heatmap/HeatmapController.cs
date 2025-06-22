@@ -15,6 +15,8 @@ namespace Heatmap
         public Toggle DayNightSystemToggle;
         
         public bool isVisible = false;
+
+        public GameObject heatMapHelper;
         
         private Mesh _mesh;
         private MeshRenderer _meshRenderer;
@@ -23,6 +25,7 @@ namespace Heatmap
 
         private void Start()
         {
+            heatMapHelper.SetActive(false);
             _mesh = GetComponent<MeshFilter>().mesh;
             _meshRenderer = GetComponent<MeshRenderer>();
             _meshRenderer.enabled = isVisible;
@@ -30,11 +33,9 @@ namespace Heatmap
 
         public void ChangeVisibility(bool value)
         {
+            heatMapHelper.SetActive(value);
             isVisible = value;
             _meshRenderer.enabled = value;
-            EarthDayNightOverlay.gameObject.SetActive(!value);
-            DayNightSystem.gameObject.SetActive(!value);
-            DayNightSystemToggle.isOn = !value;
         }
 
         public void UpdateHeatmap(NativeArray<Vector3> satellitePositions)

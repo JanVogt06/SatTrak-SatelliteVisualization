@@ -50,6 +50,11 @@ public class CesiumZoomController : MonoBehaviour
     
     private DayNightSystem dayNightSystem;
 
+    public float nearEarth = 1f;
+    public float nearSpace = 100f;
+
+    public Sprite spaceButtonNormal;
+    public Sprite spaceButtonDisabled;
 
     private void Start()
     {
@@ -69,6 +74,7 @@ public class CesiumZoomController : MonoBehaviour
         
         search.SetActive(true);
         spaceButton.interactable = false;
+        spaceButton.GetComponent<Image>().sprite = spaceButtonDisabled;
         ZoomToSpace();
     }
 
@@ -80,7 +86,11 @@ public class CesiumZoomController : MonoBehaviour
             directionalLight.intensity = intensity;
         }
     }
-    
+
+    private void ApplyNearClip(bool space) =>
+    targetCamera.nearClipPlane = space ? nearSpace : nearEarth;
+
+
     private void SetLightRotation(Quaternion rotation)
     {
         if (!useDayNightSystem || dayNightSystem == null)
@@ -96,6 +106,9 @@ public class CesiumZoomController : MonoBehaviour
         zoomRoutine = null;
         zoomRoutine = StartCoroutine(ZoomToPosition(earthView, Quaternion.Euler(earthRotation), false, 2.3f));
         StartCoroutine(AnimateFOV(spaceFov, earthFov));
+
+        freeFlyCameraScript.cameraModeAllowed = true;
+        freeFlyCameraScript.UpdateModeUI();
     }
 
     public void SnapToSatellit(Satellite view)
@@ -110,7 +123,13 @@ public class CesiumZoomController : MonoBehaviour
 
     public void ZoomToSpace()
     {
+        ApplyNearClip(true);
+
+        freeFlyCameraScript.cameraModeAllowed = false;
+        freeFlyCameraScript.UpdateModeUI();
+
         spaceButton.interactable = false;
+        spaceButton.GetComponent<Image>().sprite = spaceButtonDisabled;
 
         if (insideSat)
         {
@@ -143,6 +162,7 @@ public class CesiumZoomController : MonoBehaviour
 
         search.SetActive(false);
         spaceButton.interactable = false;
+        spaceButton.GetComponent<Image>().sprite = spaceButtonDisabled;
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
         zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation), true, 0.5f));
         georeference.latitude = 51.21796;
@@ -200,7 +220,7 @@ public class CesiumZoomController : MonoBehaviour
 
         search.SetActive(true);
 
-        SetLightIntensity(1.5f); // GEÄNDERT: Helper-Methode verwenden
+        SetLightIntensity(1.5f); 
         insideSat = true;
 
         yield return new WaitForSeconds(1f);
@@ -209,12 +229,15 @@ public class CesiumZoomController : MonoBehaviour
 
         searchPanelController.ResetZoomSlider();
 
-        StartCoroutine(FadeFromBlack());
+        yield return FadeFromBlack();
+        ApplyNearClip(true);
 
         if (!space)
         {
             StartCoroutine(SpaceButton(space));
         }
+
+        SetCameraModeAbility(false);       
     }
 
     public IEnumerator SpaceButton(bool space)
@@ -222,6 +245,7 @@ public class CesiumZoomController : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         spaceButton.interactable = true;
+        spaceButton.GetComponent<Image>().sprite = spaceButtonNormal;
     }
 
     void LateUpdate()
@@ -269,6 +293,7 @@ public class CesiumZoomController : MonoBehaviour
         if (!space)
         {
             spaceButton.interactable = true;
+            spaceButton.GetComponent<Image>().sprite = spaceButtonNormal;
             insideSat = false;
             SetLightIntensity(1.3f); // GEÄNDERT: Helper-Methode verwenden
             SetLightRotation(Quaternion.Euler(-90f, 0f, 0f)); // GEÄNDERT: Helper-Methode verwenden
@@ -280,7 +305,13 @@ public class CesiumZoomController : MonoBehaviour
             SetLightRotation(Quaternion.Euler(90f, 0f, 0f)); // GEÄNDERT: Helper-Methode verwenden
         }
 
+        ApplyNearClip(space);
+
         search.SetActive(true);
+
+        SetCameraModeAbility(!space);  
+        
+
     }
 
     IEnumerator AnimateFOV(float from, float to)
@@ -330,6 +361,12 @@ public class CesiumZoomController : MonoBehaviour
         }
         c.a = 0f;
         fadePanel.color = c;
+    }
+
+    private void SetCameraModeAbility(bool allowed)
+    {
+        freeFlyCameraScript.cameraModeAllowed = allowed;
+        if (!allowed) freeFlyCameraScript.ForceInspectorMode();
     }
 
 }

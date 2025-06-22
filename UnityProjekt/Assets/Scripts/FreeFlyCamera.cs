@@ -15,9 +15,6 @@ public class FreeFlyCamera : MonoBehaviour
     [Tooltip("The script is currently active")]
     private bool _active = true;
 
-    [SerializeField]
-    private TextMeshProUGUI modeText;
-
     [Space]
 
     [SerializeField]
@@ -97,6 +94,24 @@ public class FreeFlyCamera : MonoBehaviour
     [SerializeField] private float maxSelectionAngle = 0.2f;
     [SerializeField] private float maxDistance = 1000000f;
 
+    public Button cameraButton;
+    public Button inspectorButton;
+    public Image cameraIcon;
+    public Image inspectorIcon;
+    public Sprite cameraNormalSprite;
+    public Sprite cameraUnavailableSprite;
+    public Sprite inspectorNormalSprite;
+    public Sprite inspectorUnavailableSprite;
+
+
+
+    public Color activeColor = new Color(1f, 0.7058824f, 0f, 1f);
+    public Color inactiveColor = Color.white;
+
+    public bool cameraModeAllowed = true;
+    public bool inspectorModeAllowed = true;
+
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -118,13 +133,16 @@ public class FreeFlyCamera : MonoBehaviour
 
         crosshairImage.gameObject.SetActive(false);
 
-        modeText.text = "Inspector (Esc to switch)";
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
 
         _cursorLocked = false;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        cameraButton.onClick.AddListener(() => TrySetMode(true));
+        inspectorButton.onClick.AddListener(() => TrySetMode(false));
+        UpdateModeUI();
     }
 
     private bool _cursorLocked = true;
@@ -133,21 +151,40 @@ public class FreeFlyCamera : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            _cursorLocked = !_cursorLocked;
-            if (_cursorLocked == false)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                modeText.text = "Inspector (Esc to switch)";
-                crosshairImage.gameObject.SetActive(false);
+                TrySetMode(!_cursorLocked);
             }
-            else
-            {
-                modeText.text = "Camera (Esc to switch)";
-                crosshairImage.gameObject.SetActive(true);
-            }
-            Cursor.lockState = _cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !_cursorLocked;
         }
     }
+
+    public void TrySetMode(bool cameraWanted)
+    {
+        if (cameraWanted && !cameraModeAllowed) return;
+        if (!cameraWanted && !inspectorModeAllowed) return;
+
+        _cursorLocked = cameraWanted;
+        Cursor.lockState = _cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = !_cursorLocked;
+        crosshairImage.gameObject.SetActive(_cursorLocked);
+        UpdateModeUI();
+    }
+
+    public void ForceInspectorMode() => TrySetMode(false);
+
+    public void UpdateModeUI()
+    {
+        cameraIcon.sprite = cameraModeAllowed ? cameraNormalSprite : cameraUnavailableSprite;
+        inspectorIcon.sprite = inspectorModeAllowed ? inspectorNormalSprite : inspectorUnavailableSprite;
+
+        cameraButton.interactable = cameraModeAllowed;
+        inspectorButton.interactable = inspectorModeAllowed;
+
+        cameraIcon.color = _cursorLocked ? activeColor : inactiveColor;
+        inspectorIcon.color = !_cursorLocked ? activeColor : inactiveColor;
+    }
+
+
 
     private Satellite FindNearestLookingAtSatellite()
     {

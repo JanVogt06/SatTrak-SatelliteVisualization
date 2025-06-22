@@ -9,6 +9,8 @@ public class SatelliteShowHide : MonoBehaviour
     public Toggle showHide;
     public GameObject satelliteParent;
 
+    public SearchPanelController searchPanelController;
+
     private void Start()
     {
         showHide.isOn = true;
@@ -18,6 +20,17 @@ public class SatelliteShowHide : MonoBehaviour
     public void ShowHideSatellites()
     {
         bool state = showHide.isOn;
+
+        if (state == true)
+        {
+            searchPanelController.openButton.interactable = true;
+            searchPanelController.openButton.GetComponent<Image>().sprite = searchPanelController.normalSatButton;
+        }
+        else
+        {
+            searchPanelController.openButton.interactable = false;
+            searchPanelController.openButton.GetComponent<Image>().sprite = searchPanelController.disabledSatButton;
+        }
 
         // Sichtbarkeit
         satelliteParent.SetActive(state);

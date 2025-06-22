@@ -151,7 +151,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
             georeference.latitude = entry.lat; 
             georeference.longitude = entry.lon;
             georeference.height = 400;
-            zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 800));
+            zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 1000));
             yield break;
         }
 
@@ -161,7 +161,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         georeference.latitude = entry.lat;
         georeference.longitude = entry.lon;
         georeference.height = 400;
-        zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 800));
+        zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 1000));
     }
 
     private void ClearSuggestions()

@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace TimeSlider
 {
@@ -15,7 +16,7 @@ namespace TimeSlider
         public TMP_Text maxDateText;
         public TMP_Text currentDateText;
         public TMP_Text zoomLevelText;
-        public CanvasGroup Panel;
+        public GameObject myPanel;
         public GameObject OpenSettings;
         public TMP_InputField TimeMultiplicatorInput;
 
@@ -41,6 +42,7 @@ namespace TimeSlider
 
         private void Start()
         {
+            myPanel.SetActive(false);
             _currentZoom = _sliderSteps[0];
             var eventTrigger = dateSlider.gameObject.AddComponent<EventTrigger>();
             
@@ -63,11 +65,14 @@ namespace TimeSlider
 
         public void HideOrShow()
         {
-            var visible = !Panel.interactable;
-            Panel.alpha = visible ? 1f : 0f;
-            Panel.interactable = visible;     // Benutzerinteraktionen aktiv
-            Panel.blocksRaycasts = visible;   // Blockiert weiterhin Klicks, wenn sichtbar
-            OpenSettings.SetActive(!visible);
+            if(myPanel.activeInHierarchy)
+            {
+                myPanel.SetActive(false);
+            }
+            else
+            {
+                myPanel.SetActive(true);
+            }
         }
 
         private void OnBeginDrag()

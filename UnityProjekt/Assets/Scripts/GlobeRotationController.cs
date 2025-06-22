@@ -1,6 +1,7 @@
 ﻿using CesiumForUnity;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GlobeRotationController : MonoBehaviour
 {
@@ -41,6 +42,13 @@ public class GlobeRotationController : MonoBehaviour
         freeFlyCamera.enabled = !spaceMode;
         if (!spaceMode)
             return;
+
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            dragging = false;         
+            inertia = Vector2.zero;   
+            return;                   
+        }
 
         if (currentTarget != null)
             pivot = currentTarget.position;

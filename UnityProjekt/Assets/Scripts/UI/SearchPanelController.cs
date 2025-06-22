@@ -61,6 +61,11 @@ public class SearchPanelController : MonoBehaviour
 
     private Satellite _highlightedSatellite;
 
+    public Sprite normalSatButton;
+    public Sprite disabledSatButton;
+    public Sprite normalCityButton;
+    public Sprite disabledCityButton;
+
     void Start()
     {
         if (satelliteManager == null)
