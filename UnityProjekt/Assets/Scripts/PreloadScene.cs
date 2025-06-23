@@ -8,72 +8,65 @@ using UnityEngine.UI;
 public class PreloadScene : MonoBehaviour
 {
     [Header("Szenen & UI")]
-    public List<string> scenesToPreload;
-    public string mainMenuScene = "MainMenu";
-    public Slider loadingSlider;
-    public TextMeshProUGUI mytext;
+    [SerializeField] private List<string> scenesToPreload;
+    [SerializeField] private string mainMenuScene = "MainMenu";
+    [SerializeField] private Slider loadingSlider;
+    [SerializeField] private TextMeshProUGUI progressText;
+
+    private const float smoothSpeed = 0.5f; // Annäherungsgeschwindigkeit des Sliders
 
     private void Start()
     {
-        StartCoroutine(PreloadAllScenes());
+        Application.backgroundLoadingPriority = ThreadPriority.Low;
+        StartCoroutine(PreloadSequentially());
     }
 
-    IEnumerator PreloadAllScenes()
+    private IEnumerator PreloadSequentially()
     {
-        float totalProgress = 0f;
-        int scenesCount = scenesToPreload.Count;
+        int sceneCount = scenesToPreload.Count;
+        float displayedProgress = 0f;
 
-        // Alle Szenen asynchron laden, aber nicht aktivieren
-        List<AsyncOperation> operations = new();
-
-        foreach (string sceneName in scenesToPreload)
+        for (int i = 0; i < sceneCount; i++)
         {
-            AsyncOperation op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            AsyncOperation op = SceneManager.LoadSceneAsync(scenesToPreload[i], LoadSceneMode.Additive);
             op.allowSceneActivation = false;
-            operations.Add(op);
-        }
 
-        // Ladebalken aktualisieren
-        while (true)
-        {
-            float sumProgress = 0f;
+            // Fortschritt hochrechnen, bis die Szene bereit ist (Unity liefert max. 0.9f)
+            while (op.progress < 0.9f)
+            {
+                float targetProgress = (i + op.progress) / sceneCount;
+                displayedProgress = Mathf.MoveTowards(displayedProgress, targetProgress, smoothSpeed * Time.deltaTime);
 
-            foreach (var op in operations)
-                sumProgress += Mathf.Clamp01(op.progress / 0.9f); // max. 0.9
+                UpdateUI(displayedProgress);
+                yield return null;
+            }
 
-            float average = sumProgress / scenesCount;
-            loadingSlider.value = average;
-            mytext.text = $"{Mathf.RoundToInt(average * 100)}%";
-
-            if (average >= 0.99f)
-                break;
-
-            yield return null;
-        }
-
-        // Kurze Pause für Eindruck von "100%"
-        loadingSlider.value = 1f;
-        mytext.text = "100%";
-        yield return new WaitForSeconds(0.5f);
-
-        // Szenen aktivieren (flackert nicht, weil sie sofort entladen werden)
-        foreach (var op in operations)
+            // Szene aktivieren, danach Abschluss abwarten
             op.allowSceneActivation = true;
-
-        // Warten, bis alle Szenen aktiv wurden
-        foreach (var op in operations)
-        {
             while (!op.isDone)
                 yield return null;
         }
 
-        // Direkt entladen – keine visuelle Aktivierung sichtbar
-        foreach (string scene in scenesToPreload)
+        // Letzten Rest auf 1.0f glätten
+        while (displayedProgress < 1f)
         {
-            yield return SceneManager.UnloadSceneAsync(scene);
+            displayedProgress = Mathf.MoveTowards(displayedProgress, 1f, smoothSpeed * Time.deltaTime);
+            UpdateUI(displayedProgress);
+            yield return null;
         }
 
-        // Hauptmenü starten
+        yield return new WaitForSeconds(2.3f); // kurzer Moment bei 100 %
+
+        // Geladene Szenen unmittelbar entladen (nur Assets bleiben im Speicher)
+        foreach (string scene in scenesToPreload)
+            yield return SceneManager.UnloadSceneAsync(scene);
+
         SceneManager.LoadScene(mainMenuScene);
+    }
+
+    private void UpdateUI(float progress)
+    {
+        loadingSlider.value = progress;
+        progressText.text = $"{Mathf.RoundToInt(progress * 100f)}%";
     }
 }
