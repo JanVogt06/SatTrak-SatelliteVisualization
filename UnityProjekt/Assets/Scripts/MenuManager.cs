@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -22,7 +23,6 @@ public class MenuManager : MonoBehaviour
     private Resolution[] resolutions;
     private List<string> resolutionOptions = new();
     private int currentResolutionIndex = 0;
-
 
     private MusicManager musicManager => MusicManager.Instance;
 
@@ -80,6 +80,14 @@ public class MenuManager : MonoBehaviour
         creditsMenu.SetActive(false);
     }
 
+    public void OpenMainMenuFromCredits()
+    {
+        settingsMenu.SetActive(false);
+        creditsMenu.SetActive(false);
+
+        StartCoroutine(OpenMainMenuDelay());
+    }
+
     public void OpenSettingsMenu()
     {
         mainMenu.SetActive(false);
@@ -91,8 +99,20 @@ public class MenuManager : MonoBehaviour
     public void OpenCreditsMenu()
     {
         mainMenu.SetActive(false);
-        creditsMenu.SetActive(true);
         settingsMenu.SetActive(false);
+        StartCoroutine(OpenCreditsDelay());
+    }
+
+    public IEnumerator OpenCreditsDelay()
+    {
+        yield return new WaitForSeconds(4f);
+        creditsMenu.SetActive(true);
+    }
+
+    public IEnumerator OpenMainMenuDelay()
+    {
+        yield return new WaitForSeconds(4f);
+        mainMenu.SetActive(true);
     }
 
     void InitializeQualityDropdown()
