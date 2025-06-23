@@ -194,7 +194,7 @@ namespace TimeSlider
 
         private void UpdateCurrentDateText()
         {
-            currentDateText.text = CurrentSimulatedTime.ToString("HH:mm:ss dd.MM.yyyy");
+            currentDateText.text = CurrentSimulatedTime.ToString("HH:mm:ss \ndd.MM.yyyy");
         }
     }
 }
