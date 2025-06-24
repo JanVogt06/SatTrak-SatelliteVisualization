@@ -5,7 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace TimeSlider
 {
@@ -16,9 +15,8 @@ namespace TimeSlider
         public TMP_Text maxDateText;
         public TMP_Text currentDateText;
         public TMP_Text zoomLevelText;
-        public GameObject myPanel;
-        public GameObject OpenSettings;
         public TMP_InputField TimeMultiplicatorInput;
+        public Slider timeMultiplierSlider;
 
         [Header("Simulation Time Settings")] public float timeMultiplier = 1f;
 
@@ -42,7 +40,6 @@ namespace TimeSlider
 
         private void Start()
         {
-            myPanel.SetActive(false);
             _currentZoom = _sliderSteps[0];
             var eventTrigger = dateSlider.gameObject.AddComponent<EventTrigger>();
             
@@ -61,18 +58,6 @@ namespace TimeSlider
             CurrentSimulatedTime = _simulationStartTime;
 
             UpdateVisuals();
-        }
-
-        public void HideOrShow()
-        {
-            if(myPanel.activeInHierarchy)
-            {
-                myPanel.SetActive(false);
-            }
-            else
-            {
-                myPanel.SetActive(true);
-            }
         }
 
         private void OnBeginDrag()
@@ -115,17 +100,23 @@ namespace TimeSlider
             timeMultiplier = value;
         }
 
+        public void OnTimeMultiplierSliderChanged(float value)
+        {
+            timeMultiplier = value;
+            UpdateTimeMultiplierUI();
+        }
+
         public void OnTimeMultiplierInputValueChanged(string value)
         {
-            if (!int.TryParse(value, out var parsed))
+            if (!float.TryParse(value, out var parsed))
             {
-                parsed = 0;               
+                parsed = 0;
             }
 
-            parsed = Mathf.Clamp(parsed, 0, 100000);
+            parsed = Mathf.Clamp(parsed, 0f, timeMultiplierSlider.maxValue);
 
             timeMultiplier = parsed;
-            TimeMultiplicatorInput.text = parsed.ToString();   
+            UpdateTimeMultiplierUI();
         }
 
         private void Update()
@@ -200,5 +191,26 @@ namespace TimeSlider
         {
             currentDateText.text = CurrentSimulatedTime.ToString("HH:mm:ss \ndd.MM.yyyy");
         }
+
+        public void SetPause()
+        {
+            timeMultiplier = 0;
+            UpdateTimeMultiplierUI();
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
+        public void SetPlay()
+        {
+            timeMultiplier = 1;
+            UpdateTimeMultiplierUI();
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
+        private void UpdateTimeMultiplierUI()
+        {
+            TimeMultiplicatorInput.text = timeMultiplier.ToString(CultureInfo.CurrentCulture);
+            timeMultiplierSlider.value = timeMultiplier;
+        }
+
     }
 }
