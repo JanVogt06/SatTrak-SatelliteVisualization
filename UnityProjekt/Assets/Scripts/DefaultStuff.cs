@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DefaultStuff : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class DefaultStuff : MonoBehaviour
     public Animator uiOneAnimator;
 
     public Animator uiTwoAnimator;
+
+    public SearchPanelController spc;
 
     void Update()
     {
@@ -51,6 +54,10 @@ public class DefaultStuff : MonoBehaviour
     {
         if (uiAnimator != null)
         {
+            spc.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+            spc.ResetSearchPanel();
+            spc.panel.SetActive(false);
+
             uiAnimator.SetTrigger("Back");
             StartCoroutine(AnimationDelay());
         }
@@ -58,6 +65,10 @@ public class DefaultStuff : MonoBehaviour
 
     public void PlayUIOneOUT()
     {
+        spc.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+        spc.ResetSearchPanel();
+        spc.panel.SetActive(false);
+
         StartCoroutine(UIOneToTwo());
     }
 

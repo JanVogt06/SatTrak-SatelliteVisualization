@@ -78,6 +78,8 @@ public class SearchPanelController : MonoBehaviour
 
     private Dictionary<string, double> perigeeByName = new Dictionary<string, double>();
 
+    public Button disableAllOrbitsButton;
+
     private enum FilterMode
     {
         All,
@@ -135,6 +137,8 @@ public class SearchPanelController : MonoBehaviour
 
         lastPageButton.onClick.AddListener(() => ShowPage(totalPages - 1));
         lastPageButton.onClick.AddListener(() => ResetHighlight());
+
+        disableAllOrbitsButton.onClick.AddListener(DisableAllOrbits);
 
         satelliteManager.OnSatellitesLoaded += list =>
         {
@@ -306,25 +310,26 @@ public class SearchPanelController : MonoBehaviour
 
         Orbit orbit = satellite.OrbitPropagator.Orbit;
 
-        string info = $"<b>🛰 Satelliten-Informationen</b>\n\n" +
-                      $"<b>Name:</b> {satellite.gameObject.name}\n" +
-                      $"<b>Epoch:</b> {orbit.Epoch:yyyy-MM-dd HH:mm:ss}\n" +
+        string info =
+                "<b>Satellite Data</b>\n\n" +
+                $"<b>Name:</b> {satellite.gameObject.name}\n" +
+                $"<b>Epoch (UTC):</b> {orbit.Epoch:yyyy-MM-dd HH:mm:ss}\n" +
 
-                      "\n<b>📈 Bahnelemente (SGP4)</b>\n" +
-                      $"<b>Inklination:</b> {orbit.Inclination.Degrees:F4}°\n" +
-                      $"<b>RAAN (Aufsteigender Knoten):</b> {orbit.AscendingNode.Degrees:F4}°\n" +
-                      $"<b>Argument des Perigäums:</b> {orbit.ArgumentPerigee.Degrees:F4}°\n" +
-                      $"<b>Mean Anomaly:</b> {orbit.MeanAnomoly.Degrees:F4}°\n" +
-                      $"<b>Eccentricity:</b> {orbit.Eccentricity:F6}\n" +
-                      $"<b>Mean Motion:</b> {orbit.MeanMotion:F6} rad/min\n" +
-                      $"<b>Recovered Mean Motion:</b> {orbit.RecoveredMeanMotion:F6} rad/min\n" +
+                "\n<b>SGP4 Orbital Elements</b>\n" +
+                $"<b>Inclination:</b> {orbit.Inclination.Degrees:F4}°\n" +
+                $"<b>RAAN:</b> {orbit.AscendingNode.Degrees:F4}°\n" +
+                $"<b>Argument of Perigee:</b> {orbit.ArgumentPerigee.Degrees:F4}°\n" +
+                $"<b>Mean Anomaly:</b> {orbit.MeanAnomoly.Degrees:F4}°\n" +
+                $"<b>Eccentricity:</b> {orbit.Eccentricity:F6}\n" +
+                $"<b>Mean Motion:</b> {orbit.MeanMotion:F6} rad/min\n" +
+                $"<b>Mean Motion (recov.):</b> {orbit.RecoveredMeanMotion:F6} rad/min\n" +
 
-                      $"<b>Halbachse (a):</b> {orbit.SemiMajorAxis:F2} km\n" +
-                      $"<b>Apogäum:</b> {orbit.Apogee:F2} km\n" +
-                      $"<b>Perigäum:</b> {orbit.Perigee:F2} km\n" +
-                      $"<b>Periode:</b> {orbit.Period:F2} min\n" +
+                $"<b>Semi-major Axis:</b> {orbit.SemiMajorAxis:F2} km\n" +
+                $"<b>Apogee:</b> {orbit.Apogee:F2} km\n" +
+                $"<b>Perigee:</b> {orbit.Perigee:F2} km\n" +
+                $"<b>Period:</b> {orbit.Period:F2} min\n" +
 
-                      $"<b>BStar (Drag-Term):</b> {orbit.BStar:E2}\n";
+                $"<b>BStar (drag):</b> {orbit.BStar:E2}\n";
 
         infoText.text = info;
         infoPanel.SetActive(true);
@@ -332,17 +337,15 @@ public class SearchPanelController : MonoBehaviour
 
     private void ApplySearchFilter(string query)
     {
-        /* ─ 1. Non-empty query → always switch to “All satellites” ─ */
         if (!string.IsNullOrWhiteSpace(query))
         {
             if (currentMode != FilterMode.All)
             {
                 currentMode = FilterMode.All;
-                filterDropdown.SetValueWithoutNotify(0);   // dropdown index 0
-                filterDropdown.RefreshShownValue();        // update caption
+                filterDropdown.SetValueWithoutNotify(0);   
+                filterDropdown.RefreshShownValue();        
             }
 
-            /* build filtered list against the full catalogue            */
             filteredSatelliteNames = allSatelliteNames
                 .Where(n => n.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
@@ -354,14 +357,12 @@ public class SearchPanelController : MonoBehaviour
             return;
         }
 
-        /* ─ 2. Empty query → fall back to current dropdown mode ─ */
-        ApplyCurrentFilter();    // this already calls ShowPage(0)
+        ApplyCurrentFilter();    
     }
 
 
     private void ShowPage(int pageIndex)
     {
-        /* ───────────────────── 1. Empty list handling ───────────────────── */
         if (filteredSatelliteNames.Count == 0)
         {
             foreach (Transform child in contentParent)
@@ -375,7 +376,6 @@ public class SearchPanelController : MonoBehaviour
             return;
         }
 
-        /* ───────────────────── 2. Page clamping & navigation ────────────── */
         currentPage = Mathf.Clamp(pageIndex, 0, totalPages - 1);
 
         bool onFirst = currentPage == 0;
@@ -388,11 +388,9 @@ public class SearchPanelController : MonoBehaviour
 
         pageLabel.text = $"Page {currentPage + 1} / {totalPages}";
 
-        /* ───────────────────── 3. Clear old rows ────────────────────────── */
         foreach (Transform child in contentParent)
             Destroy(child.gameObject);
 
-        /* ───────────────────── 4. Build current page ────────────────────── */
         int start = currentPage * itemsPerPage;
         int end = Mathf.Min(start + itemsPerPage, filteredSatelliteNames.Count);
 
@@ -407,16 +405,13 @@ public class SearchPanelController : MonoBehaviour
             TextMeshProUGUI nameTxt = tmps[0];
             TextMeshProUGUI distTxt = tmps[1];
 
-            /* Name and distance */
             nameTxt.text = satName;
             double perigeeKm = sat.OrbitPropagator.Orbit.Perigee;
             distTxt.text = $"{perigeeKm:F0} km";
 
-            /* Click action */
             row.GetComponent<Button>().onClick.AddListener(() => OnItemSelected(satName));
         }
 
-        /* ───────────────────── 5. Force layout update ───────────────────── */
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent);
     }
 
@@ -467,8 +462,7 @@ public class SearchPanelController : MonoBehaviour
 
     public void ResetSearchPanel()
     {
-        /* 1) Dropdown-Auswahl, Suchfeld und Filter zurücksetzen */
-        filterDropdown.SetValueWithoutNotify(0);     // „Alle Satelliten“
+        filterDropdown.SetValueWithoutNotify(0);     
         currentMode = FilterMode.All;
 
         searchInputField.SetTextWithoutNotify(string.Empty);
@@ -478,7 +472,6 @@ public class SearchPanelController : MonoBehaviour
                                 Mathf.CeilToInt((float)filteredSatelliteNames.Count
                                                 / itemsPerPage));
 
-        /* 2) Navigations-Buttons und Seitenanzeige initialisieren */
         currentPage                = 0;
         prevPageButton.interactable = false;
         firstPageButton.interactable = false;
@@ -489,7 +482,6 @@ public class SearchPanelController : MonoBehaviour
 
         pageLabel.text = $"Seite 1 / {totalPages}";
 
-        /* 3) Inhalt neu aufbauen (erste Seite) */
         foreach (Transform child in contentParent)
             Destroy(child.gameObject);
 
@@ -509,18 +501,14 @@ public class SearchPanelController : MonoBehaviour
 
             var btn = row.GetComponent<Button>();
             btn.onClick.AddListener(() => OnItemSelected(name));
-
-            /* Hover-Delegaten bleiben unverändert, da im Prefab registriert */
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent);
 
-        /* 4) Scroll-Position ganz nach oben */
         var scroll = contentParent.GetComponentInParent<ScrollRect>();
         if (scroll != null)
             scroll.verticalNormalizedPosition = 1f;
 
-        /* 5) Anzeige „X Satellites found“ aktualisieren */
         foundSatText.text = $"{allSatelliteNames.Count}";
 
             pageLabel.text = $"Page 1 / {totalPages}";
@@ -547,34 +535,39 @@ public class SearchPanelController : MonoBehaviour
     {
         if (!isTracking || trackedSatellite == null) return;
 
-        // 1) Positionen
         Vector3 satPos = trackedSatellite.transform.position;
 
         double4x4 ecefToLocal = georeference.ecefToLocalMatrix;
         double3 earthD = math.transform(ecefToLocal, double3.zero);
         Vector3 earth = new Vector3((float)earthD.x, (float)earthD.y, (float)earthD.z);
 
-        // 2) Radialvektor Erdmittelpunkt → Satellit
         Vector3 radial = (satPos - earth).normalized;
 
-        // 3) Kameradistanz weich an Zielwert angleichen
         cameraDistanceOffset = Mathf.SmoothDamp(
                                   cameraDistanceOffset,
                                   _targetDistance,
                                   ref _currentVelocity,
-                                  0.25f);                     // Zeitkonstante [s]
+                                  0.25f);                    
 
-        // 4) Kameraposition
         Vector3 camPos = satPos + radial * cameraDistanceOffset;
         Camera.main.transform.position = camPos;
 
-        // 5) Up-Vektor robust bestimmen
         Vector3 up = Vector3.Cross(radial, Vector3.right);
         if (up.sqrMagnitude < 1e-6f)
             up = Vector3.Cross(radial, Vector3.forward);
         up.Normalize();
 
-        // 6) Ausrichtung: Blick auf den Satelliten
         Camera.main.transform.rotation = Quaternion.LookRotation(satPos - camPos, up);
+    }
+
+    public void DisableAllOrbits()
+    {
+        foreach (Satellite sat in satelliteManager.GetAllSatellites())
+            sat.orbit.shouldCalculateOrbit = false;
+
+        if (trackedSatellite != null)
+            OrbitToggle.isOn = trackedSatellite.orbit.shouldCalculateOrbit;
+
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
