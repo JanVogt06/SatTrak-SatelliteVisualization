@@ -90,6 +90,7 @@ namespace TimeSlider
         public void ResetDate()
         {
             SetDate(DateTime.Now);
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void SetDate(DateTime date)
@@ -116,13 +117,15 @@ namespace TimeSlider
 
         public void OnTimeMultiplierInputValueChanged(string value)
         {
-            if (!int.TryParse(value, out int newValue))
+            if (!int.TryParse(value, out var parsed))
             {
-                TimeMultiplicatorInput.text = "0";
-                return;
+                parsed = 0;               
             }
 
-            timeMultiplier = newValue;
+            parsed = Mathf.Clamp(parsed, 0, 100000);
+
+            timeMultiplier = parsed;
+            TimeMultiplicatorInput.text = parsed.ToString();   
         }
 
         private void Update()
@@ -175,6 +178,7 @@ namespace TimeSlider
             _currentZoom = _sliderSteps[index];
             dateSlider.value = _currentZoom.ToSliderValue(CurrentSimulatedTime);
             UpdateVisuals();
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void UpdateVisuals()
@@ -183,7 +187,7 @@ namespace TimeSlider
             dateSlider.minValue = _currentZoom.Min;
             dateSlider.maxValue = _currentZoom.Max;
             UpdateDateTexts();
-            zoomLevelText.text = _currentZoom.Name + ": " + dateSlider.value;
+            zoomLevelText.text = _currentZoom.Name + ": \n" + dateSlider.value;
         }
 
         private void UpdateDateTexts()
