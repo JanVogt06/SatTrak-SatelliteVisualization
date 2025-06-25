@@ -13906,7 +13906,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &1573679628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18018,6 +18018,7 @@ MonoBehaviour:
   fovTransitionDuration: 2.3
   orbitController: {fileID: 1952269539}
   spaceButton: {fileID: 664286998}
+  search: {fileID: 0}
   freeFlyCameraScript: {fileID: 1952269535}
   georeference: {fileID: 1786786860}
   searchPanelController: {fileID: 449546354}
