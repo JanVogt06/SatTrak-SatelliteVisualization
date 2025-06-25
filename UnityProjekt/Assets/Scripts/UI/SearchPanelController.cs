@@ -94,25 +94,7 @@ public class SearchPanelController : MonoBehaviour
     private static readonly string[] FAMOUS_SATELLITES =
     {
         "25544",
-        "TERRA",
-        "AQUA",
-        "TERRASAR-X",
-        "SKYTERRA 1",
-        "LANDSAT 8",
-        "INSAT-3D",
-        "SENTINEL-2A",
-        "JASON-3",
-        "INSAT-3DR",
-        "SENTINEL-2B",
-        "NOAA 20",
-        "BEIDOU-3 G1",
-        "LANDSAT 9",
-        "INSAT-3DS",
-        "ROBUSTA-3A",
-        "28485 SWIFT",
-        "43435 TESS",
-        "37849 SUOMI NPP",
-        "39634 SENTINEL-1A"
+        "20580"
     };
 
     private List<Color> PossibleTrackColors = new List<Color>
