@@ -6,6 +6,9 @@ using UnityEngine.UI;
 using Unity.Mathematics;
 using System.Collections;
 using CesiumForUnity;
+using System.Linq;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class LocationEntry
@@ -25,130 +28,231 @@ public class LocationDatabase
 
 public class GeoNamesSearchFromJSON : MonoBehaviour
 {
+    /* ---------- Inspector-Referenzen ---------- */
     [Header("GeoNames JSON")]
     public TextAsset geoJson;
 
-    [Header("UI")]
-    public TMP_InputField inputField;
-    public RectTransform suggestionPanel;
-    public GameObject suggestionButtonPrefab;
-    public int maxResults = 5;
+    [Header("UI References")]
+    public GameObject panel;
+    public Button openButton;
+    public RectTransform contentParent;
+    public GameObject rowPrefab;
+    public Button nextPageButton;
+    public Button prevPageButton;
+    public Button firstPageButton;
+    public Button lastPageButton;
+    public TextMeshProUGUI pageLabel;
+    public TMP_InputField searchInputField;
+    public TMP_Dropdown filterDropdown;
 
-    [Header("Controllers")]
+    [Header("External References")]
     public CesiumZoomController zoomController;
-
-    private List<LocationEntry> _db;
-    private Dictionary<char, List<LocationEntry>> _group1;
-    private Dictionary<string, List<LocationEntry>> _group2;
-
-    private Stack<GameObject> _buttonPool = new Stack<GameObject>();
-
     public CesiumGeoreference georeference;
 
-    void Awake()
-    {
-        var dbWrap = JsonUtility.FromJson<LocationDatabase>(geoJson.text);
-        _db = dbWrap.entries;
+    [Header("Settings")]
+    public int itemsPerPage = 20;
 
-        foreach (var e in _db)
+    /* ---------- interne Felder ---------- */
+    private readonly Dictionary<string, LocationEntry> _lookup = new();
+
+    private int _currentPage = 0;
+    private int _totalPages = 1;
+
+    public TextMeshProUGUI foundPlacesText;    
+
+    private List<LocationEntry> _nameAsc;
+    private List<LocationEntry> _nameDesc;
+
+    private enum FilterMode
+    {
+        All,
+        Famous,
+        NameAscending,
+        NameDescending
+    }
+
+    private List<LocationEntry> _allLocations = new();
+    private List<LocationEntry> _filtered = new();
+    private List<LocationEntry> _famousList;
+
+    private FilterMode _mode = FilterMode.All;
+
+    private static readonly string[] _famous = {
+    "London","Paris","Berlin","Madrid","Rome","Vienna","Warsaw","Prague","Budapest","Amsterdam",
+    "Brussels","Athens","Stockholm","Copenhagen","Dublin","Lisbon","Oslo","Helsinki","Bucharest","Sofia",
+    "Zagreb","Belgrade","Kyiv","Moscow",
+    "Washington, D.C.","Beijing","Tokyo","New Delhi","Cairo","Riyadh","Mexico City","Brasília",
+    "Buenos Aires","Ottawa","Canberra","Pretoria","Nairobi","Jakarta","Seoul","Bangkok"
+};
+
+    /* ---------- Lebenszyklus ---------- */
+    private void Awake()
+    {
+        var db = JsonUtility.FromJson<LocationDatabase>(geoJson.text);
+        _allLocations = db.entries;
+
+        foreach (var e in _allLocations)
+        {
             e.nameLower = e.name.ToLowerInvariant();
+            _lookup[e.name] = e;
+        }
 
-        _group1 = new Dictionary<char, List<LocationEntry>>();
-        _group2 = new Dictionary<string, List<LocationEntry>>();
-        foreach (var e in _db)
+        _nameAsc = _allLocations.OrderBy(l => l.nameLower).ToList();
+        _nameDesc = _nameAsc.AsEnumerable().Reverse().ToList();
+
+        _filtered = new List<LocationEntry>(_allLocations);  
+        _totalPages = Mathf.Max(1, Mathf.CeilToInt((float)_filtered.Count / itemsPerPage));
+
+        var famousHash = new HashSet<string>(_famous, StringComparer.OrdinalIgnoreCase);
+        _famousList = _allLocations.Where(l => famousHash.Contains(l.name)).ToList();
+    }
+
+    private void Start()
+    {
+        panel.SetActive(false);
+        openButton.onClick.AddListener(TogglePanel);
+
+        nextPageButton.onClick.AddListener(() => ShowPage(_currentPage + 1));
+        prevPageButton.onClick.AddListener(() => ShowPage(_currentPage - 1));
+        firstPageButton.onClick.AddListener(() => ShowPage(0));
+        lastPageButton.onClick.AddListener(() => ShowPage(_totalPages - 1));
+
+        searchInputField.onValueChanged.AddListener(OnSearchChanged);
+
+        filterDropdown.ClearOptions();
+        filterDropdown.AddOptions(new List<TMP_Dropdown.OptionData>
+    {
+        new("All"),
+        new("Famous"),
+        new("Name ascending"),
+        new("Name descending")
+    });
+        filterDropdown.onValueChanged.AddListener(idx =>
         {
-            if (string.IsNullOrEmpty(e.nameLower)) continue;
+            _mode = (FilterMode)idx;
+            searchInputField.SetTextWithoutNotify(string.Empty);
+            ApplyModeFilter();
+        });
 
-            char c1 = e.nameLower[0];
-            if (!_group1.TryGetValue(c1, out var list1))
-            {
-                list1 = new List<LocationEntry>();
-                _group1[c1] = list1;
-            }
-            list1.Add(e);
+        ShowPage(0);
+    }
 
-            if (e.nameLower.Length >= 2)
-            {
-                string c2 = e.nameLower.Substring(0, 2);
-                if (!_group2.TryGetValue(c2, out var list2))
-                {
-                    list2 = new List<LocationEntry>();
-                    _group2[c2] = list2;
-                }
-                list2.Add(e);
-            }
+    /* ---------- UI-Callbacks ---------- */
+    private void TogglePanel()
+    {
+        bool open = !panel.activeSelf;
+        panel.SetActive(open);
+
+        openButton.GetComponent<Image>().color =
+            open ? new Color(1f, 0.7059f, 0f, 1f) : new Color(1f, 1f, 1f, 1f);
+
+        if (open)
+        {
+            searchInputField.SetTextWithoutNotify(string.Empty);
+            _mode = FilterMode.All;
+            filterDropdown.SetValueWithoutNotify(0);
+
+            _filtered = _allLocations;
+            _totalPages = Mathf.Max(1, Mathf.CeilToInt((float)_filtered.Count / itemsPerPage));
+            UpdateFoundLabel();
+            ShowPage(0);
         }
     }
 
-    void Start()
+    private void UpdateFoundLabel()
     {
-        inputField.onValueChanged.AddListener(OnTextChanged);
+        if (foundPlacesText != null)
+            foundPlacesText.text = _filtered.Count.ToString();
     }
 
-    private void OnTextChanged(string text)
+    private void OnFilterChanged(int index)
     {
-        ClearSuggestions();
+        _mode = (FilterMode)index;
+        searchInputField.SetTextWithoutNotify(string.Empty);
+        ApplyModeFilter();
+    }
 
-        if (string.IsNullOrWhiteSpace(text))
+    /* ---------- Seitenanzeige ---------- */
+    private void ShowPage(int index)
+    {
+        if (_filtered.Count == 0)
+        {
+            ClearRows();
+            pageLabel.text = "Keine Ergebnisse";
+            prevPageButton.interactable =
+            nextPageButton.interactable =
+            firstPageButton.interactable =
+            lastPageButton.interactable = false;
             return;
-
-        string lower = text.ToLowerInvariant();
-
-        List<LocationEntry> candidates = null;
-        if (lower.Length >= 2 && _group2.TryGetValue(lower.Substring(0, 2), out var g2))
-            candidates = g2;
-        else if (_group1.TryGetValue(lower[0], out var g1))
-            candidates = g1;
-        else
-            return;
-
-        int count = 0;
-        foreach (var entry in candidates)
-        {
-            if (!entry.nameLower.StartsWith(lower))
-                continue;
-
-            var btn = GetPooledButton();
-            btn.transform.SetParent(suggestionPanel, false);
-            btn.GetComponentInChildren<TMP_Text>().text = entry.name;
-
-            var uiBtn = btn.GetComponent<Button>();
-            uiBtn.onClick.RemoveAllListeners();
-            uiBtn.onClick.AddListener(() => OnSelect(entry));
-
-            if (++count >= maxResults)
-                break;
         }
+
+        _currentPage = Mathf.Clamp(index, 0, _totalPages - 1);
+
+        /* Buttons aktivieren / deaktivieren */
+        bool first = _currentPage == 0;
+        bool last = _currentPage == _totalPages - 1;
+
+        prevPageButton.interactable = !first;
+        firstPageButton.interactable = !first;
+        nextPageButton.interactable = !last;
+        lastPageButton.interactable = !last;
+
+        pageLabel.text = $"Seite {_currentPage + 1} / {_totalPages}";
+
+        ClearRows();
+
+        int start = _currentPage * itemsPerPage;
+        int end = Mathf.Min(start + itemsPerPage, _filtered.Count);
+
+        for (int i = start; i < end; i++)
+        {
+            LocationEntry entry = _filtered[i];
+
+            GameObject row = Instantiate(rowPrefab, contentParent);
+            TextMeshProUGUI[] tmps = row.GetComponentsInChildren<TextMeshProUGUI>(true);
+
+            tmps[0].text = entry.name;
+            tmps[1].text = $"Lat: {entry.lat:F4}  Lon: {entry.lon:F4}";
+
+            row.GetComponent<Button>().onClick.AddListener(() => OnItemSelected(entry.name));
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent);
     }
 
-    GameObject GetPooledButton()
+    private void ClearRows()
     {
-        if (_buttonPool.Count > 0)
-        {
-            var go = _buttonPool.Pop();
-            go.SetActive(true);
-            return go;
-        }
-        else
-        {
-            return Instantiate(suggestionButtonPrefab);
-        }
+        foreach (Transform child in contentParent)
+            Destroy(child.gameObject);
     }
 
-    private void OnSelect(LocationEntry entry)
+    private void ResetPanel()
     {
-        ClearSuggestions();
-        inputField.text = "";
+        searchInputField.SetTextWithoutNotify(string.Empty);
+        _mode = FilterMode.All;
+        filterDropdown.SetValueWithoutNotify(0);
 
-        StopAllCoroutines();
+        _filtered = new List<LocationEntry>(_allLocations);
+        _totalPages = Mathf.Max(1, Mathf.CeilToInt((float)_filtered.Count / itemsPerPage));
+        ShowPage(0);
+    }
+
+    /* ---------- Selektion ---------- */
+    private void OnItemSelected(string placeName)
+    {
+        LocationEntry entry = _lookup[placeName];
         StartCoroutine(SwitchSpaceThenZoom(entry));
+
+        panel.SetActive(false);
+        openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
     }
 
     private IEnumerator SwitchSpaceThenZoom(LocationEntry entry)
     {
+        /* Zoom-Logik unverändert aus GeoNamesSearchFromJSON */
         if (Mathf.Abs(zoomController.targetCamera.fieldOfView - zoomController.spaceFov) < 0.1f)
         {
-            georeference.latitude = entry.lat; 
+            georeference.latitude = entry.lat;
             georeference.longitude = entry.lon;
             georeference.height = 400;
             zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 1000));
@@ -156,21 +260,68 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         }
 
         zoomController.ZoomToSpace();
-        
         yield return new WaitForSeconds(2f);
+
         georeference.latitude = entry.lat;
         georeference.longitude = entry.lon;
         georeference.height = 400;
         zoomController.ZoomToEarth(new double3(entry.lon, entry.lat, 1000));
     }
 
-    private void ClearSuggestions()
+    private void OnSearchChanged(string query)
     {
-        foreach (Transform child in suggestionPanel)
+        if (string.IsNullOrWhiteSpace(query))
         {
-            var go = child.gameObject;
-            go.SetActive(false);
-            _buttonPool.Push(go);
+            ApplyModeFilter();
+            return;
         }
+
+        if (_mode != FilterMode.All)
+        {
+            _mode = FilterMode.All;
+            filterDropdown.SetValueWithoutNotify(0);
+        }
+
+        string q = query.ToLowerInvariant();
+        _filtered = _allLocations.Where(l => l.nameLower.Contains(q)).ToList();
+
+        _totalPages = Mathf.Max(1, Mathf.CeilToInt((float)_filtered.Count / itemsPerPage));
+        UpdateFoundLabel();
+        ShowPage(0);
+    }
+
+    private void ApplyModeFilter()
+    {
+        switch (_mode)
+        {
+            case FilterMode.All:
+                _filtered = _allLocations;
+                break;
+
+            case FilterMode.Famous:
+                _filtered = _famousList;   
+                break;
+
+            case FilterMode.NameAscending:
+                _filtered = _nameAsc;
+                break;
+
+            case FilterMode.NameDescending:
+                _filtered = _nameDesc;
+                break;
+        }
+
+        _totalPages = Mathf.Max(1, Mathf.CeilToInt((float)_filtered.Count / itemsPerPage));
+        UpdateFoundLabel();
+        ShowPage(0);
+    }
+
+    public void CloseTheWindow()
+    {
+        panel.SetActive(false);
+
+        openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }

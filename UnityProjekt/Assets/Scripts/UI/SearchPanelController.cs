@@ -570,4 +570,13 @@ public class SearchPanelController : MonoBehaviour
 
         EventSystem.current.SetSelectedGameObject(null);
     }
+
+    public void CloseTheWindow()
+    {
+        panel.SetActive(false);
+
+        openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+
+        EventSystem.current.SetSelectedGameObject(null);
+    }
 }

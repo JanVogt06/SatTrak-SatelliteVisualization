@@ -27,8 +27,6 @@ public class CesiumZoomController : MonoBehaviour
 
     public Button spaceButton;
 
-    public GameObject search;
-
     public FreeFlyCamera freeFlyCameraScript;
 
     public CesiumGeoreference georeference;
@@ -72,7 +70,6 @@ public class CesiumZoomController : MonoBehaviour
             directionalLight.intensity = 1.3f;
         }
         
-        search.SetActive(true);
         spaceButton.interactable = false;
         spaceButton.GetComponent<Image>().sprite = spaceButtonDisabled;
         ZoomToSpace();
@@ -101,7 +98,6 @@ public class CesiumZoomController : MonoBehaviour
 
     public void ZoomToEarth(double3 earthView)
     {
-        search.SetActive(false);
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
         zoomRoutine = null;
         zoomRoutine = StartCoroutine(ZoomToPosition(earthView, Quaternion.Euler(earthRotation), false, 2.3f));
@@ -113,7 +109,6 @@ public class CesiumZoomController : MonoBehaviour
 
     public void SnapToSatellit(Satellite view)
     {
-        search.SetActive(false);
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
 
         zoomRoutine = StartCoroutine(ZoomToPositionSatellite(view, Quaternion.Euler(earthRotation), false));
@@ -140,7 +135,6 @@ public class CesiumZoomController : MonoBehaviour
         {
             zoomSlider.gameObject.SetActive(false);
             SetLightIntensity(1.3f); // GEÄNDERT: Helper-Methode verwenden
-            search.SetActive(false);
             if (zoomRoutine != null) StopCoroutine(zoomRoutine);
             zoomRoutine = StartCoroutine(ZoomToPosition(spaceView, Quaternion.Euler(spaceRotation), true, 2.3f));
             georeference.latitude = 51.21796;
@@ -160,7 +154,6 @@ public class CesiumZoomController : MonoBehaviour
 
         searchPanelController.StopTracking();
 
-        search.SetActive(false);
         spaceButton.interactable = false;
         spaceButton.GetComponent<Image>().sprite = spaceButtonDisabled;
         if (zoomRoutine != null) StopCoroutine(zoomRoutine);
@@ -173,7 +166,6 @@ public class CesiumZoomController : MonoBehaviour
         yield return new WaitForSeconds(2f);
         StartCoroutine(FadeFromBlack());
 
-        search.SetActive(true);
         insideSat = false;
     }
 
@@ -218,8 +210,6 @@ public class CesiumZoomController : MonoBehaviour
             orbitController.InitializeOrbit();
         }
 
-        search.SetActive(true);
-
         SetLightIntensity(1.5f); 
         insideSat = true;
 
@@ -253,11 +243,6 @@ public class CesiumZoomController : MonoBehaviour
         if (insideSat == true)
         {
             SetLightRotation(targetCamera.transform.rotation); // GEÄNDERT: Helper-Methode verwenden
-            search.SetActive(false);
-        }
-        else
-        {
-            search.SetActive(true);
         }
     }
 
@@ -307,11 +292,7 @@ public class CesiumZoomController : MonoBehaviour
 
         ApplyNearClip(space);
 
-        search.SetActive(true);
-
         SetCameraModeAbility(!space);  
-        
-
     }
 
     IEnumerator AnimateFOV(float from, float to)
