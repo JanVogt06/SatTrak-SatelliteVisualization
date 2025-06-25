@@ -38,7 +38,7 @@ namespace TimeSlider
         private bool _isDragging;
 
 
-        private void Start()
+        private void Start() 
         {
             _currentZoom = _sliderSteps[0];
             var eventTrigger = dateSlider.gameObject.AddComponent<EventTrigger>();
