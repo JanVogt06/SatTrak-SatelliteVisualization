@@ -13,50 +13,47 @@ using System;
 
 public class SearchPanelController : MonoBehaviour
 {
-    [Header("UI References")]
-    public GameObject panel;
+    [Header("UI References")] public GameObject panel;
     public Button openButton;
-    public RectTransform contentParent; 
+    public RectTransform contentParent;
     public GameObject rowPrefab;
     public Button nextPageButton;
     public Button prevPageButton;
     public TextMeshProUGUI pageLabel;
 
-    [Header("External References")]
-    public SatelliteManager satelliteManager;
+    [Header("External References")] public SatelliteManager satelliteManager;
     public CesiumZoomController zoomController;
     public CesiumGeoreference georeference;
+    public GridLayoutGroup trackedLayoutGroup;
+    public GameObject SatelliteTrackPrefab;
+    public GameObject SatelliteTrackList;
 
-    [Header("Settings")]
-    private int itemsPerPage = 20; 
+    [Header("Settings")] private int itemsPerPage = 20;
 
-    [Header("Camera Tracking Settings")]
-    public float cameraDistanceOffset = 100000f;
+    [Header("Camera Tracking Settings")] public float cameraDistanceOffset = 100000f;
 
     private Satellite trackedSatellite;
+    private Dictionary<Satellite, GameObject> _allTrackedSatellites = new();
     private bool isTracking = false;
 
     private List<string> allSatelliteNames = new List<string>();
     private int currentPage = 0;
     private int totalPages = 0;
 
-    [Header("Suche")]
-    public TMP_InputField searchInputField;
+    [Header("Suche")] public TMP_InputField searchInputField;
     private List<string> filteredSatelliteNames = new List<string>();
 
-    [Header("Info Panel")]
-    public GameObject infoPanel;
+    [Header("Info Panel")] public GameObject infoPanel;
     public TextMeshProUGUI infoText;
     public Toggle OrbitToggle;
 
-    [Header("Zoom-Slider-Einstellungen")]
-    public Slider zoomSlider;                 
-    public float minDistance;      
+    [Header("Zoom-Slider-Einstellungen")] public Slider zoomSlider;
+    public float minDistance;
     public float maxDistance;
 
-    private float defaultSliderPos = 0.03f;           
+    private float defaultSliderPos = 0.03f;
 
-    private float _targetDistance;                  
+    private float _targetDistance;
     private float _currentVelocity;
 
     private Satellite _highlightedSatellite;
@@ -69,7 +66,7 @@ public class SearchPanelController : MonoBehaviour
     public GameObject theUI1;
     public GameObject theUI2;
 
-    public Button firstPageButton;   
+    public Button firstPageButton;
     public Button lastPageButton;
 
     public TextMeshProUGUI foundSatText;
@@ -89,30 +86,26 @@ public class SearchPanelController : MonoBehaviour
         PerigeeAscending,
         PerigeeDescending
     }
+
     private FilterMode currentMode = FilterMode.All;
 
     private static readonly string[] FAMOUS_SATELLITES =
     {
-        "25544",          
-        "TERRA",
-        "AQUA",
-        "TERRASAR-X",
-        "SKYTERRA 1",
-        "LANDSAT 8",
-        "INSAT-3D",
-        "SENTINEL-2A",
-        "JASON-3",
-        "INSAT-3DR",
-        "SENTINEL-2B",
-        "NOAA 20",
-        "BEIDOU-3 G1",
-        "LANDSAT 9",
-        "INSAT-3DS",
-        "ROBUSTA-3A",
-        "28485 SWIFT",
-        "43435 TESS",
-        "37849 SUOMI NPP",
-        "39634 SENTINEL-1A"
+        "25544",
+        "20580"
+    };
+
+    private List<Color> PossibleTrackColors = new List<Color>
+    {
+        Color.blue,
+        Color.green,
+        Color.magenta,
+        Color.red,
+        Color.cyan,
+        Color.yellow,
+        new(1.0f, 0.6470588235f, 0.0f),
+        new(0.616f, 0.0f, 1.0f),
+        new(0.6f, 0.3f, 0.0f)
     };
 
     void Start()
@@ -165,9 +158,9 @@ public class SearchPanelController : MonoBehaviour
 
     private void OnFilterChanged(int index)
     {
-        currentMode = (FilterMode)index;       
+        currentMode = (FilterMode)index;
         searchInputField.SetTextWithoutNotify(string.Empty);
-        ApplyCurrentFilter();                 
+        ApplyCurrentFilter();
     }
 
     private void ApplyCurrentFilter()
@@ -225,11 +218,12 @@ public class SearchPanelController : MonoBehaviour
         panel.SetActive(nowOpen);
 
         openButton.GetComponent<Image>().color =
-            nowOpen ? new Color(1f, 0.7058824f, 0f, 1f)
-                    : new Color(1f, 1f, 1f, 1f);
+            nowOpen
+                ? new Color(1f, 0.7058824f, 0f, 1f)
+                : new Color(1f, 1f, 1f, 1f);
 
         if (nowOpen)
-            ResetSearchPanel(); 
+            ResetSearchPanel();
     }
 
 
@@ -267,7 +261,7 @@ public class SearchPanelController : MonoBehaviour
             new TMP_Dropdown.OptionData("Distance ascending"),
             new TMP_Dropdown.OptionData("Distance descending")
         });
-        filterDropdown.RefreshShownValue();   
+        filterDropdown.RefreshShownValue();
     }
 
     private static string StripLeadingDigits(string input)
@@ -289,7 +283,7 @@ public class SearchPanelController : MonoBehaviour
 
     public void ResetZoomSlider()
     {
-        zoomSlider.SetValueWithoutNotify(defaultSliderPos);          
+        zoomSlider.SetValueWithoutNotify(defaultSliderPos);
         _targetDistance = Mathf.Lerp(minDistance, maxDistance, defaultSliderPos);
         cameraDistanceOffset = _targetDistance;
         _currentVelocity = 0f;
@@ -299,10 +293,9 @@ public class SearchPanelController : MonoBehaviour
     }
 
 
-
     private void ShowSatelliteInfo(Satellite satellite)
     {
-        OrbitToggle.isOn = satellite.orbit.shouldCalculateOrbit;
+        OrbitToggle.isOn = satellite.orbit.ShouldCalculateOrbit;
         if (satellite == null)
         {
             infoPanel.SetActive(false);
@@ -312,25 +305,22 @@ public class SearchPanelController : MonoBehaviour
         Orbit orbit = satellite.OrbitPropagator.Orbit;
 
         string info =
-                "<b>Satellite Data</b>\n\n" +
-                $"<b>Name:</b> {satellite.gameObject.name}\n" +
-                $"<b>Epoch (UTC):</b> {orbit.Epoch:yyyy-MM-dd HH:mm:ss}\n" +
-
-                "\n<b>SGP4 Orbital Elements</b>\n" +
-                $"<b>Inclination:</b> {orbit.Inclination.Degrees:F4}°\n" +
-                $"<b>RAAN:</b> {orbit.AscendingNode.Degrees:F4}°\n" +
-                $"<b>Argument of Perigee:</b> {orbit.ArgumentPerigee.Degrees:F4}°\n" +
-                $"<b>Mean Anomaly:</b> {orbit.MeanAnomoly.Degrees:F4}°\n" +
-                $"<b>Eccentricity:</b> {orbit.Eccentricity:F6}\n" +
-                $"<b>Mean Motion:</b> {orbit.MeanMotion:F6} rad/min\n" +
-                $"<b>Mean Motion (recov.):</b> {orbit.RecoveredMeanMotion:F6} rad/min\n" +
-
-                $"<b>Semi-major Axis:</b> {orbit.SemiMajorAxis:F2} km\n" +
-                $"<b>Apogee:</b> {orbit.Apogee:F2} km\n" +
-                $"<b>Perigee:</b> {orbit.Perigee:F2} km\n" +
-                $"<b>Period:</b> {orbit.Period:F2} min\n" +
-
-                $"<b>BStar (drag):</b> {orbit.BStar:E2}\n";
+            "<b>Satellite Data</b>\n\n" +
+            $"<b>Name:</b> {satellite.gameObject.name}\n" +
+            $"<b>Epoch (UTC):</b> {orbit.Epoch:yyyy-MM-dd HH:mm:ss}\n" +
+            "\n<b>SGP4 Orbital Elements</b>\n" +
+            $"<b>Inclination:</b> {orbit.Inclination.Degrees:F4}°\n" +
+            $"<b>RAAN:</b> {orbit.AscendingNode.Degrees:F4}°\n" +
+            $"<b>Argument of Perigee:</b> {orbit.ArgumentPerigee.Degrees:F4}°\n" +
+            $"<b>Mean Anomaly:</b> {orbit.MeanAnomoly.Degrees:F4}°\n" +
+            $"<b>Eccentricity:</b> {orbit.Eccentricity:F6}\n" +
+            $"<b>Mean Motion:</b> {orbit.MeanMotion:F6} rad/min\n" +
+            $"<b>Mean Motion (recov.):</b> {orbit.RecoveredMeanMotion:F6} rad/min\n" +
+            $"<b>Semi-major Axis:</b> {orbit.SemiMajorAxis:F2} km\n" +
+            $"<b>Apogee:</b> {orbit.Apogee:F2} km\n" +
+            $"<b>Perigee:</b> {orbit.Perigee:F2} km\n" +
+            $"<b>Period:</b> {orbit.Period:F2} min\n" +
+            $"<b>BStar (drag):</b> {orbit.BStar:E2}\n";
 
         infoText.text = info;
         infoPanel.SetActive(true);
@@ -343,8 +333,8 @@ public class SearchPanelController : MonoBehaviour
             if (currentMode != FilterMode.All)
             {
                 currentMode = FilterMode.All;
-                filterDropdown.SetValueWithoutNotify(0);   
-                filterDropdown.RefreshShownValue();        
+                filterDropdown.SetValueWithoutNotify(0);
+                filterDropdown.RefreshShownValue();
             }
 
             filteredSatelliteNames = allSatelliteNames
@@ -360,7 +350,7 @@ public class SearchPanelController : MonoBehaviour
             return;
         }
 
-        ApplyCurrentFilter();    
+        ApplyCurrentFilter();
     }
 
 
@@ -373,9 +363,9 @@ public class SearchPanelController : MonoBehaviour
 
             pageLabel.text = "No results";
             prevPageButton.interactable =
-            nextPageButton.interactable =
-            firstPageButton.interactable =
-            lastPageButton.interactable = false;
+                nextPageButton.interactable =
+                    firstPageButton.interactable =
+                        lastPageButton.interactable = false;
             return;
         }
 
@@ -417,7 +407,6 @@ public class SearchPanelController : MonoBehaviour
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent);
     }
-
 
 
     public void OnItemSelected(string itemName)
@@ -465,25 +454,25 @@ public class SearchPanelController : MonoBehaviour
 
     public void ResetSearchPanel()
     {
-        filterDropdown.SetValueWithoutNotify(0);     
+        filterDropdown.SetValueWithoutNotify(0);
         currentMode = FilterMode.All;
 
         searchInputField.SetTextWithoutNotify(string.Empty);
 
         filteredSatelliteNames = new List<string>(allSatelliteNames);
-        totalPages             = Mathf.Max(1,
-                                Mathf.CeilToInt((float)filteredSatelliteNames.Count
-                                                / itemsPerPage));
+        totalPages = Mathf.Max(1,
+            Mathf.CeilToInt((float)filteredSatelliteNames.Count
+                            / itemsPerPage));
 
-        currentPage                = 0;
+        currentPage = 0;
         prevPageButton.interactable = false;
         firstPageButton.interactable = false;
 
         bool multiplePages = totalPages > 1;
-        nextPageButton.interactable  = multiplePages;
-        lastPageButton.interactable  = multiplePages;
+        nextPageButton.interactable = multiplePages;
+        lastPageButton.interactable = multiplePages;
 
-        pageLabel.text = $"Seite 1 / {totalPages}";
+        pageLabel.text = $"Page 1 / {totalPages}";
 
         foreach (Transform child in contentParent)
             Destroy(child.gameObject);
@@ -491,11 +480,11 @@ public class SearchPanelController : MonoBehaviour
         int end = Mathf.Min(itemsPerPage, filteredSatelliteNames.Count);
         for (int i = 0; i < end; i++)
         {
-            string name  = filteredSatelliteNames[i];
+            string name = filteredSatelliteNames[i];
             Satellite sat = satelliteManager.GetSatelliteByName(name);
 
-            var row   = Instantiate(rowPrefab, contentParent);
-            var tmps  = row.GetComponentsInChildren<TextMeshProUGUI>();
+            var row = Instantiate(rowPrefab, contentParent);
+            var tmps = row.GetComponentsInChildren<TextMeshProUGUI>();
 
             tmps[0].text = name;
 
@@ -531,11 +520,45 @@ public class SearchPanelController : MonoBehaviour
 
     public void ToggleOrbit(bool visible)
     {
-        trackedSatellite.orbit.shouldCalculateOrbit = visible;
+        var color = PossibleTrackColors[_allTrackedSatellites.Count];
+
+        if (visible)
+        {
+            if (_allTrackedSatellites.Count == 9)
+            {
+                _allTrackedSatellites.Remove(_allTrackedSatellites.First().Key);
+            }
+            var track = Instantiate(SatelliteTrackPrefab, trackedLayoutGroup.transform);
+            var image = track.GetComponentInChildren<Image>();
+            var text = track.GetComponentInChildren<TMP_Text>();
+            
+            image.color = color;
+            text.text = trackedSatellite.name;
+            track.name = trackedSatellite.name;
+            _allTrackedSatellites.Add(trackedSatellite, track);
+        }
+        else
+        {
+            var go = _allTrackedSatellites[trackedSatellite];
+            Destroy(go);
+            _allTrackedSatellites.Remove(trackedSatellite);
+        }
+
+        trackedSatellite.orbit.ToggleCalculateOrbit(visible, color);
+
+        
     }
 
     private void LateUpdate()
     {
+        if (_allTrackedSatellites.Count != 0)
+        {
+            SatelliteTrackList.SetActive(true);
+        }
+        else
+        {
+            SatelliteTrackList.SetActive(false);
+        }
         if (!isTracking || trackedSatellite == null) return;
 
         Vector3 satPos = trackedSatellite.transform.position;
@@ -547,10 +570,10 @@ public class SearchPanelController : MonoBehaviour
         Vector3 radial = (satPos - earth).normalized;
 
         cameraDistanceOffset = Mathf.SmoothDamp(
-                                  cameraDistanceOffset,
-                                  _targetDistance,
-                                  ref _currentVelocity,
-                                  0.25f);                    
+            cameraDistanceOffset,
+            _targetDistance,
+            ref _currentVelocity,
+            0.25f);
 
         Vector3 camPos = satPos + radial * cameraDistanceOffset;
         Camera.main.transform.position = camPos;
@@ -565,11 +588,15 @@ public class SearchPanelController : MonoBehaviour
 
     public void DisableAllOrbits()
     {
-        foreach (Satellite sat in satelliteManager.GetAllSatellites())
-            sat.orbit.shouldCalculateOrbit = false;
+        foreach (var (satellite, go) in _allTrackedSatellites)
+        {
+            Destroy(go);
+            trackedSatellite.orbit.ToggleCalculateOrbit(false);
+        }
+        _allTrackedSatellites.Clear();
 
         if (trackedSatellite != null)
-            OrbitToggle.isOn = trackedSatellite.orbit.shouldCalculateOrbit;
+            OrbitToggle.isOn = trackedSatellite.orbit.ShouldCalculateOrbit;
 
         EventSystem.current.SetSelectedGameObject(null);
     }

@@ -171,13 +171,12 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         ApplyModeFilter();
     }
 
-    /* ---------- Seitenanzeige ---------- */
     private void ShowPage(int index)
     {
         if (_filtered.Count == 0)
         {
             ClearRows();
-            pageLabel.text = "Keine Ergebnisse";
+            pageLabel.text = "No results";
             prevPageButton.interactable =
             nextPageButton.interactable =
             firstPageButton.interactable =
@@ -196,7 +195,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         nextPageButton.interactable = !last;
         lastPageButton.interactable = !last;
 
-        pageLabel.text = $"Seite {_currentPage + 1} / {_totalPages}";
+        pageLabel.text = $"Page {_currentPage + 1} / {_totalPages}";
 
         ClearRows();
 
