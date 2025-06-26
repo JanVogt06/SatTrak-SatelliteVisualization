@@ -13,7 +13,8 @@ namespace Satellites
 {
     public class SatelliteOrbit : MonoBehaviour
     {
-        public bool shouldCalculateOrbit;
+        public bool ShouldCalculateOrbit { get; private set; }
+        private Color _orbitColor;
         private Sgp4 _orbitPropagator;
         private LineRenderer _orbitRenderer;
         public TimeSlider.TimeSlider time;
@@ -27,8 +28,15 @@ namespace Satellites
 
         public void Update()
         {
-            if (shouldCalculateOrbit) CalculateOrbit();
+            if (ShouldCalculateOrbit) CalculateOrbit();
             else if (_orbitRenderer) Destroy(_orbitRenderer);
+        }
+
+        public void ToggleCalculateOrbit(bool calculateOrbit, Color? orbitColor = null)
+        {
+            ShouldCalculateOrbit = calculateOrbit;
+            if (calculateOrbit)
+                _orbitColor = orbitColor.Value;
         }
 
         private void CalculateOrbit()
@@ -49,8 +57,8 @@ namespace Satellites
             _orbitRenderer.startWidth = 7500f;
             _orbitRenderer.endWidth = 7500f;
             _orbitRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            _orbitRenderer.startColor = Color.cyan;
-            _orbitRenderer.endColor = Color.cyan;
+            _orbitRenderer.startColor = _orbitColor;
+            _orbitRenderer.endColor = _orbitColor;
         }
 
         private List<Vector3> CalculateNextPositions(TimeSpan until, TimeSpan stepSize)
