@@ -7,7 +7,6 @@ using Unity.Mathematics;
 using System.Collections;
 using CesiumForUnity;
 using System.Linq;
-using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 
 [Serializable]
@@ -80,8 +79,8 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
     private static readonly string[] _famous = {
     "London","Paris","Berlin","Madrid","Rome","Vienna","Warsaw","Prague","Budapest","Amsterdam",
     "Brussels","Athens","Stockholm","Copenhagen","Dublin","Lisbon","Oslo","Helsinki","Bucharest","Sofia",
-    "Zagreb","Belgrade","Kyiv","Moscow",
-    "Washington, D.C.","Beijing","Tokyo","New Delhi","Cairo","Riyadh","Mexico City","Brasília",
+    "Zagreb","Belgrade","Kyiv","Moscow","Jena",
+    "New York","Beijing","Tokyo","New Delhi","Cairo","Riyadh","Mexico City","Brasília",
     "Buenos Aires","Ottawa","Canberra","Pretoria","Nairobi","Jakarta","Seoul","Bangkok"
 };
 

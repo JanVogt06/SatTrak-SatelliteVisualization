@@ -210,6 +210,8 @@ public class SearchPanelController : MonoBehaviour
                 break;
         }
 
+        UpdateFoundLabel();
+
         totalPages = Mathf.Max(1,
             Mathf.CeilToInt((float)filteredSatelliteNames.Count / itemsPerPage));
         ShowPage(0);
@@ -217,8 +219,7 @@ public class SearchPanelController : MonoBehaviour
 
     public void OpenButtonPanel()
     {
-        var satellites = SatelliteManager.Instance.GetAllSatellites();
-        foundSatText.text = $"{satellites.Count}";
+        UpdateFoundLabel();
 
         bool nowOpen = !panel.activeInHierarchy;
         panel.SetActive(nowOpen);
@@ -352,6 +353,8 @@ public class SearchPanelController : MonoBehaviour
 
             totalPages = Mathf.Max(1,
                 Mathf.CeilToInt((float)filteredSatelliteNames.Count / itemsPerPage));
+
+            UpdateFoundLabel();
 
             ShowPage(0);
             return;
@@ -509,10 +512,10 @@ public class SearchPanelController : MonoBehaviour
         if (scroll != null)
             scroll.verticalNormalizedPosition = 1f;
 
-        foundSatText.text = $"{allSatelliteNames.Count}";
+        UpdateFoundLabel();
 
-            pageLabel.text = $"Page 1 / {totalPages}";
-            filterDropdown.RefreshShownValue();
+        pageLabel.text = $"Page 1 / {totalPages}";
+        filterDropdown.RefreshShownValue();
     }
 
     public void StopTracking()
@@ -578,5 +581,11 @@ public class SearchPanelController : MonoBehaviour
         openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
 
         EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    private void UpdateFoundLabel()
+    {
+        if (foundSatText != null)
+            foundSatText.text = filteredSatelliteNames.Count.ToString();
     }
 }

@@ -3392,11 +3392,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 41.9
   m_fontSizeBase: 28
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 9
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -3428,7 +3428,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 4.8497143, z: 0, w: 5.4859676}
+  m_margin: {x: 7.89785, y: 5.9390583, z: 8.714935, w: 5.4859676}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -18018,7 +18018,6 @@ MonoBehaviour:
   fovTransitionDuration: 2.3
   orbitController: {fileID: 1952269539}
   spaceButton: {fileID: 664286998}
-  search: {fileID: 0}
   freeFlyCameraScript: {fileID: 1952269535}
   georeference: {fileID: 1786786860}
   searchPanelController: {fileID: 449546354}
@@ -18841,11 +18840,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 43.1
   m_fontSizeBase: 28
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 9
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -18877,7 +18876,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 4.8497143, z: 0, w: 5.4859676}
+  m_margin: {x: 7.3531494, y: 4.8497143, z: 7.8979416, w: 5.4859676}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
