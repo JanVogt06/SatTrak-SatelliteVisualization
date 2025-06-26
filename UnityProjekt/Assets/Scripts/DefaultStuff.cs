@@ -19,6 +19,8 @@ public class DefaultStuff : MonoBehaviour
 
     public SearchPanelController spc;
 
+    public GeoNamesSearchFromJSON gns;
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -58,6 +60,10 @@ public class DefaultStuff : MonoBehaviour
             spc.ResetSearchPanel();
             spc.panel.SetActive(false);
 
+            gns.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+            gns.ResetPanel();
+            gns.panel.SetActive(false);
+
             uiAnimator.SetTrigger("Back");
             StartCoroutine(AnimationDelay());
         }
@@ -68,6 +74,10 @@ public class DefaultStuff : MonoBehaviour
         spc.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
         spc.ResetSearchPanel();
         spc.panel.SetActive(false);
+
+        gns.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+        gns.ResetPanel();
+        gns.panel.SetActive(false);
 
         StartCoroutine(UIOneToTwo());
     }
@@ -94,6 +104,14 @@ public class DefaultStuff : MonoBehaviour
 
     public IEnumerator UITwoToOne()
     {
+        spc.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+        spc.ResetSearchPanel();
+        spc.panel.SetActive(false);
+
+        gns.openButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+        gns.ResetPanel();
+        gns.panel.SetActive(false);
+
         if (uiTwoAnimator != null)
         {
             uiTwoAnimator.SetTrigger("GetOut");

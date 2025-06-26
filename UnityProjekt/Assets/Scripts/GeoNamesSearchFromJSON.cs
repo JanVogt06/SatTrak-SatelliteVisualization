@@ -224,7 +224,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    private void ResetPanel()
+    public void ResetPanel()
     {
         searchInputField.SetTextWithoutNotify(string.Empty);
         _mode = FilterMode.All;
