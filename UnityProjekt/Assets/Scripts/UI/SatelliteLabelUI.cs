@@ -1,11 +1,20 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SatelliteLabelUI : MonoBehaviour
 {
     public TextMeshProUGUI labelText;
     public Transform target;
     public Camera mainCamera;
+     
+    public SearchPanelController controller;
+
+    private void Awake()                   
+    {
+        if (TryGetComponent(out Button btn))
+            btn.onClick.AddListener(OnLabelClicked);
+    }
 
     public void SetTarget(Transform satellite, string name)
     {
@@ -26,6 +35,15 @@ public class SatelliteLabelUI : MonoBehaviour
         {
             Hide();
             return;
+        }
+    }
+
+    private void OnLabelClicked()
+    {
+        if (controller != null && labelText != null)
+        {
+            controller.OnItemSelected(labelText.text);
+            this.gameObject.SetActive(false);
         }
     }
 }

@@ -90,6 +90,8 @@ public class SearchPanelController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI periodValue;
     [SerializeField] private TextMeshProUGUI bStarValue;
 
+    public DefaultStuff infoPanelAnimation;
+
     private enum FilterMode
     {
         All,
@@ -312,6 +314,7 @@ public class SearchPanelController : MonoBehaviour
         OrbitToggle.isOn = satellite.orbit.ShouldCalculateOrbit;
         if (satellite == null)
         {
+            infoPanelAnimation.ResetPanelAnimation();
             infoPanel.SetActive(false);
             return;
         }
@@ -440,6 +443,7 @@ public class SearchPanelController : MonoBehaviour
         if (trackedSatellite == null)
         {
             isTracking = false;
+            infoPanelAnimation.ResetPanelAnimation();
             infoPanel.SetActive(false);
             yield break;
         }
@@ -524,39 +528,45 @@ public class SearchPanelController : MonoBehaviour
         _highlightedSatellite = null;
 
         trackedSatellite = null;
+        infoPanelAnimation.ResetPanelAnimation();
         infoPanel.SetActive(false);
     }
 
     public void ToggleOrbit(bool visible)
     {
-        var color = PossibleTrackColors[_allTrackedSatellites.Count];
+        if (trackedSatellite == null) return;
 
-        if (visible)
+        bool hasEntry = _allTrackedSatellites.TryGetValue(trackedSatellite, out GameObject trackGo);
+
+        if (visible && !hasEntry)
         {
-            if (_allTrackedSatellites.Count == 9)
+            if (_allTrackedSatellites.Count == PossibleTrackColors.Count)
             {
-                _allTrackedSatellites.Remove(_allTrackedSatellites.First().Key);
+                var firstKey = _allTrackedSatellites.Keys.First();
+                Destroy(_allTrackedSatellites[firstKey]);
+                _allTrackedSatellites.Remove(firstKey);
             }
-            var track = Instantiate(SatelliteTrackPrefab, trackedLayoutGroup.transform);
-            var image = track.GetComponentInChildren<Image>();
-            var text = track.GetComponentInChildren<TMP_Text>();
-            
-            image.color = color;
-            text.text = trackedSatellite.name;
-            track.name = trackedSatellite.name;
-            _allTrackedSatellites.Add(trackedSatellite, track);
+
+            Color color = PossibleTrackColors[_allTrackedSatellites.Count];
+
+            trackGo = Instantiate(SatelliteTrackPrefab, trackedLayoutGroup.transform);
+            trackGo.GetComponentInChildren<Image>().color = color;
+            trackGo.GetComponentInChildren<TMP_Text>().text = trackedSatellite.name;
+            trackGo.name = trackedSatellite.name;
+
+            _allTrackedSatellites.Add(trackedSatellite, trackGo);
+            trackedSatellite.orbit.ToggleCalculateOrbit(true, color);
         }
-        else
+        else if (!visible && hasEntry)           
         {
-            var go = _allTrackedSatellites[trackedSatellite];
-            Destroy(go);
+            Destroy(trackGo);
             _allTrackedSatellites.Remove(trackedSatellite);
+            trackedSatellite.orbit.ToggleCalculateOrbit(false);
         }
 
-        trackedSatellite.orbit.ToggleCalculateOrbit(visible, color);
-
-        
+        OrbitToggle.SetIsOnWithoutNotify(trackedSatellite.orbit.ShouldCalculateOrbit);
     }
+
 
     private void LateUpdate()
     {
@@ -600,12 +610,12 @@ public class SearchPanelController : MonoBehaviour
         foreach (var (satellite, go) in _allTrackedSatellites)
         {
             Destroy(go);
-            trackedSatellite.orbit.ToggleCalculateOrbit(false);
+            satellite.orbit.ToggleCalculateOrbit(false);   
         }
         _allTrackedSatellites.Clear();
 
         if (trackedSatellite != null)
-            OrbitToggle.isOn = trackedSatellite.orbit.ShouldCalculateOrbit;
+            OrbitToggle.SetIsOnWithoutNotify(trackedSatellite.orbit.ShouldCalculateOrbit);
 
         EventSystem.current.SetSelectedGameObject(null);
     }

@@ -1,7 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DefaultStuff : MonoBehaviour
@@ -21,6 +21,14 @@ public class DefaultStuff : MonoBehaviour
 
     public GeoNamesSearchFromJSON gns;
 
+    public Button infoScreenOpenCloseButton;
+
+    public Animator infoScreenAnimator;
+
+    public Sprite openIcon;
+
+    public Sprite closeIcon;
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -34,6 +42,8 @@ public class DefaultStuff : MonoBehaviour
 
     void Start()
     {
+        infoScreenOpenCloseButton.GetComponent<Image>().sprite = openIcon;
+
         ButtonOpenObject.SetActive(true);
         Application.targetFrameRate = 240;
     }
@@ -129,5 +139,53 @@ public class DefaultStuff : MonoBehaviour
     {
         yield return new WaitForSeconds(0.3f);
         ButtonOpenObject.SetActive(true);
+    }
+
+    public IEnumerator InfoScreenGoIn()
+    {
+        if (infoScreenAnimator != null)
+        {
+            infoScreenAnimator.SetTrigger("InfoOpen");
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        infoScreenOpenCloseButton.GetComponent<Image>().sprite = closeIcon;
+    }
+
+    public IEnumerator InfoScreenGoOut()
+    {
+        if (infoScreenAnimator != null)
+        {
+            infoScreenAnimator.SetTrigger("InfoClose");
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        infoScreenOpenCloseButton.GetComponent<Image>().sprite = openIcon;
+    }
+
+    public void ResetPanelAnimation()
+    {
+        if (infoScreenAnimator != null)
+        {
+            infoScreenAnimator.SetTrigger("InfoClose");
+        }
+
+        infoScreenOpenCloseButton.GetComponent<Image>().sprite = openIcon;
+    }
+
+    public void InfoPanelOpener()
+    {
+        if (infoScreenOpenCloseButton.GetComponent<Image>().sprite == openIcon)
+        {
+            StartCoroutine(InfoScreenGoIn());
+        }
+        else
+        {
+            StartCoroutine(InfoScreenGoOut());
+        }
+
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
