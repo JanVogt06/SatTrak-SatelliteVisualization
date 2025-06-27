@@ -44,7 +44,6 @@ public class SearchPanelController : MonoBehaviour
     private List<string> filteredSatelliteNames = new List<string>();
 
     [Header("Info Panel")] public GameObject infoPanel;
-    public TextMeshProUGUI infoText;
     public Toggle OrbitToggle;
 
     [Header("Zoom-Slider-Einstellungen")] public Slider zoomSlider;
@@ -76,6 +75,20 @@ public class SearchPanelController : MonoBehaviour
     private Dictionary<string, double> perigeeByName = new Dictionary<string, double>();
 
     public Button disableAllOrbitsButton;
+
+    [SerializeField] private TextMeshProUGUI nameValue;
+    [SerializeField] private TextMeshProUGUI epochValue;
+    [SerializeField] private TextMeshProUGUI inclinationValue;
+    [SerializeField] private TextMeshProUGUI raanValue;
+    [SerializeField] private TextMeshProUGUI argPerigeeValue;
+    [SerializeField] private TextMeshProUGUI meanAnomalyValue;
+    [SerializeField] private TextMeshProUGUI eccentricityValue;
+    [SerializeField] private TextMeshProUGUI meanMotionValue;
+    [SerializeField] private TextMeshProUGUI semiMajorAxisValue;
+    [SerializeField] private TextMeshProUGUI apogeeValue;
+    [SerializeField] private TextMeshProUGUI perigeeValue;
+    [SerializeField] private TextMeshProUGUI periodValue;
+    [SerializeField] private TextMeshProUGUI bStarValue;
 
     private enum FilterMode
     {
@@ -117,6 +130,7 @@ public class SearchPanelController : MonoBehaviour
         if (georeference == null)
             georeference = FindObjectOfType<CesiumGeoreference>();
 
+        infoPanel.SetActive(false);
         panel.SetActive(false);
         openButton.onClick.AddListener(() => OpenButtonPanel());
 
@@ -304,25 +318,20 @@ public class SearchPanelController : MonoBehaviour
 
         Orbit orbit = satellite.OrbitPropagator.Orbit;
 
-        string info =
-            "<b>Satellite Data</b>\n\n" +
-            $"<b>Name:</b> {satellite.gameObject.name}\n" +
-            $"<b>Epoch (UTC):</b> {orbit.Epoch:yyyy-MM-dd HH:mm:ss}\n" +
-            "\n<b>SGP4 Orbital Elements</b>\n" +
-            $"<b>Inclination:</b> {orbit.Inclination.Degrees:F4}°\n" +
-            $"<b>RAAN:</b> {orbit.AscendingNode.Degrees:F4}°\n" +
-            $"<b>Argument of Perigee:</b> {orbit.ArgumentPerigee.Degrees:F4}°\n" +
-            $"<b>Mean Anomaly:</b> {orbit.MeanAnomoly.Degrees:F4}°\n" +
-            $"<b>Eccentricity:</b> {orbit.Eccentricity:F6}\n" +
-            $"<b>Mean Motion:</b> {orbit.MeanMotion:F6} rad/min\n" +
-            $"<b>Mean Motion (recov.):</b> {orbit.RecoveredMeanMotion:F6} rad/min\n" +
-            $"<b>Semi-major Axis:</b> {orbit.SemiMajorAxis:F2} km\n" +
-            $"<b>Apogee:</b> {orbit.Apogee:F2} km\n" +
-            $"<b>Perigee:</b> {orbit.Perigee:F2} km\n" +
-            $"<b>Period:</b> {orbit.Period:F2} min\n" +
-            $"<b>BStar (drag):</b> {orbit.BStar:E2}\n";
+        nameValue.text = satellite.gameObject.name;
+        epochValue.text = orbit.Epoch.ToString("yyyy-MM-dd HH:mm:ss");
+        inclinationValue.text = $"{orbit.Inclination.Degrees:F4}°";
+        raanValue.text = $"{orbit.AscendingNode.Degrees:F4}°";
+        argPerigeeValue.text = $"{orbit.ArgumentPerigee.Degrees:F4}°";
+        meanAnomalyValue.text = $"{orbit.MeanAnomoly.Degrees:F4}°";
+        eccentricityValue.text = $"{orbit.Eccentricity:F6}";
+        meanMotionValue.text = $"{orbit.MeanMotion:F6} rad/min";
+        semiMajorAxisValue.text = $"{orbit.SemiMajorAxis:F2} km";
+        apogeeValue.text = $"{orbit.Apogee:F2} km";
+        perigeeValue.text = $"{orbit.Perigee:F2} km";
+        periodValue.text = $"{orbit.Period:F2} min";
+        bStarValue.text = $"{orbit.BStar:E2}";
 
-        infoText.text = info;
         infoPanel.SetActive(true);
     }
 
