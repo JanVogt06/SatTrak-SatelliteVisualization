@@ -49,6 +49,9 @@ namespace Satellites
         [Tooltip("Sentinel 6 Model")]
         public GameObject sentinelModelPrefab;
 
+		[Tooltip("Starlink Model")]
+        public GameObject starlinkModelPrefab;
+
         private readonly List<int> _tooNearIss = new() { 63520, 49044, 62030, 63129, 63204 };
 
         [Header("Materials")]
@@ -90,7 +93,8 @@ namespace Satellites
             {
                 { 20580, hubbleModelPrefab },  // Hubble
                 { 56217, keplerModelPrefab },    // Kepler
-                { 46984, sentinelModelPrefab }    // Sentinel 6
+                { 46984, sentinelModelPrefab },    // Sentinel 6
+				{ 63147, starlinkModelPrefab }    // Starlink
             };
             
             EnableGpuInstancing();

@@ -21,7 +21,7 @@ namespace Satellites
         public int NoradId { get; private set; }
         
         // Famous Satellites Liste
-        private static readonly int[] FAMOUS_NORAD_IDS = { 20580, 56217, 46984 };
+        private static readonly int[] FAMOUS_NORAD_IDS = { 20580, 56217, 46984, 63147 };
         
         public bool Init(Tle tle, GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, 
                          GameObject issModelPrefab = null, Dictionary<int, GameObject> famousModelPrefabs = null)
