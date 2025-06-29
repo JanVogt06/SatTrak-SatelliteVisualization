@@ -89,7 +89,7 @@ namespace Satellites
             famousModelPrefabs = new Dictionary<int, GameObject>
             {
                 { 20580, hubbleModelPrefab },  // Hubble
-                { 46319, keplerModelPrefab },    // Kepler
+                { 56217, keplerModelPrefab },    // Kepler
                 { 46984, sentinelModelPrefab }    // Sentinel 6
             };
             
