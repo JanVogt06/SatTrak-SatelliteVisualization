@@ -79,6 +79,16 @@ namespace Satellites
         {
             Debug.Log("SatelliteManager: Start");
             
+            // Debug: Prüfe ob ISS-Modell zugewiesen
+            if (issModelPrefab != null)
+            {
+                Debug.Log($"ISS Model Prefab ist zugewiesen: {issModelPrefab.name}");
+            }
+            else
+            {
+                Debug.LogError("ISS Model Prefab ist NICHT zugewiesen!");
+            }
+            
             // Famous Models Dictionary initialisieren
             famousModelPrefabs = new Dictionary<int, GameObject>
             {
@@ -191,6 +201,13 @@ namespace Satellites
         private bool CreateSatellite(Tle tle)
         {
             if (_tooNearIss.Contains((int)tle.NoradNumber)) return true;
+            
+            // Debug für ISS
+            if ((int)tle.NoradNumber == 25544)
+            {
+                Debug.Log($"CreateSatellite: ISS wird erstellt! NORAD: {tle.NoradNumber}, Name: {tle.Name}");
+            }
+            
             var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
 

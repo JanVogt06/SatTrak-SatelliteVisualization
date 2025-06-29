@@ -31,7 +31,7 @@ namespace Satellites
 
         void Start()
         {
-            CreateSpaceSphere();
+            // Erstelle Space Sphere NICHT in Start, sondern erst wenn das Modell gesetzt wird
             if (_modelInstance != null)
                 UpdateVisibility();
         }
@@ -83,14 +83,32 @@ namespace Satellites
             if (_isSpecial && specialModelPrefab != null)
             {
                 modelToUse = specialModelPrefab;
-                Debug.Log($"Satellit {transform.parent.name} verwendet spezielles Modell!");
                 
                 // Prüfen ob es die ISS ist für Space-Mode Hervorhebung
-                var satellite = transform.parent.GetComponent<Satellite>();
-                if (satellite != null && satellite.IsISS)
+                // Versuche verschiedene Wege, die Satellite-Komponente zu finden
+                var satellite = GetComponent<Satellite>();
+                if (satellite == null)
+                    satellite = GetComponentInParent<Satellite>();
+                if (satellite == null && transform.parent != null)
+                    satellite = transform.parent.GetComponent<Satellite>();
+                    
+                if (satellite != null)
                 {
-                    _isISS = true;
-                    Debug.Log("ISS erkannt - wird im Space-Mode hervorgehoben!");
+                    Debug.Log($"Satellit {satellite.name} (NORAD: {satellite.NoradId}) verwendet spezielles Modell!");
+                    if (satellite.IsISS)
+                    {
+                        _isISS = true;
+                        Debug.Log($"ISS erkannt ({satellite.name}, NORAD: {satellite.NoradId}) - wird im Space-Mode hervorgehoben!");
+                    }
+                    else if (satellite.IsFamous)
+                    {
+                        Debug.Log($"Famous Satellite erkannt ({satellite.name}, NORAD: {satellite.NoradId})");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("FEHLER: Konnte Satellite-Komponente nicht finden! GameObject-Name: " + gameObject.name);
+                    Debug.LogError("Transform.parent: " + (transform.parent != null ? transform.parent.name : "null"));
                 }
             }
             else
@@ -142,25 +160,33 @@ namespace Satellites
             // Skaliere das gesamte Modell
             NormalizeSatelliteSize();
 
-            // Erstelle/Update Space Sphere
-            CreateSpaceSphere();
+            // Erstelle/Update Space Sphere - WICHTIG: Nach dem _isISS gesetzt wurde!
+            CreateOrUpdateSpaceSphere();
 
             return true;
         }
 
-        private void CreateSpaceSphere()
+        private void CreateOrUpdateSpaceSphere()
         {
+            // Debug-Ausgabe
+            Debug.Log($"CreateOrUpdateSpaceSphere aufgerufen. _isISS = {_isISS}, _isSpecial = {_isSpecial}");
+            
+            // Wenn schon vorhanden, lösche alte Sphere
             if (_spaceSphere != null)
-                return;
-            // Erstelle eine simple Kugel
+            {
+                Destroy(_spaceSphere);
+            }
+            
+            // Erstelle neue Space Sphere
             _spaceSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _spaceSphere.name = "SpaceSphere";
             _spaceSphere.transform.SetParent(transform);
             _spaceSphere.transform.localPosition = Vector3.zero;
 
-            // NUR ISS größer machen, nicht alle Famous Satellites
+            // NUR ISS größer machen
             float size = _isISS ? 50f : 5f;
             _spaceSphere.transform.localScale = Vector3.one * size;
+            Debug.Log($"Space Sphere Größe gesetzt auf: {size} (ISS = {_isISS})");
 
             // Entferne Collider für Performance
             var collider = _spaceSphere.GetComponent<Collider>();
@@ -177,18 +203,30 @@ namespace Satellites
                 issMaterial.EnableKeyword("_EMISSION");
                 issMaterial.SetColor("_EmissionColor", Color.yellow * 0.5f); // Leuchten
                 renderer.sharedMaterial = issMaterial;
+                Debug.Log("ISS Space Sphere mit gelber Farbe erstellt!");
             }
             else if (_spaceMaterial != null)
             {
                 renderer.sharedMaterial = _spaceMaterial;
+                Debug.Log($"Standard Space Material verwendet für {gameObject.name}");
             }
             else
             {
                 // Fallback Material
                 renderer.sharedMaterial = new Material(Shader.Find("Standard"));
+                Debug.Log("Fallback Material verwendet");
             }
-            // Initial verstecken
-            _spaceSphere.SetActive(false);
+            
+            // Initial verstecken oder zeigen basierend auf aktuellem Modus
+            bool isEarthMode = zoomController && zoomController.targetCamera &&
+                               zoomController.targetCamera.fieldOfView < fovThreshold;
+            _spaceSphere.SetActive(!isEarthMode);
+        }
+
+        private void CreateSpaceSphere()
+        {
+            // Diese Methode ist jetzt obsolet, verwende CreateOrUpdateSpaceSphere
+            CreateOrUpdateSpaceSphere();
         }
 
         private void NormalizeSatelliteSize()

@@ -13727,11 +13727,9 @@ MonoBehaviour:
   time: {fileID: 568983495}
   satelliteModelPrefabs:
   - {fileID: 8771091787928289351, guid: 08e567c099d494975a467eefea83f881, type: 3}
-  - {fileID: 4419922976013616421, guid: c595c9307d92449eb9c0560f569a79e6, type: 3}
   - {fileID: -8148156210950934553, guid: 5f04e502fa2fa418484832ffb96932e9, type: 3}
   - {fileID: 4499123344997166499, guid: aab7f7bc48b5f42a4ad0376757977ca1, type: 3}
   - {fileID: -1401270577561610751, guid: 84dece156fbf7454d9a6b47726ef22c5, type: 3}
-  - {fileID: -8148156210950934553, guid: 81e8b41058be64133a9404e0d95a9c9c, type: 3}
   - {fileID: -8148156210950934553, guid: 830549a9a594d4aa89a1657c1c9c1021, type: 3}
   - {fileID: -1401270577561610751, guid: 2afde290528af44dd96a5912ea0ede3d, type: 3}
   - {fileID: -8148156210950934553, guid: 01ae1faba2fdb45fc81a6d8a378c8800, type: 3}
@@ -13743,6 +13741,8 @@ MonoBehaviour:
   - {fileID: -8148156210950934553, guid: 93322d92829c8442c9398c4568713f8d, type: 3}
   - {fileID: -8148156210950934553, guid: 7a49e392697064d1b912596702befad4, type: 3}
   issModelPrefab: {fileID: 8771091787928289351, guid: 731c7786f65424293a1683636aa845d7,
+    type: 3}
+  hubbleModelPrefab: {fileID: -8148156210950934553, guid: ed729486238d94550b316e9ee0a3ef79,
     type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   altitudeSlider: {fileID: 114000014283629704}
