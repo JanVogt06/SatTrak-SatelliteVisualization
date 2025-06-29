@@ -42,6 +42,12 @@ namespace Satellites
         [Header("Famous Satellite Models")]
         [Tooltip("Hubble Space Telescope Model")]
         public GameObject hubbleModelPrefab;
+        
+        [Tooltip("Kepler Space Telescope Model")]
+        public GameObject keplerModelPrefab;
+        
+        [Tooltip("Sentinel 6 Model")]
+        public GameObject sentinelModelPrefab;
 
         private readonly List<int> _tooNearIss = new() { 63520, 49044, 62030, 63129, 63204 };
 
@@ -82,8 +88,9 @@ namespace Satellites
             // Famous Models Dictionary initialisieren
             famousModelPrefabs = new Dictionary<int, GameObject>
             {
-                { 20580, hubbleModelPrefab }  // Hubble
-                // Weitere können hier hinzugefügt werden
+                { 20580, hubbleModelPrefab },  // Hubble
+                { 46319, keplerModelPrefab },    // Kepler
+                { 46984, sentinelModelPrefab }    // Sentinel 6
             };
             
             EnableGpuInstancing();

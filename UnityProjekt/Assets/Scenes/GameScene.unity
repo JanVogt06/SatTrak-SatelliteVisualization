@@ -13730,6 +13730,10 @@ MonoBehaviour:
     type: 3}
   hubbleModelPrefab: {fileID: -8148156210950934553, guid: ed729486238d94550b316e9ee0a3ef79,
     type: 3}
+  keplerModelPrefab: {fileID: -8148156210950934553, guid: 4a3cbe0297984e8458231450c31dd530,
+    type: 3}
+  sentinelModelPrefab: {fileID: -8148156210950934553, guid: 521c5857188ebe24da371724baecbd7b,
+    type: 3}
   globalSpaceMaterial: {fileID: 2100000, guid: fc6275ffcc4da496996bd1b21edc3458, type: 2}
   altitudeSlider: {fileID: 114000014283629704}
   satellitesActive: 1

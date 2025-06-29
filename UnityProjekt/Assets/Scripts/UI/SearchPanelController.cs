@@ -107,7 +107,9 @@ public class SearchPanelController : MonoBehaviour
     private static readonly string[] FAMOUS_SATELLITES =
     {
         "25544",
-        "20580"
+        "20580",
+        "46319",
+        "46984"
     };
 
     private List<Color> PossibleTrackColors = new List<Color>
