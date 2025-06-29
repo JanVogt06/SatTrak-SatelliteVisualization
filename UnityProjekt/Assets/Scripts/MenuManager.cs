@@ -163,7 +163,7 @@ public class MenuManager : MonoBehaviour
             string option = $"{res.width}x{res.height} @ {Mathf.RoundToInt((float)res.refreshRateRatio.value)}Hz";
             resolutionOptions.Add(option);
 
-            // Aktuelle Auflösung finden
+            // Aktuelle Auflï¿½sung finden
             if (res.width == Screen.currentResolution.width &&
                 res.height == Screen.currentResolution.height &&
                 Mathf.Approximately((float)res.refreshRateRatio.value, (float)Screen.currentResolution.refreshRateRatio.value))
@@ -183,5 +183,10 @@ public class MenuManager : MonoBehaviour
     {
         Resolution res = resolutions[index];
         Screen.SetResolution(res.width, res.height, FullScreenMode.FullScreenWindow, res.refreshRateRatio);
+    }
+
+    public void LoadGame()
+    {
+        SceneSwitcher.Instance.SwitchScene("GameScene");
     }
 }

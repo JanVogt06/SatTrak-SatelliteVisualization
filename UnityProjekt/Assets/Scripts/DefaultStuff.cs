@@ -39,7 +39,8 @@ public class DefaultStuff : MonoBehaviour
         if (timer >= 0.2f)
         {
             float fps = 1f / Time.unscaledDeltaTime;
-            fpsText.text = $"Framerate: {Mathf.RoundToInt(fps)} FPS";
+            if (fpsText != null)
+                fpsText.text = $"Framerate: {Mathf.RoundToInt(fps)} FPS";
             timer = 0;
         }
     }
@@ -198,5 +199,10 @@ public class DefaultStuff : MonoBehaviour
         }
 
         EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void SwitchToMenu()
+    {
+        SceneSwitcher.Instance.SwitchScene("MainMenu");
     }
 }

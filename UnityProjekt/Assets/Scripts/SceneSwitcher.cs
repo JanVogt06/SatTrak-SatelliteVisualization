@@ -1,21 +1,75 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneSwitcher : MonoBehaviour
 {
-    [Header("Name der Zielszene (muss in Build Settings stehen)")]
-    public string sceneName;
+    public static SceneSwitcher Instance;
+    
+    [SerializeField] private Slider loadingSlider;
+    [SerializeField] private TextMeshProUGUI progressText;
+    [SerializeField] private GameObject loadingScreenGameObject;
+    private const float smoothSpeed = 0.5f; // Ann�herungsgeschwindigkeit des Sliders
 
-    public void SwitchScene()
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
+    public void SwitchScene(string sceneName)
+    {
+        loadingScreenGameObject.SetActive(true);
+        loadingSlider.value = 0.0f;
         if (!string.IsNullOrEmpty(sceneName))
         {
-            SceneManager.LoadScene(sceneName);
+            StartCoroutine(SwitchSceneAsync(sceneName));
         }
         else
         {
             Debug.LogWarning("Kein Szenenname angegeben!");
         }
+    }
+
+    IEnumerator SwitchSceneAsync(string sceneName)
+    {
+        var asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        float displayedProgress = 0f;
+        while (!asyncLoad.isDone)
+        {
+            displayedProgress = Mathf.MoveTowards(displayedProgress, asyncLoad.progress, smoothSpeed * Time.deltaTime);
+
+            UpdateUI(displayedProgress);
+            yield return null;
+        }
+        
+        // Letzten Rest auf 1.0f gl�tten
+        while (displayedProgress < 1f)
+        {
+            displayedProgress = Mathf.MoveTowards(displayedProgress, 1f, smoothSpeed * Time.deltaTime);
+            UpdateUI(displayedProgress);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(2.3f); // kurzer Moment bei 100 %
+        loadingScreenGameObject.SetActive(false);
+    }
+
+    private void UpdateUI(float progress)
+    {
+        loadingSlider.value = progress;
+        progressText.text = $"{Mathf.RoundToInt(progress * 100f)}%";
     }
 
     public void EndProgramm()

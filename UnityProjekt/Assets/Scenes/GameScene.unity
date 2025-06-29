@@ -3662,7 +3662,6 @@ GameObject:
   - component: {fileID: 308697199}
   - component: {fileID: 308697201}
   - component: {fileID: 308697202}
-  - component: {fileID: 308697203}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3753,19 +3752,6 @@ MonoBehaviour:
   showHide: {fileID: 1827469938}
   satelliteParent: {fileID: 1901460567}
   searchPanelController: {fileID: 449546354}
---- !u!114 &308697203
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 308697198}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f105b07de80fdcd4599caeaf31eeb70a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneName: MainMenu
 --- !u!1 &314609045
 GameObject:
   m_ObjectHideFlags: 0
@@ -11573,7 +11559,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1276588529}
   m_HandleRect: {fileID: 1276588528}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -17641,9 +17627,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 308697203}
-        m_TargetAssemblyTypeName: SceneSwitcher, Assembly-CSharp
-        m_MethodName: SwitchScene
+      - m_Target: {fileID: 308697199}
+        m_TargetAssemblyTypeName: DefaultStuff, Assembly-CSharp
+        m_MethodName: SwitchToMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
