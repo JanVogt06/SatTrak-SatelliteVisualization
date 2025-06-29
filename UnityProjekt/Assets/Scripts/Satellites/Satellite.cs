@@ -54,12 +54,10 @@ namespace Satellites
             if (IsISS && issModelPrefab != null)
             {
                 specialModel = issModelPrefab;
-                Debug.Log("ISS bekommt spezielles Modell!");
             }
             else if (IsFamous && famousModelPrefabs != null && famousModelPrefabs.ContainsKey(NoradId))
             {
                 specialModel = famousModelPrefabs[NoradId];
-                Debug.Log($"Famous Satellite {NoradId} bekommt spezielles Modell!");
             }
             
             return modelController.SetModel(satelliteModelPrefabs, globalSpaceMaterial, IsISS || IsFamous, specialModel);

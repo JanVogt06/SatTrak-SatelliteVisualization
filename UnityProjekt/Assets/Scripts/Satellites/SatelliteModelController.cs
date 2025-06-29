@@ -94,21 +94,10 @@ namespace Satellites
                     
                 if (satellite != null)
                 {
-                    Debug.Log($"Satellit {satellite.name} (NORAD: {satellite.NoradId}) verwendet spezielles Modell!");
                     if (satellite.IsISS)
                     {
                         _isISS = true;
-                        Debug.Log($"ISS erkannt ({satellite.name}, NORAD: {satellite.NoradId}) - wird im Space-Mode hervorgehoben!");
                     }
-                    else if (satellite.IsFamous)
-                    {
-                        Debug.Log($"Famous Satellite erkannt ({satellite.name}, NORAD: {satellite.NoradId})");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("FEHLER: Konnte Satellite-Komponente nicht finden! GameObject-Name: " + gameObject.name);
-                    Debug.LogError("Transform.parent: " + (transform.parent != null ? transform.parent.name : "null"));
                 }
             }
             else
@@ -168,9 +157,6 @@ namespace Satellites
 
         private void CreateOrUpdateSpaceSphere()
         {
-            // Debug-Ausgabe
-            Debug.Log($"CreateOrUpdateSpaceSphere aufgerufen. _isISS = {_isISS}, _isSpecial = {_isSpecial}");
-            
             // Wenn schon vorhanden, lösche alte Sphere
             if (_spaceSphere != null)
             {
@@ -186,7 +172,6 @@ namespace Satellites
             // NUR ISS größer machen
             float size = _isISS ? 50f : 5f;
             _spaceSphere.transform.localScale = Vector3.one * size;
-            Debug.Log($"Space Sphere Größe gesetzt auf: {size} (ISS = {_isISS})");
 
             // Entferne Collider für Performance
             var collider = _spaceSphere.GetComponent<Collider>();
@@ -203,18 +188,15 @@ namespace Satellites
                 issMaterial.EnableKeyword("_EMISSION");
                 issMaterial.SetColor("_EmissionColor", Color.yellow * 0.5f); // Leuchten
                 renderer.sharedMaterial = issMaterial;
-                Debug.Log("ISS Space Sphere mit gelber Farbe erstellt!");
             }
             else if (_spaceMaterial != null)
             {
                 renderer.sharedMaterial = _spaceMaterial;
-                Debug.Log($"Standard Space Material verwendet für {gameObject.name}");
             }
             else
             {
                 // Fallback Material
                 renderer.sharedMaterial = new Material(Shader.Find("Standard"));
-                Debug.Log("Fallback Material verwendet");
             }
             
             // Initial verstecken oder zeigen basierend auf aktuellem Modus
