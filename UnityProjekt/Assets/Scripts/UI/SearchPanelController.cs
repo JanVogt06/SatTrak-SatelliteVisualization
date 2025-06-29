@@ -552,7 +552,7 @@ public class SearchPanelController : MonoBehaviour
             Color color = PossibleTrackColors[_allTrackedSatellites.Count];
 
             trackGo = Instantiate(SatelliteTrackPrefab, trackedLayoutGroup.transform);
-            trackGo.GetComponentInChildren<Image>().color = color;
+            trackGo.GetComponentsInChildren<Image>().Single(child => child.CompareTag("Color")).color = color;
             trackGo.GetComponentInChildren<TMP_Text>().text = trackedSatellite.name;
             trackGo.name = trackedSatellite.name;
 
