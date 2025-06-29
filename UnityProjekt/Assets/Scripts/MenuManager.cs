@@ -26,8 +26,15 @@ public class MenuManager : MonoBehaviour
 
     private MusicManager musicManager => MusicManager.Instance;
 
+    public Toggle showFpsToggle;
+    private const string PrefKey = "ShowFPS";
+
     void Start()
     {
+        showFpsToggle.isOn = PlayerPrefs.GetInt(PrefKey, 0) == 1;
+
+        showFpsToggle.onValueChanged.AddListener(OnToggleChanged);
+
         InitializeQualityDropdown();
         InitializeResolutionDropdown();
 
@@ -40,6 +47,12 @@ public class MenuManager : MonoBehaviour
     {
         volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
         muteButton.onClick.AddListener(OnMuteClicked);
+    }
+
+    private static void OnToggleChanged(bool value)
+    {
+        PlayerPrefs.SetInt(PrefKey, value ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     public void OnVolumeChanged(float value)

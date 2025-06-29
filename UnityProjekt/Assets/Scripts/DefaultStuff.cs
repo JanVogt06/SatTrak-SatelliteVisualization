@@ -29,6 +29,10 @@ public class DefaultStuff : MonoBehaviour
 
     public Sprite closeIcon;
 
+    private const string PrefKey = "ShowFPS";
+
+    public GameObject showFpsObject;
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -40,11 +44,18 @@ public class DefaultStuff : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        bool show = PlayerPrefs.GetInt(PrefKey, 0) == 1;
+        showFpsObject.SetActive(show);
+    }
+
     void Start()
     {
         infoScreenOpenCloseButton.GetComponent<Image>().sprite = openIcon;
 
         ButtonOpenObject.SetActive(true);
+
         Application.targetFrameRate = 240;
     }
 
