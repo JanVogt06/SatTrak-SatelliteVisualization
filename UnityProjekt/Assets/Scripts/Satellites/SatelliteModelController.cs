@@ -22,6 +22,7 @@ namespace Satellites
         private bool _lastMode;
 
         private bool _isISS;
+        private bool _isSpecial;
 
         [Header("Highlight")]
         public Material highlightMaterial;         
@@ -70,19 +71,27 @@ namespace Satellites
             _highlightShell.SetActive(false);
         }
 
-
-
-        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, bool isISS = false, GameObject issModelPrefab = null)
+        public bool SetModel(GameObject[] satelliteModelPrefabs, Material globalSpaceMaterial, 
+                            bool isSpecial = false, GameObject specialModelPrefab = null)
         {
-            _isISS = isISS;
+            _isSpecial = isSpecial;
+            _isISS = false; // Wird später gesetzt wenn nötig
 
             GameObject modelToUse;
 
-            // Wenn es die ISS ist und ein spezielles Modell vorhanden ist
-            if (_isISS && issModelPrefab != null)
+            // Wenn es ein spezielles Modell gibt
+            if (_isSpecial && specialModelPrefab != null)
             {
-                modelToUse = issModelPrefab;
-                Debug.Log("ISS verwendet spezielles Modell!");
+                modelToUse = specialModelPrefab;
+                Debug.Log($"Satellit {transform.parent.name} verwendet spezielles Modell!");
+                
+                // Prüfen ob es die ISS ist für Space-Mode Hervorhebung
+                var satellite = transform.parent.GetComponent<Satellite>();
+                if (satellite != null && satellite.IsISS)
+                {
+                    _isISS = true;
+                    Debug.Log("ISS erkannt - wird im Space-Mode hervorgehoben!");
+                }
             }
             else
             {
@@ -134,7 +143,7 @@ namespace Satellites
             NormalizeSatelliteSize();
 
             // Erstelle/Update Space Sphere
-                CreateSpaceSphere();
+            CreateSpaceSphere();
 
             return true;
         }
@@ -149,7 +158,7 @@ namespace Satellites
             _spaceSphere.transform.SetParent(transform);
             _spaceSphere.transform.localPosition = Vector3.zero;
 
-            // ISS größer machen
+            // NUR ISS größer machen, nicht alle Famous Satellites
             float size = _isISS ? 50f : 5f;
             _spaceSphere.transform.localScale = Vector3.one * size;
 
@@ -160,7 +169,7 @@ namespace Satellites
 
             // Material setzen
             var renderer = _spaceSphere.GetComponent<MeshRenderer>();
-            if (_isISS)
+            if (_isISS)  // NUR ISS bekommt gelbe Farbe
             {
                 // Erstelle ein neues Material für die ISS
                 Material issMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
@@ -184,7 +193,8 @@ namespace Satellites
 
         private void NormalizeSatelliteSize()
         {        
-			float targetSize = _isISS ? 100000f : 40000f;
+            // ISS und Famous Satellites bekommen gleiche Größe
+            float targetSize = (_isISS || _isSpecial) ? 100000f : 40000f;
 
             var renderers = _modelInstance.GetComponentsInChildren<Renderer>();
             if (renderers.Length == 0) return;

@@ -32,15 +32,18 @@ namespace Satellites
         public HeatmapController heatmapController;
         public TimeSlider.TimeSlider time;
 
-
         [Header("Satellite Models")]
         [Tooltip("Liste der verfügbaren Satelliten-Modelle")]
         public GameObject[] satelliteModelPrefabs;
 
         [Tooltip("Spezielles Modell für die ISS")]
         public GameObject issModelPrefab;
-        private readonly List<int> _tooNearIss = new() { 63520, 49044, 62030, 63129, 63204 };
 
+        [Header("Famous Satellite Models")]
+        [Tooltip("Hubble Space Telescope Model")]
+        public GameObject hubbleModelPrefab;
+
+        private readonly List<int> _tooNearIss = new() { 63520, 49044, 62030, 63129, 63204 };
 
         [Header("Materials")]
         [Tooltip("Material für Satelliten im Space-Modus")]
@@ -60,6 +63,9 @@ namespace Satellites
 
         public bool satellitesActive = true;
 
+        // Dictionary für Famous Satellites
+        private Dictionary<int, GameObject> famousModelPrefabs;
+
         // --- Unity Lifecycle ---
         void Awake()
         {
@@ -72,6 +78,14 @@ namespace Satellites
         void Start()
         {
             Debug.Log("SatelliteManager: Start");
+            
+            // Famous Models Dictionary initialisieren
+            famousModelPrefabs = new Dictionary<int, GameObject>
+            {
+                { 20580, hubbleModelPrefab }  // Hubble
+                // Weitere können hier hinzugefügt werden
+            };
+            
             EnableGpuInstancing();
             FetchTleData();
             AllocateTransformAccessArray();
@@ -142,7 +156,6 @@ namespace Satellites
             return _satellites;
         }
 
-
         private void FetchTleData()
         {
             try
@@ -181,8 +194,9 @@ namespace Satellites
             var satelliteGo = Instantiate(satellitePrefab, satelliteParent.transform);
             var satellite = satelliteGo.GetComponent<Satellite>();
 
-            // Übergebe ISS-Modell falls vorhanden
-            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial, issModelPrefab);
+            // Übergebe auch famous models
+            var modelApplied = satellite.Init(tle, satelliteModelPrefabs, globalSpaceMaterial, 
+                                             issModelPrefab, famousModelPrefabs);
             _satellites.Add(satellite);
             return modelApplied;
         }
