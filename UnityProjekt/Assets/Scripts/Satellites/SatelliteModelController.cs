@@ -207,7 +207,6 @@ namespace Satellites
 
         private void CreateSpaceSphere()
         {
-            // Diese Methode ist jetzt obsolet, verwende CreateOrUpdateSpaceSphere
             CreateOrUpdateSpaceSphere();
         }
 
