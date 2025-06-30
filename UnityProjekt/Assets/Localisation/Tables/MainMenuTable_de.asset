@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MainMenuTable_de
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: de
+  m_SharedData: {fileID: 11400000, guid: 86401d85eb9db494087bf2a4f2d98938, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 287321489408
+    m_Localized: Starte Simulation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 765287596032
+    m_Localized: Beenden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 659972816896
+    m_Localized: Einstellungen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1724747218944
+    m_Localized: "Hauptmen\xFC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 763182055424
+    m_Localized: Entwickler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8911544516608
+    m_Localized: Englisch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8958050959360
+    m_Localized: Deutsch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9100191727616
+    m_Localized: Einstellungen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9364525154304
+    m_Localized: Musik & Sonstiges
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9503541166080
+    m_Localized: Grafik
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9619622723584
+    m_Localized: Anpassung
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10081130381312
+    m_Localized: Sprache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10141771628544
+    m_Localized: Fadenkreuz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10222646198272
+    m_Localized: Mauszeiger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10302975508480
+    m_Localized: "Qualit\xE4t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10325800910848
+    m_Localized: "Aufl\xF6sung"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10687026954240
+    m_Localized: Zeige Fps
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11342554726400
+    m_Localized: "Zur\xFCck"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12523125473280
+    m_Localized: Ausgeglichen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12525394591744
+    m_Localized: "Hohe Qualit\xE4t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12508403466240
+    m_Localized: Leistung
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14753937358848
+    m_Localized: Entwickler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14996154220544
+    m_Localized: 'Programmierer
+
+      Dokumentation & Organisation'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15136583712768
+    m_Localized: 'Programmierer
+
+      UI-Designer'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15305597386752
+    m_Localized: Programmierer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15569943396352
+    m_Localized: 'Programmierer
+
+      Optimierung'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

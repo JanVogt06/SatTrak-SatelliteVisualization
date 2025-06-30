@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
@@ -29,11 +31,20 @@ public class MenuManager : MonoBehaviour
     public Toggle showFpsToggle;
     private const string PrefKey = "ShowFPS";
 
+    public TMP_Dropdown languageDropdown;          
+    private const string LocalePrefKey = "LocaleIndex";
+
+    private string tableName = "MainMenuTable";
+    private string englishKey = "EnglishLbl";
+    private string germanKey = "GermanLbl";
+
     void Start()
     {
         showFpsToggle.isOn = PlayerPrefs.GetInt(PrefKey, 0) == 1;
 
         showFpsToggle.onValueChanged.AddListener(OnToggleChanged);
+
+        InitializeLanguageDropdown();
 
         InitializeQualityDropdown();
         InitializeResolutionDropdown();
@@ -43,10 +54,86 @@ public class MenuManager : MonoBehaviour
         OpenMainMenu();
     }
 
+    void Awake()
+    {
+        int savedIndex = PlayerPrefs.GetInt(LocalePrefKey, 0);
+        ApplyLocale(savedIndex);                               
+
+        UpdateLanguageDropdown();                              
+        UpdateQualityDropdown();
+
+        LocalizationSettings.SelectedLocaleChanged += _ =>
+        {
+            UpdateLanguageDropdown();
+            UpdateQualityDropdown();
+        };
+    }
+
+    void UpdateQualityDropdown()
+    {
+        var db = LocalizationSettings.StringDatabase;
+        var opts = new List<TMP_Dropdown.OptionData>();
+
+        string[] keys = { "QL_Performance", "QL_Balanced", "QL_HighQuality" };
+
+        for (int i = 0; i < keys.Length; i++)
+        {
+            string label = db.GetLocalizedString("MainMenuTable", keys[i]);
+            if (string.IsNullOrEmpty(label)) label = QualitySettings.names[i];
+            opts.Add(new TMP_Dropdown.OptionData(label));
+        }
+
+        qualityDropdown.options = opts;
+        qualityDropdown.RefreshShownValue();
+    }
+
+    void UpdateLanguageDropdown()
+    {
+        var db = LocalizationSettings.StringDatabase;
+        var opts = new List<TMP_Dropdown.OptionData>
+    {
+        new(db.GetLocalizedString(tableName, englishKey)),
+        new(db.GetLocalizedString(tableName, germanKey))
+    };
+
+        languageDropdown.options = opts;
+        languageDropdown.RefreshShownValue();
+
+        /* Index synchronisieren, falls Locale extern geändert wurde */
+        int current = LocalizationSettings.AvailableLocales.Locales
+                       .IndexOf(LocalizationSettings.SelectedLocale);
+        languageDropdown.SetValueWithoutNotify(current);
+    }
+
+    void InitializeLanguageDropdown()
+    {
+        languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
+    }
+
+    private void OnLanguageChanged(int index)
+    {
+        ApplyLocale(index);
+        PlayerPrefs.SetInt(LocalePrefKey, index);
+        PlayerPrefs.Save();
+    }
+
+    private static void ApplyLocale(int index)
+    {
+        IList<Locale> locales = LocalizationSettings.AvailableLocales.Locales;
+
+        if (index >= 0 && index < locales.Count)
+            LocalizationSettings.SelectedLocale = locales[index];
+    }
+
     void BindEvents()
     {
         volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
         muteButton.onClick.AddListener(OnMuteClicked);
+    }
+
+    public void CloseGame()
+    {
+        Application.Quit();
     }
 
     private static void OnToggleChanged(bool value)
@@ -130,18 +217,6 @@ public class MenuManager : MonoBehaviour
 
     void InitializeQualityDropdown()
     {
-        qualityDropdown.ClearOptions();
-        List<string> options = new();
-
-        for (int i = 0; i < QualitySettings.names.Length; i++)
-        {
-            options.Add(QualitySettings.names[i]);
-        }
-
-        qualityDropdown.AddOptions(options);
-        qualityDropdown.value = QualitySettings.GetQualityLevel();
-        qualityDropdown.RefreshShownValue();
-
         qualityDropdown.onValueChanged.AddListener(SetQualityLevel);
     }
 
@@ -163,7 +238,6 @@ public class MenuManager : MonoBehaviour
             string option = $"{res.width}x{res.height} @ {Mathf.RoundToInt((float)res.refreshRateRatio.value)}Hz";
             resolutionOptions.Add(option);
 
-            // Aktuelle Aufl�sung finden
             if (res.width == Screen.currentResolution.width &&
                 res.height == Screen.currentResolution.height &&
                 Mathf.Approximately((float)res.refreshRateRatio.value, (float)Screen.currentResolution.refreshRateRatio.value))
