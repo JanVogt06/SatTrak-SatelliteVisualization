@@ -12,7 +12,7 @@ ScriptedImporter:
     generateSecondaryUVSet: 0
   importSettings:
     nodeNameMethod: 1
-    animationMethod: 2
+    animationMethod: 0
     generateMipMaps: 1
     texturesReadable: 0
     defaultMinFilterMode: 9729
