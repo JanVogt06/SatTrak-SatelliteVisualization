@@ -92,6 +92,9 @@ public class SearchPanelController : MonoBehaviour
 
     public DefaultStuff infoPanelAnimation;
 
+    public GameObject famousInfoPanel;               
+    public TextMeshProUGUI famousInfoText;
+
     private enum FilterMode
     {
         All,
@@ -111,6 +114,24 @@ public class SearchPanelController : MonoBehaviour
         "56217",
         "46984",
 		"63147"
+    };
+
+    private readonly Dictionary<string, string> famousInfoTexts = new()
+    {
+        { "25544",
+          "<u>International Space Station (ISS)</u> \n\nIn service since 1998, the ISS circles Earth every 90 minutes at roughly 400 km altitude. It is a joint venture of NASA, Roscosmos, ESA, JAXA and CSA and has been permanently inhabited since November 2000. More than 3 000 microgravity, biology, technology and Earth-observation experiments have been conducted on board. The station offers about 930 m³ of pressurised volume—comparable to a six-bedroom house—and is visible to the naked eye from the ground. Current plans call for operation until at least 2030, after which commercial outposts are expected to take over." },
+
+        { "20580",
+          "<u>Hubble Space Telescope (HST)</u> \n\nDeployed on 24 April 1990 by Space Shuttle Discovery, Hubble’s 2.4 m mirror has provided diffraction-limited imaging above Earth’s atmosphere. Five shuttle servicing missions between 1993 and 2009 corrected optics and upgraded instruments, enabling landmark deep-field views and precise measurements of cosmic expansion. Hubble continues to operate at ~540 km altitude, working in tandem with newer telescopes such as JWST. Its observations span ultraviolet to near-infrared wavelengths and have contributed to over 20 000 peer-reviewed papers. Without an end-of-life boost or de-orbit mission, re-entry is projected for the late 2030s." },
+
+        { "46984",
+          "<u>Sentinel-6 Michael Freilich</u> \n\nLaunched on 21 November 2020, this altimetry satellite continues the precise sea-level record begun by TOPEX/Poseidon in 1992. Operating in a 1 336 km sun-synchronous orbit, its Poseidon-4 radar measures global mean sea level to millimetre accuracy, supporting climate studies and weather forecasting. Sentinel-6 is a collaboration among ESA, EUMETSAT, NASA and NOAA, with a twin (Sentinel-6B) planned for 2025. An onboard GNSS radio-occultation payload also derives atmospheric temperature and humidity profiles. The mission is designed to extend high-quality ocean-topography data through at least 2030." },
+
+        { "56217",
+          "<u>Kepler-20 (Kepler Communications)</u> \n\nThis 6U CubeSat was released on 15 April 2023 during SpaceX’s Transporter-7 rideshare and augments Kepler’s growing Gen-1 constellation. Each satellite, built in Toronto, combines Ku-band broadband with narrowband IoT links to create a global store-and-forward data network. Future iterations will add optical inter-satellite lasers for real-time relay services to other spacecraft. Weighing about 10 kg, Kepler-20 orbits in a 97° sun-synchronous track at 575 km altitude. The company’s long-term goal is a space-based “Internet for things”—enabling continuous connectivity for remote sensors, ships and satellites." },
+
+        { "63147",
+          "<u>Starlink-32936</u> \n\nPart of SpaceX’s large-scale Starlink network, this satellite was launched on 2 March 2024 and operates in a 550 km low-Earth orbit. Phased-array antennas deliver broadband internet with latencies below 30 ms, while optical laser links route data between satellites without ground hops. The vehicle uses electric propulsion for orbit-keeping and end-of-life disposal, limiting lifetime to about five years before controlled de-orbit. Starlink has already surpassed 7 300 active satellites, forming the largest constellation in history. Mitigation measures such as darker coatings, attitude adjustments and coordination protocols aim to reduce brightness and collision risk." }
     };
 
     private List<Color> PossibleTrackColors = new List<Color>
@@ -319,6 +340,7 @@ public class SearchPanelController : MonoBehaviour
         {
             infoPanelAnimation.ResetPanelAnimation();
             infoPanel.SetActive(false);
+            famousInfoPanel.SetActive(false);   
             return;
         }
 
@@ -337,6 +359,20 @@ public class SearchPanelController : MonoBehaviour
         perigeeValue.text = $"{orbit.Perigee:F2} km";
         periodValue.text = $"{orbit.Period:F2} min";
         bStarValue.text = $"{orbit.BStar:E2}";
+
+        string satName = satellite.gameObject.name;
+        bool isFamous = famousInfoTexts.Keys.Any(id => satName.Contains(id, StringComparison.OrdinalIgnoreCase));
+
+        if (isFamous)
+        {
+            string id = famousInfoTexts.Keys.First(k => satName.Contains(k, StringComparison.OrdinalIgnoreCase));
+            famousInfoText.text = famousInfoTexts[id];
+            famousInfoPanel.SetActive(true);
+        }
+        else
+        {
+            famousInfoPanel.SetActive(false);
+        }
 
         infoPanel.SetActive(true);
     }
