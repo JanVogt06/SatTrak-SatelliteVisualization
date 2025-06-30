@@ -35,16 +35,6 @@ namespace Satellites
             
             // Famous Satellites identifizieren
             IsFamous = FAMOUS_NORAD_IDS.Contains((int)tle.NoradNumber);
-            
-            // Debug-Ausgabe
-            if (IsISS)
-            {
-                Debug.Log($"ISS gefunden! NORAD: {tle.NoradNumber}, Name: {tle.Name}");
-            }
-            if (IsFamous)
-            {
-                Debug.Log($"Famous Satellite gefunden! NORAD: {tle.NoradNumber}, Name: {tle.Name}");
-            }
         
             OrbitPropagator = new Sgp4(tle);
             orbit.Initialize(OrbitPropagator);
