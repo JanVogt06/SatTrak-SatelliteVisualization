@@ -36,6 +36,9 @@ namespace Heatmap
             heatMapHelper.SetActive(value);
             isVisible = value;
             _meshRenderer.enabled = value;
+            EarthDayNightOverlay.enabled = !value;
+            DayNightSystem.enabled = !value;
+            DayNightSystemToggle.isOn = !value;
         }
 
         public void UpdateHeatmap(NativeArray<Vector3> satellitePositions)
