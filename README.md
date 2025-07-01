@@ -8,15 +8,33 @@ auf einem virtuellen Globus zu verfolgen.
 
 ## 🌍 Features
 
+### Kern-Features
+
 - **Echtzeit-Satellitenverfolgung**: Visualisierung von über 5000 aktiven Satelliten mit TLE-Daten von Celestrak
-- **Interaktive Kamerasteuerung**: Nahtloser Übergang zwischen Weltraum- und Erdansicht
-- **ISS-Tracking**: Spezielle Hervorhebung und Quick-Access für die Internationale Raumstation
+- **Interaktive Kamerasteuerung**: Nahtloser Übergang zwischen Weltraum- und Erdansicht mit Zoom-Slider
+- **Famous Satellites**: Spezielle 3D-Modelle und Informationen für berühmte Satelliten
+- **Orbit-Visualisierung**: Darstellung von Satelliten-Orbits mit verschiedenen Farben (bis zu 9 gleichzeitig)
+- **Satelliten-Filterung**
+
+### Visualisierung & Navigation
+
 - **Heatmap-Visualisierung**: Darstellung der Satellitendichte auf der Erdoberfläche
 - **Tag/Nacht-System**: Realistische Beleuchtung mit Tag/Nacht-Zyklus
-- **Ortssuche**: Schnelle Navigation zu Städten weltweit mit GeoNames-Datenbank
-- **Satellitensuche**: Durchsuchbare Liste aller verfolgten Satelliten
+- **Ortssuche**: Schnelle Navigation zu über 1000 Städten weltweit mit GeoNames-Datenbank
+- **Satelliten-Info-Panel**: Detaillierte Orbital-Daten (Inklination, Exzentrizität, Periode, etc.)
 - **Performance-optimiert**: GPU-Instancing und Job-System für flüssige Darstellung
-- **Anpassbare UI**: Customizable Crosshair und Cursor-Designs
+
+### User Interface
+
+- **Anpassbare UI**:
+    - Customizable Crosshair (6 Designs, 8 Farben)
+    - Cursor-Designs (2 Varianten, 8 Farben)
+    - FPS-Anzeige (optional)
+- **Zeitsteuerung**:
+    - Zeitraffer (0x - 1000x)
+    - Zeit-Slider mit Zoom-Funktion
+    - Pause/Play Kontrollen
+- **Audio-System**: Hintergrundmusik mit Lautstärkeregelung
 
 ## 📋 Systemanforderungen
 
@@ -109,24 +127,90 @@ cd UnitySeminar
 ## 🏗️ Projektstruktur
 
 ```
-Assets/
-├── Scripts/
-│   ├── Satellites/           # Satelliten-Kernlogik
-│   │   ├── SGP/             # SGP4 Orbit-Propagation
-│   │   ├── Satellite.cs
-│   │   ├── SatelliteManager.cs
-│   │   ├── SatelliteOrbit.cs
-│   │   └── SatelliteModelController.cs
-│   ├── UI/                  # User Interface
-│   │   ├── SearchPanelController.cs
-│   │   └── SatelliteLabelUI.cs
-│   ├── Lighting/            # Tag/Nacht-System
-│   │   ├── DayNightSystem.cs
-│   │   └── EarthDayNightOverlay.cs
-│   ├── Heatmap/             # Dichtevisualisierung
-│   ├── TimeSlider/          # Zeitsteuerung
-│   └── CesiumZoomController.cs
-├── Modelle/                 # 3D-Modelle/Materialien
+UnityProjekt/
+├── Assets/
+│   ├── Scripts/
+│   │   ├── Satellites/                    # Satelliten-Kernlogik
+│   │   │   ├── SGP/                      # SGP4 Orbit-Propagation Algorithmus
+│   │   │   ├── Satellite.cs              # Satelliten-Entität
+│   │   │   ├── SatelliteManager.cs       # Zentrale Satelliten-Verwaltung
+│   │   │   ├── SatelliteOrbit.cs         # Orbit-Visualisierung
+│   │   │   ├── SatelliteModelController.cs # LOD-System & Modell-Switching
+│   │   │   └── MoveSatelliteJobParallelForTransform.cs # Job System
+│   │   │
+│   │   ├── UI/                           # User Interface
+│   │   │   ├── SearchPanelController.cs  # Satelliten-Suche & Filter
+│   │   │   ├── SatelliteLabelUI.cs       # Satelliten-Labels
+│   │   │   ├── ISSQuickButton.cs         # ISS Schnellzugriff
+│   │   │   ├── SatelliteShowHide.cs      # Sichtbarkeits-Toggle
+│   │   │   └── TooltipController.cs      # Tooltip-System
+│   │   │
+│   │   ├── Lighting/                     # Beleuchtung
+│   │   │   ├── DayNightSystem.cs         # Tag/Nacht-Zyklus
+│   │   │   └── EarthDayNightOverlay.cs   # Terminator-Visualisierung
+│   │   │
+│   │   ├── Heatmap/                      # Dichtevisualisierung
+│   │   │   ├── HeatmapController.cs      # Heatmap-Verwaltung
+│   │   │   └── HeatmapDensityJob.cs      # GPU-Berechnung
+│   │   │
+│   │   ├── TimeSlider/                   # Zeitsteuerung
+│   │   │   ├── TimeSlider.cs             # Zeit-Kontrolle
+│   │   │   └── SliderStep.cs             # Zoom-Stufen
+│   │   │
+│   │   ├── DoubleSlider/                 # Altitude-Filter
+│   │   │   └── Scripts/                  # Doppel-Slider Komponenten
+│   │   │
+│   │   ├── CesiumZoomController.cs       # Kamera-Modi (Space/Earth)
+│   │   ├── FreeFlyCamera.cs              # First-Person Kamera
+│   │   ├── GlobeRotationController.cs    # Orbit-Kamera
+│   │   ├── IntroOrbitCam.cs              # Start-Animation
+│   │   ├── CameraFlySequence.cs          # Kamera-Übergänge
+│   │   ├── CameraAccessMonitor.cs        # Debug-Tool
+│   │   │
+│   │   ├── MenuManager.cs                # Hauptmenü-Verwaltung
+│   │   ├── MainMenuCameraMovement.cs     # Menü-Animation
+│   │   ├── MainMenuSatelliteSpawner.cs   # Menü-Dekoration
+│   │   ├── PreloadScene.cs               # Asset-Preloading
+│   │   ├── SceneSwitcher.cs              # Szenen-Verwaltung
+│   │   │
+│   │   ├── CrosshairSelector.cs          # Crosshair-Einstellungen
+│   │   ├── CrosshairSettings.cs          # Crosshair-Speicher
+│   │   ├── CustomCursor.cs               # Cursor-System
+│   │   ├── MusicManager.cs               # Audio-Verwaltung
+│   │   │
+│   │   ├── GeoNamesSearchFromJSON.cs     # Ortssuche
+│   │   ├── ConversionExtensions.cs       # Koordinaten-Helfer
+│   │   ├── TerrainHeightClamp.cs         # Terrain-Anpassung
+│   │   ├── FlyingUIPhysics.cs            # UI-Physik
+│   │   └── DefaultStuff.cs               # Verschiedene UI-Funktionen
+│   │
+│   ├── Modelle/                          # 3D Assets
+│   │   ├── Satellites/                   # Standard-Satelliten
+│   │   ├── Famous/                       # ISS, Hubble, etc.
+│   │   ├── Materials/                    # Materialien & Shader
+│   │   └── UI/                           # UI-Grafiken
+│   │
+│   ├── Resources/                        # Runtime-Ressourcen
+│   │   ├── Localization/                 # Sprachdateien (DE/EN)
+│   │   ├── Audio/                        # Musik & Sounds
+│   │   └── Data/                         # JSON-Daten (GeoNames, etc.)
+│   │
+│   ├── Scenes/                           # Unity-Szenen
+│   │   ├── PreloadScene.unity            # Lade-Szene
+│   │   ├── MainMenu.unity                # Hauptmenü
+│   │   └── GameScene.unity               # Spiel-Szene
+│   │
+│   ├── Plugins/                          # Externe Plugins
+│   │   └── Cesium/                       # Cesium for Unity
+│   │
+│   └── StreamingAssets/                  # Cesium Tiles & große Dateien
+│
+├── Packages/                             # Unity Package Manager
+│   ├── manifest.json                     # Package-Definitionen
+│   └── packages-lock.json                # Version Lock
+│
+├── ProjectSettings/                      # Unity-Projekteinstellungen
+└── README.md                             # Projektdokumentation
 ```
 
 ### Hauptkomponenten
