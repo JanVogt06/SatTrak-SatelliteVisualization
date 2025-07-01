@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: 1d5df2588507b0a429b4b7138932f2b0, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 5935755336425930775
   m_TableData:
   - m_Id: 1087728910336
     m_Localized: 'Framerate:'
@@ -200,6 +201,172 @@ MonoBehaviour:
     m_Localized: General Informations
     m_Metadata:
       m_Items: []
+  - m_Id: 163323898363904
+    m_Localized: Epoch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163327996198912
+    m_Localized: Inclination
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163329648754688
+    m_Localized: Mean Anomaly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163331678797824
+    m_Localized: Eccentricity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163461387649024
+    m_Localized: Mean Motion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163462960513024
+    m_Localized: Semi-major Axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163463723876352
+    m_Localized: Apogee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163578387759104
+    m_Localized: Perigee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163579130150912
+    m_Localized: Period
+    m_Metadata:
+      m_Items: []
+  - m_Id: 164803258744832
+    m_Localized: BStar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170700026544128
+    m_Localized: The exact moment at which the listed orbital elements are valid,
+      expressed in Coordinated Universal Time.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170702828339200
+    m_Localized: "The angle between the orbital plane and Earth\u2019s equatorial
+      plane; high values indicate tilted or polar orbits."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170745987727360
+    m_Localized: The Right Ascension of the Ascending Node; this angle is measured
+      from the vernal equinox to the point where the satellite crosses the equator
+      from south to north.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170746570735616
+    m_Localized: "The angle, measured within the orbital plane, from the ascending
+      node to the orbit\u2019s closest point to Earth (perigee)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171792286220288
+    m_Localized: A calculated angle that indicates how far the satellite has progressed
+      around its orbit since perigee, assuming uniform motion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171794949603328
+    m_Localized: "A dimensionless number describing the orbit\u2019s shape; 0 denotes
+      a circle, while values approaching 1 indicate an increasingly elongated ellipse."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171797206138880
+    m_Localized: The average angular rate required to complete one revolution, often
+      given in revolutions per day or radians per minute.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171799244570624
+    m_Localized: One half of the longest diameter of the orbital ellipse; it sets
+      the overall size of the orbit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171801069092864
+    m_Localized: "The farthest point of the orbit from Earth\u2019s centre (or surface,
+      depending on convention)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171802868449280
+    m_Localized: The nearest point of the orbit to Earth.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171805007544320
+    m_Localized: The time required for the satellite to complete one full orbit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 172115977437184
+    m_Localized: An empirical coefficient that characterises atmospheric drag effects;
+      higher values signify stronger deceleration due to the upper atmosphere.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178690519597056
+    m_Localized: Satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178691849191424
+    m_Localized: Satellites found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178692935516160
+    m_Localized: Search Satellite...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 180794172768256
+    m_Localized: Page {0} / {1}
+    m_Metadata:
+      m_Items:
+      - rid: 5935755336425930775
+  - m_Id: 178694424494080
+    m_Localized: No Results
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181899321540608
+    m_Localized: All satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181900869238784
+    m_Localized: Famous satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181902018478080
+    m_Localized: Name ascending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181903192883200
+    m_Localized: Name descending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181904295985152
+    m_Localized: Distance ascending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181905948540928
+    m_Localized: Distance descending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 185888515686400
+    m_Localized: Citys and Villages
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186245853609984
+    m_Localized: Search City / Village...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186449877139456
+    m_Localized: Citys / Villages found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 188230824755200
+    m_Localized: Famous Places
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5935755336425930775
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 180794172768256

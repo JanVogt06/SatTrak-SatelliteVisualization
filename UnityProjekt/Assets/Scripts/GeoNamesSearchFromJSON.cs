@@ -8,6 +8,7 @@ using System.Collections;
 using CesiumForUnity;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.Localization.Settings;
 
 [Serializable]
 public class LocationEntry
@@ -104,6 +105,14 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
 
         var famousHash = new HashSet<string>(_famous, StringComparer.OrdinalIgnoreCase);
         _famousList = _allLocations.Where(l => famousHash.Contains(l.name)).ToList();
+
+        LocalizationSettings.SelectedLocaleChanged += _ =>
+        {
+            PopulateFilterDropdown();
+            pageLabel.text = _filtered.Count == 0
+                ? L("GameScene", "NoResults")
+                : L("GameScene", "PageLabel", _currentPage + 1, _totalPages);
+        };
     }
 
     private void Start()
@@ -118,25 +127,33 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
 
         searchInputField.onValueChanged.AddListener(OnSearchChanged);
 
-        filterDropdown.ClearOptions();
-        filterDropdown.AddOptions(new List<TMP_Dropdown.OptionData>
-    {
-        new("All"),
-        new("Famous"),
-        new("Name ascending"),
-        new("Name descending")
-    });
-        filterDropdown.onValueChanged.AddListener(idx =>
-        {
-            _mode = (FilterMode)idx;
-            searchInputField.SetTextWithoutNotify(string.Empty);
-            ApplyModeFilter();
-        });
+        PopulateFilterDropdown();
+        filterDropdown.onValueChanged.AddListener(OnFilterChanged);
 
         ShowPage(0);
     }
 
-    /* ---------- UI-Callbacks ---------- */
+    private static string L(string table, string key, params object[] args)
+    {
+        return args.Length == 0
+            ? LocalizationSettings.StringDatabase.GetLocalizedString(table, key)
+            : LocalizationSettings.StringDatabase.GetLocalizedString(table, key, args);
+    }
+
+    private void PopulateFilterDropdown()
+    {
+        filterDropdown.ClearOptions();
+        var opts = new List<TMP_Dropdown.OptionData>
+        {
+            new(L("GameScene", "gs.All")),
+            new(L("GameScene", "gs.FamousCity")),
+            new(L("GameScene", "gs.NameAsc")),
+            new(L("GameScene", "gs.NameDesc"))
+        };
+        filterDropdown.AddOptions(opts);
+        filterDropdown.RefreshShownValue();
+    }
+
     private void TogglePanel()
     {
         bool open = !panel.activeSelf;
@@ -176,7 +193,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         if (_filtered.Count == 0)
         {
             ClearRows();
-            pageLabel.text = "No results";
+            pageLabel.text = L("GameScene", "NoResults");
             prevPageButton.interactable =
             nextPageButton.interactable =
             firstPageButton.interactable =
@@ -195,7 +212,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         nextPageButton.interactable = !last;
         lastPageButton.interactable = !last;
 
-        pageLabel.text = $"Page {_currentPage + 1} / {_totalPages}";
+        pageLabel.text = L("GameScene", "PageLabel", _currentPage + 1, _totalPages);
 
         ClearRows();
 
@@ -233,6 +250,8 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         _filtered = new List<LocationEntry>(_allLocations);
         _totalPages = Mathf.Max(1, Mathf.CeilToInt((float)_filtered.Count / itemsPerPage));
         ShowPage(0);
+
+        pageLabel.text = L("GameScene", "PageLabel", 1, _totalPages);
     }
 
     /* ---------- Selektion ---------- */

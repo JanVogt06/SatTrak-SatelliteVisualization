@@ -140,6 +140,31 @@ public class SearchPanelController : MonoBehaviour
         new(0.6f, 0.3f, 0.0f)
     };
 
+    private string L(string table, string key, params object[] args)
+    {
+        if (args.Length == 0)
+            return LocalizationSettings.StringDatabase.GetLocalizedString(table, key);
+
+        return LocalizationSettings.StringDatabase
+               .GetLocalizedString(table, key, args);
+    }
+
+    void PopulateFilterDropdown()
+    {
+        filterDropdown.ClearOptions();
+        var opts = new List<TMP_Dropdown.OptionData>
+        {
+            new(L("GameScene", "gs.All")),
+            new(L("GameScene", "gs.Famous")),
+            new(L("GameScene", "gs.NameAsc")),
+            new(L("GameScene", "gs.NameDesc")),
+            new(L("GameScene", "gs.DistAsc")),
+            new(L("GameScene", "gs.DistDesc"))
+        };
+        filterDropdown.AddOptions(opts);
+        filterDropdown.RefreshShownValue();
+    }
+
     void Start()
     {
         if (satelliteManager == null)
@@ -301,6 +326,18 @@ public class SearchPanelController : MonoBehaviour
             if (famousInfoPanel.activeSelf && trackedSatellite != null)
                 ShowSatelliteInfo(trackedSatellite);   
         };
+
+        PopulateFilterDropdown();
+
+        LocalizationSettings.SelectedLocaleChanged += _ =>
+        {
+            PopulateFilterDropdown();             
+
+            pageLabel.text = L("GameScene", "PageLabel",
+                               currentPage + 1, totalPages);
+            if (filteredSatelliteNames.Count == 0)
+                pageLabel.text = L("GameScene", "NoResults");
+        };
     }
 
     private static string StripLeadingDigits(string input)
@@ -416,7 +453,7 @@ public class SearchPanelController : MonoBehaviour
             foreach (Transform child in contentParent)
                 Destroy(child.gameObject);
 
-            pageLabel.text = "No results";
+            pageLabel.text = L("GameScene", "NoResults");
             prevPageButton.interactable =
                 nextPageButton.interactable =
                     firstPageButton.interactable =
@@ -434,7 +471,7 @@ public class SearchPanelController : MonoBehaviour
         nextPageButton.interactable = !onLast;
         lastPageButton.interactable = !onLast;
 
-        pageLabel.text = $"Page {currentPage + 1} / {totalPages}";
+        pageLabel.text = L("GameScene", "PageLabel", currentPage + 1, totalPages);
 
         foreach (Transform child in contentParent)
             Destroy(child.gameObject);
@@ -528,7 +565,7 @@ public class SearchPanelController : MonoBehaviour
         nextPageButton.interactable = multiplePages;
         lastPageButton.interactable = multiplePages;
 
-        pageLabel.text = $"Page 1 / {totalPages}";
+        pageLabel.text = L("GameScene", "PageLabel", 1, totalPages);
 
         foreach (Transform child in contentParent)
             Destroy(child.gameObject);
@@ -559,7 +596,7 @@ public class SearchPanelController : MonoBehaviour
 
         UpdateFoundLabel();
 
-        pageLabel.text = $"Page 1 / {totalPages}";
+        pageLabel.text = L("GameScene", "PageLabel", 1, totalPages);
         filterDropdown.RefreshShownValue();
     }
 

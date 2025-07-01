@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: de
   m_SharedData: {fileID: 11400000, guid: 1d5df2588507b0a429b4b7138932f2b0, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 5935755336425930776
   m_TableData:
   - m_Id: 1087728910336
     m_Localized: 'Bildrate:'
@@ -197,6 +198,177 @@ MonoBehaviour:
     m_Localized: Allgemeines
     m_Metadata:
       m_Items: []
+  - m_Id: 163323898363904
+    m_Localized: Epoche
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163327996198912
+    m_Localized: Inklination
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163329648754688
+    m_Localized: Mittlere Anomalie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163331678797824
+    m_Localized: "Exzentrizit\xE4t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163461387649024
+    m_Localized: Mittlere Bewegung
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163462960513024
+    m_Localized: "Gro\xDFe Halbachse"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163463723876352
+    m_Localized: "Apog\xE4um"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163578387759104
+    m_Localized: "Perig\xE4um"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163579130150912
+    m_Localized: 'Umlaufperiode
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 164803258744832
+    m_Localized: B*-Wert
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170700026544128
+    m_Localized: "Der genaue Zeitpunkt, zu dem die aufgef\xFChrten Bahnelemente g\xFCltig
+      sind, wird in koordinierter Weltzeit (UTC) angegeben."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170702828339200
+    m_Localized: "Der Winkel zwischen der Bahnebene und der \xC4quatorebene der Erde;
+      bei hohen Werten wird auf geneigte bzw. polare Umlaufbahnen geschlossen."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170745987727360
+    m_Localized: "Die Rektaszension des aufsteigenden Knotens; dieser Winkel wird
+      vom Fr\xFChlingspunkt bis zu dem Punkt gemessen, an dem der Satellit den \xC4quator
+      von S\xFCden nach Norden passiert."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170746570735616
+    m_Localized: "Der Winkel, der innerhalb der Bahnebene vom aufsteigenden Knoten
+      bis zum erdn\xE4chsten Punkt der Umlaufbahn (Perig\xE4um) gemessen wird."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171792286220288
+    m_Localized: "Ein Winkel der angibt, um welchen Betrag der Satellit seit dem
+      Perig\xE4um \u2013 unter der Annahme gleichf\xF6rmiger Bewegung - auf seiner
+      Umlaufbahn fortgeschritten ist."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171794949603328
+    m_Localized: "Eine Dimensionslose Nummer. 0 kennzeichnet eine Kreisbahn, w\xE4hrend
+      Werte, die sich 1 ann\xE4hern, auf eine zunehmend gestreckte Ellipse hindeuten."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171797206138880
+    m_Localized: "Die durchschnittliche Winkelgeschwindigkeit, die zum Abschluss
+      einer vollst\xE4ndigen Umlaufbahn erforderlich ist."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171799244570624
+    m_Localized: "Sie wird als H\xE4lfte des gr\xF6\xDFten Durchmessers der orbitalen
+      Ellipse definiert und legt die Gesamtgr\xF6\xDFe der Bahn fest."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171801069092864
+    m_Localized: "Der vom Erdmittelpunkt (oder von der Erdoberfl\xE4che) am weitesten
+      entfernte Punkt der Umlaufbahn."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171802868449280
+    m_Localized: "Der von der Erde n\xE4chstgelegene Punkt der Umlaufbahn."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171805007544320
+    m_Localized: "Die Zeitspanne, die erforderlich ist, damit der Satellit eine vollst\xE4ndige
+      Bahn umkreist."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 172115977437184
+    m_Localized: "Ein empirischer Faktor, mittels dessen die Auswirkungen des atmosph\xE4rischen
+      Widerstands charakterisiert werden, wobei h\xF6here Werte auf eine st\xE4rkere
+      Verz\xF6gerung durch die obere Atmosph\xE4re hinweisen."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178690519597056
+    m_Localized: Satelliten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178691849191424
+    m_Localized: Satelliten gefunden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178692935516160
+    m_Localized: Suche Satellit...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 180794172768256
+    m_Localized: Seite {0} / {1}
+    m_Metadata:
+      m_Items:
+      - rid: 5935755336425930776
+  - m_Id: 178694424494080
+    m_Localized: "Keine Ergebnisse\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181899321540608
+    m_Localized: Alle Satelliten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181900869238784
+    m_Localized: Bekannte Satelliten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181902018478080
+    m_Localized: Name aufsteigend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181903192883200
+    m_Localized: Name absteigend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181904295985152
+    m_Localized: Distanz aufsteigend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181905948540928
+    m_Localized: Distanz absteigend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 185888515686400
+    m_Localized: "St\xE4dte und D\xF6rfer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186245853609984
+    m_Localized: Suche Stadt / Dorf...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186449877139456
+    m_Localized: "St\xE4dte / D\xF6rfer gefunden"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 188230824755200
+    m_Localized: "Ber\xFChmte Orte"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5935755336425930776
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 180794172768256

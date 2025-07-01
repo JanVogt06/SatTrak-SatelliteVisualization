@@ -123,6 +123,10 @@ MonoBehaviour:
     m_Key: preload.loading
     m_Metadata:
       m_Items: []
+  - m_Id: 206555474690048
+    m_Key: mainmenu.help
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
