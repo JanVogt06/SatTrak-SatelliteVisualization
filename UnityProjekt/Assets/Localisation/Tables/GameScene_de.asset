@@ -1,0 +1,202 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: GameScene_de
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: de
+  m_SharedData: {fileID: 11400000, guid: 1d5df2588507b0a429b4b7138932f2b0, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 1087728910336
+    m_Localized: 'Bildrate:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1607378010112
+    m_Localized: Weltraum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702534184960
+    m_Localized: Suche nach Objekten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1766165970944
+    m_Localized: Satelliten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1840837165056
+    m_Localized: "St\xE4dte & D\xF6rfer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2686685675520
+    m_Localized: 'Arbeitsmodus:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2942810849280
+    m_Localized: Visuelle, Bewegungs- und Zeiteinstellungen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3099988197376
+    m_Localized: Zeige Satelliten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3169789804544
+    m_Localized: Tag-Nacht-Zyklus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3300576591872
+    m_Localized: Zeige Heatmap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3410454773760
+    m_Localized: Wenig Sat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3540318814208
+    m_Localized: Viele Sat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3617967964160
+    m_Localized: "Visuelles Men\xFC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3768899993600
+    m_Localized: "Hauptmen\xFC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7093691219968
+    m_Localized: "L\xF6sche\nOrbit"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7179615731712
+    m_Localized: "Satellitenh\xF6he"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7463700135936
+    m_Localized: Minimal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513322946560
+    m_Localized: Maximal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7660761120768
+    m_Localized: Zeit- und Bewegungseinstellungen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10385854955520
+    m_Localized: Monat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10408650997760
+    m_Localized: Tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10426317406208
+    m_Localized: Stunde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10445279854592
+    m_Localized: Minute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10462761713664
+    m_Localized: Sekunde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11191090020352
+    m_Localized: Unendlich
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12332255281152
+    m_Localized: Alle verfolgten Satelliten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12644227612672
+    m_Localized: Satellitendaten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14018491318272
+    m_Localized: "<u>Internationale Raumstation (ISS)</u>\n\nSeit 1998 im Einsatz
+      umkreist die ISS die Erde alle 90 Minuten in rund 400 km H\xF6he. Sie ist ein
+      Gemeinschaftsprojekt von NASA, Roskosmos, ESA, JAXA und CSA und seit November
+      2000 dauerhaft bemannt. Mehr als 3 000 Experimente zu Mikrogravitation, Biologie,
+      Technologie und Erdbeobachtung wurden bisher durchgef\xFChrt. Der Innenraum
+      von etwa 930 m\xB3 entspricht einem Sechs-Zimmer-Haus und ist mit blo\xDFem
+      Auge sichtbar. Der Betrieb ist bis mindestens 2030 vorgesehen, bevor kommerzielle
+      Nachfolger \xFCbernehmen sollen."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14019875438592
+    m_Localized: "<u>Weltraumteleskop Hubble (HST)</u>\n\nAm 24. April 1990 vom Space
+      Shuttle Discovery ausgesetzt, liefert Hubbles 2,4-m-Spiegel beugungsbegrenzte
+      Aufnahmen oberhalb der Atmosph\xE4re. F\xFCnf Wartungsmissionen von 1993 bis
+      2009 korrigierten die Optik und r\xFCsteten Instrumente nach; so entstanden
+      ber\xFChmte Deep-Field-Bilder und pr\xE4zise Messungen der kosmischen Expansion.
+      Hubble arbeitet weiterhin in ~540 km H\xF6he und erg\xE4nzt neuere Observatorien
+      wie das JWST. Seine Daten f\xFChrten zu \xFCber 20 000 Fachpublikationen von
+      UV- bis NIR-Bereich. Ohne aktives De-Orbit-Man\xF6ver wird ein Wiedereintritt
+      Ende der 2030er erwartet."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14021196644352
+    m_Localized: "<u>Sentinel-6 Michael Freilich</u>\n\nGestartet am 21. November
+      2020, setzt dieser Altimetersatellit die millimetergenaue Meeresspiegel-Zeitreihe
+      fort, die 1992 mit TOPEX/Poseidon begann. In einer sonnensynchronen Bahn von
+      1 336 km misst das Radar Poseidon-4 den globalen mittleren Meeresspiegel und
+      unterst\xFCtzt Klima- und Wettermodelle. Sentinel-6 ist ein Gemeinschaftsprojekt
+      von ESA, EUMETSAT, NASA und NOAA; ein baugleiches Sentinel-6B soll 2025 folgen.
+      Ein GNSS-Radiookkultations-Experiment liefert au\xDFerdem Temperatur- und Feuchteprofile
+      der Atmosph\xE4re. So bleibt der hochwertige Ozeantopografie-Datensatz mindestens
+      bis 2030 erhalten."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14022417186816
+    m_Localized: "<u>Kepler-20 (Kepler Communications)</u>\n\nDieser 6U-CubeSat wurde
+      am 15. April 2023 im Rahmen von SpaceX\u2019 Transporter-7-Mission ausgesetzt
+      und erweitert die Gen-1-Konstellation von Kepler. Jeder Satellit, gefertigt
+      in Toronto, kombiniert Ku-Band-Breitband mit Schmalband-IoT-Links zu einem
+      globalen Store-and-Forward-Netzwerk. K\xFCnftige Versionen erhalten optische
+      Laser-Verbindungen f\xFCr Echtzeit-Relaisdienste zwischen Satelliten. Mit rund
+      10 kg Masse umkreist Kepler-20 in 575 km H\xF6he auf einer 97\xB0-sonnensynchronen
+      Bahn. Ziel ist ein weltraumgest\xFCtztes \u201EInternet der Dinge\u201C mit
+      durchgehender Konnektivit\xE4t f\xFCr Sensoren, Schiffe und Raumfahrzeuge."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14023901970432
+    m_Localized: "<u>Starlink-32936</u>\n\nAls Teil der Starlink-Megakonstellation
+      von SpaceX wurde dieser Satellit am 2. M\xE4rz 2024 gestartet und operiert
+      in 550 km H\xF6he. Phased-Array-Antennen liefern Breitbandinternet mit Latenzen
+      unter 30 ms, w\xE4hrend optische Laser-Links Daten direkt zwischen Satelliten
+      leiten. Elektrische Triebwerke sorgen f\xFCr Bahnhaltung und einen kontrollierten
+      Wiedereintritt nach etwa f\xFCnf Jahren. Mit \xFCber 7 300 aktiven Einheiten
+      ist Starlink bereits die gr\xF6\xDFte Satellitenflotte der Geschichte. Dunkle
+      Beschichtungen und abgestimmte Man\xF6ver sollen Lichtverschmutzung und Kollisionsrisiken
+      verringern."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17255776780288
+    m_Localized: Satelliteneinstellungen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17361754259456
+    m_Localized: Zeige Orbit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17434651262976
+    m_Localized: Allgemeines
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

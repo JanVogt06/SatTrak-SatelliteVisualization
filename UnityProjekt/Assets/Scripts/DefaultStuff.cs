@@ -40,7 +40,7 @@ public class DefaultStuff : MonoBehaviour
         {
             float fps = 1f / Time.unscaledDeltaTime;
             if (fpsText != null)
-                fpsText.text = $"Framerate: {Mathf.RoundToInt(fps)} FPS";
+                fpsText.text = $"{Mathf.RoundToInt(fps)} FPS";
             timer = 0;
         }
     }

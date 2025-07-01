@@ -4,6 +4,7 @@ using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 namespace TimeSlider
@@ -37,6 +38,10 @@ namespace TimeSlider
         private bool _isHovered;
         private bool _isDragging;
 
+        private void Awake()
+        {
+            LocalizationSettings.SelectedLocaleChanged += _ => UpdateVisuals();
+        }
 
         private void Start() 
         {
@@ -178,7 +183,7 @@ namespace TimeSlider
             dateSlider.minValue = _currentZoom.Min;
             dateSlider.maxValue = _currentZoom.Max;
             UpdateDateTexts();
-            zoomLevelText.text = _currentZoom.Name + ": \n" + dateSlider.value;
+            zoomLevelText.text = GetLocalizedStepName(_currentZoom.Type) + ": \n" + dateSlider.value;
         }
 
         private void UpdateDateTexts()
@@ -212,5 +217,19 @@ namespace TimeSlider
             timeMultiplierSlider.value = timeMultiplier;
         }
 
+        private string GetLocalizedStepName(SliderStep.Types type)
+        {
+            string key = type switch
+            {
+                SliderStep.Types.Month => "Step_Month",
+                SliderStep.Types.Day => "Step_Day",
+                SliderStep.Types.Hour => "Step_Hour",
+                SliderStep.Types.Minute => "Step_Minute",
+                _ => "Step_Second"
+            };
+
+            return LocalizationSettings.StringDatabase.GetLocalizedString(
+                     "GameScene", key);
+        }
     }
 }

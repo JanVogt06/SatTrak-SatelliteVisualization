@@ -1,0 +1,205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: GameScene_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 1d5df2588507b0a429b4b7138932f2b0, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 1087728910336
+    m_Localized: 'Framerate:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1607378010112
+    m_Localized: Back to Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702534184960
+    m_Localized: Search for Objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1766165970944
+    m_Localized: Satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1840837165056
+    m_Localized: Citys & Villages
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2686685675520
+    m_Localized: 'Operation Mode:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2942810849280
+    m_Localized: Visual, Motion & Time Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3099988197376
+    m_Localized: Show Satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3169789804544
+    m_Localized: Day-Night-Cycle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3300576591872
+    m_Localized: Show Heatmap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3410454773760
+    m_Localized: 'Few Sat. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3540318814208
+    m_Localized: Many Sat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3617967964160
+    m_Localized: Visual Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3768899993600
+    m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7093691219968
+    m_Localized: 'Reset
+
+      Orbit'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7179615731712
+    m_Localized: Satellite Heigh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7463700135936
+    m_Localized: Minimum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513322946560
+    m_Localized: Maximum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7660761120768
+    m_Localized: Time & Motion Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10385854955520
+    m_Localized: Month
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10408650997760
+    m_Localized: Day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10426317406208
+    m_Localized: Hour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10445279854592
+    m_Localized: Minute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10462761713664
+    m_Localized: Second
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11191090020352
+    m_Localized: Unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12332255281152
+    m_Localized: All Tracked Satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12644227612672
+    m_Localized: Satellite Data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14018491318272
+    m_Localized: "<u>International Space Station (ISS)</u>\n\nIn service since 1998,
+      the ISS circles Earth every 90 minutes at roughly 400 km altitude. It is a
+      joint project of NASA, Roscosmos, ESA, JAXA and CSA and has been permanently
+      inhabited since November 2000. More than 3 000 experiments in micro-gravity,
+      biology, technology and Earth observation have been conducted on board. The
+      station offers about 930 m\xB3 of pressurised volume - comparable to a six-bedroom
+      house - and can be seen with the naked eye. Current plans call for operation
+      until at least 2030, after which commercial outposts are expected to take over."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14019875438592
+    m_Localized: "<u>Hubble Space Telescope (HST)</u>\n\nDeployed on 24 April 1990
+      by Space Shuttle Discovery, Hubble\u2019s 2.4 m mirror provides diffraction-limited
+      imaging above Earth\u2019s atmosphere. Five servicing missions between 1993
+      and 2009 corrected optics and upgraded instruments, enabling landmark deep-field
+      views and precise measurements of cosmic expansion. Hubble continues to operate
+      at ~540 km altitude, working alongside newer observatories such as JWST. Its
+      data have generated more than 20 000 peer-reviewed papers spanning ultraviolet
+      to near-infrared astronomy. Without a de-orbit mission, atmospheric re-entry
+      is projected for the late 2030s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14021196644352
+    m_Localized: '<u>Sentinel-6 Michael Freilich</u>
+
+
+      Launched on 21 November
+      2020, this altimetry satellite extends the precise sea-level record begun by
+      TOPEX/Poseidon in 1992. Operating in a 1 336 km sun-synchronous orbit, its
+      Poseidon-4 radar measures global mean sea level to millimetre accuracy. Sentinel-6
+      is a partnership of ESA, EUMETSAT, NASA and NOAA, with the twin Sentinel-6B
+      planned for 2025. A GNSS radio-occultation payload also derives atmospheric
+      temperature and humidity profiles. The mission will keep high-quality ocean-topography
+      data flowing through at least 2030.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14022417186816
+    m_Localized: "<u>Kepler-20 (Kepler Communications)</u>\n\nThis 6U CubeSat was
+      released on 15 April 2023 during SpaceX\u2019s Transporter-7 rideshare and
+      augments Kepler\u2019s growing Gen-1 constellation. Each satellite, built in
+      Toronto, combines Ku-band broadband with narrow-band IoT links to form a global
+      store-and-forward network. Future units will add optical inter-satellite lasers
+      for real-time relay services. Weighing about 10 kg, Kepler-20 orbits in a 97\xB0
+      sun-synchronous path at 575 km altitude. The long-term aim is a space-based
+      \u201CInternet for things,\u201D enabling constant connectivity for remote
+      sensors, ships and spacecraft."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14023901970432
+    m_Localized: "<u>Starlink-32936</u>\n\nPart of SpaceX\u2019s Starlink mega-constellation,
+      this satellite was launched on 2 March 2024 and operates in a 550 km low-Earth
+      orbit. Phased-array antennas deliver broadband internet with latencies below
+      30 ms, while optical laser links route data directly between satellites. Electric
+      propulsion handles station-keeping and controlled de-orbit after roughly five
+      years. Starlink now exceeds 7 300 active satellites\u2014the largest fleet
+      in history. Mitigation measures such as darker coatings and coordinated manoeuvres
+      aim to reduce brightness and collision risk."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17255776780288
+    m_Localized: Satellite Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17361754259456
+    m_Localized: Show Orbit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17434651262976
+    m_Localized: General Informations
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

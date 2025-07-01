@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: GameScene Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: GameScene
+  m_TableCollectionNameGuidString: 1d5df2588507b0a429b4b7138932f2b0
+  m_Entries:
+  - m_Id: 1087728910336
+    m_Key: gs.framerate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1607378010112
+    m_Key: gs.backtoSpace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702534184960
+    m_Key: gs.Search for Objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1766165970944
+    m_Key: gs.Satellites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1840837165056
+    m_Key: gs.citys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2686685675520
+    m_Key: gs.operatiionmode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2942810849280
+    m_Key: gs.visualheader
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3099988197376
+    m_Key: gs.showsat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3169789804544
+    m_Key: gs.daynight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3300576591872
+    m_Key: gs.heatmap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3410454773760
+    m_Key: gs.few
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3540318814208
+    m_Key: gs.many
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3617967964160
+    m_Key: gs.vismenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3768899993600
+    m_Key: gs.mainmenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7093691219968
+    m_Key: gs.resetorbit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7179615731712
+    m_Key: gs.height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7463700135936
+    m_Key: gs.minimum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513322946560
+    m_Key: gs.maximum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7660761120768
+    m_Key: gs.timemotion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10385854955520
+    m_Key: Step_Month
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10408650997760
+    m_Key: Step_Day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10426317406208
+    m_Key: Step_Hour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10445279854592
+    m_Key: Step_Minute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10462761713664
+    m_Key: Step_Second
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11191090020352
+    m_Key: gs.unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12332255281152
+    m_Key: gs.trackedsat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12644227612672
+    m_Key: gs.satdata
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14016784236544
+    m_Key: New Entry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14018491318272
+    m_Key: ISS_Info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14019875438592
+    m_Key: HST_Info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14021196644352
+    m_Key: SENT6_Info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14022417186816
+    m_Key: KEPLER20_Info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14023901970432
+    m_Key: STARLINK_Info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17255776780288
+    m_Key: gs.satset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17361754259456
+    m_Key: gs.showorbit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17434651262976
+    m_Key: gs.generalInfo
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 5232451192944853026
+  references:
+    version: 2
+    RefIds:
+    - rid: 5232451192944853026
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1751326688570

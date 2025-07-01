@@ -119,6 +119,10 @@ MonoBehaviour:
     m_Key: name4
     m_Metadata:
       m_Items: []
+  - m_Id: 16720243851264
+    m_Key: preload.loading
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

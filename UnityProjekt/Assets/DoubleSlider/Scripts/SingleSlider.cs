@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 #endregion
@@ -76,12 +77,24 @@ namespace DoubleSlider.Scripts
 
             if (Mathf.Approximately(Value, 1000))
             {
-                _label.Text = "Unlimited";
+                string txt = LocalizationSettings.StringDatabase
+                       .GetLocalizedString("GameScene", "gs.unlimited");
+                _label.Text = txt;
             }
             else
             {
                 _label.Text = Value.ToString("F1") + " km";
             }
+        }
+
+        private void OnEnable()
+        {
+            LocalizationSettings.SelectedLocaleChanged += _ => UpdateLabel();
+        }
+
+        private void OnDisable()
+        {
+            LocalizationSettings.SelectedLocaleChanged -= _ => UpdateLabel();
         }
     }
 }

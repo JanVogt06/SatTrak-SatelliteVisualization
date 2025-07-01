@@ -17,6 +17,13 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: de55d9d667ea6394683f98e26c8536cd
   m_SerializeEntries:
+  - m_GUID: 4b8ca5577799bc642ad9a885e2293a06
+    m_Address: GameScene_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e175f4e232f315948b7fe63237867f39
     m_Address: MainMenuTable_en
     m_ReadOnly: 1

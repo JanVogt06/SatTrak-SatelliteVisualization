@@ -24,6 +24,13 @@ MonoBehaviour:
     - Locale-de
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d901cee12af2fee4aa4002363308845f
+    m_Address: GameScene_de
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-de
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: bcdefd1e8e9ffc646a74fc357818f2d2, type: 2}
   m_SchemaSet:
