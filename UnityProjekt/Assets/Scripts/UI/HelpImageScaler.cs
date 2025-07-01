@@ -1,45 +1,51 @@
 using UnityEngine;
-using UnityEngine.UI;   // nur UGUI
-using System;
+using UnityEngine.UI;
 
+/// <summary>
+/// Keeps an Image scaled to a max % of its parent width (no stretch, centred).
+/// Safe against execution order & missing components.
+/// </summary>
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(LayoutElement))]
-public class HelpImageScaler : MonoBehaviour, ILayoutSelfController   // ILayoutSelfController ist hier in UnityEngine.UI
+public class HelpImageScaler : MonoBehaviour, ILayoutSelfController
 {
-    [Range(0f, 1f)]
-    [SerializeField] private float maxRelativeWidth = 0.8f;   // 80 %
+    [Range(0.1f, 1f)]
+    [SerializeField] float maxRelativeWidth = 0.8f;  // 80 %
 
     Image         img;
     LayoutElement le;
+    RectTransform rt;
 
     void Awake()
     {
         img = GetComponent<Image>();
         le  = GetComponent<LayoutElement>();
+        rt  = GetComponent<RectTransform>();
 
-        // sicherstellen, dass Aspect-Schalter aktiv ist
-        img.preserveAspect = true;
+        if (img) img.preserveAspect = true;
     }
 
-    /* Unity ruft diese beiden Methoden beim Layouten auf */
+    /* Called by the UI-system during a layout pass */
     public void SetLayoutHorizontal() => Adjust();
     public void SetLayoutVertical()   => Adjust();
 
     void Adjust()
     {
-        if (img.sprite == null) { le.preferredWidth = le.preferredHeight = 0; return; }
+        /* **Guard-clauses** : bail out if something is missing */
+        if (img == null || le == null || rt == null || img.sprite == null)
+            return;
 
-        RectTransform parentRT = transform.parent as RectTransform;
+        /* Parent width – if parent is disabled, return */
+        RectTransform parentRT = rt.parent as RectTransform;
         if (parentRT == null) return;
 
-        float parentW  = parentRT.rect.width;
-        float maxW     = parentW * maxRelativeWidth;
+        float maxW = parentRT.rect.width * maxRelativeWidth;
 
-        float sprW = img.sprite.rect.width;
-        float sprH = img.sprite.rect.height;
-        float ratio = sprH / sprW;
+        float spriteW = img.sprite.rect.width;
+        float spriteH = img.sprite.rect.height;
+        float ratio   = spriteH / spriteW;
 
-        float targetW = Mathf.Min(maxW, sprW);   // nicht größer skalieren als Original
+        float targetW = Mathf.Min(maxW, spriteW);
         float targetH = targetW * ratio;
 
         le.preferredWidth  = targetW;

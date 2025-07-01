@@ -6015,6 +6015,10 @@ MonoBehaviour:
     type: 3}
   imagePrefab: {fileID: 1262514350935981509, guid: e2120062a039d4cdca1d7c03dff3cc69,
     type: 3}
+  thumbImagePrefab: {fileID: 1262514350935981509, guid: 04c3dc4b1cb5a4531addb91d22a44c9c,
+    type: 3}
+  thumbRowPrefab: {fileID: 5923306860754484038, guid: f235a28a64f7f4d39889caa6defb173a,
+    type: 3}
   tocContainerPrefab: {fileID: 7627653151861961021, guid: 29019de554bd44da9a8bf3f2fa6d38ee,
     type: 3}
   tocButtonPrefab: {fileID: 240245046670426525, guid: be90a4ebbec9f4f00895c1287d3c269a,
@@ -8189,6 +8193,10 @@ MonoBehaviour:
   bodyPrefab: {fileID: 1719672028647928767, guid: c724ff706a68b4a08a0996ef54f01cf6,
     type: 3}
   imagePrefab: {fileID: 1262514350935981509, guid: e2120062a039d4cdca1d7c03dff3cc69,
+    type: 3}
+  thumbImagePrefab: {fileID: 1262514350935981509, guid: 04c3dc4b1cb5a4531addb91d22a44c9c,
+    type: 3}
+  thumbRowPrefab: {fileID: 5923306860754484038, guid: f235a28a64f7f4d39889caa6defb173a,
     type: 3}
   tocContainerPrefab: {fileID: 7627653151861961021, guid: 29019de554bd44da9a8bf3f2fa6d38ee,
     type: 3}
@@ -15613,6 +15621,10 @@ MonoBehaviour:
     type: 3}
   imagePrefab: {fileID: 1262514350935981509, guid: e2120062a039d4cdca1d7c03dff3cc69,
     type: 3}
+  thumbImagePrefab: {fileID: 1262514350935981509, guid: 04c3dc4b1cb5a4531addb91d22a44c9c,
+    type: 3}
+  thumbRowPrefab: {fileID: 5923306860754484038, guid: f235a28a64f7f4d39889caa6defb173a,
+    type: 3}
   tocContainerPrefab: {fileID: 7627653151861961021, guid: 29019de554bd44da9a8bf3f2fa6d38ee,
     type: 3}
   tocButtonPrefab: {fileID: 240245046670426525, guid: be90a4ebbec9f4f00895c1287d3c269a,
@@ -20452,6 +20464,10 @@ MonoBehaviour:
   bodyPrefab: {fileID: 1719672028647928767, guid: c724ff706a68b4a08a0996ef54f01cf6,
     type: 3}
   imagePrefab: {fileID: 1262514350935981509, guid: e2120062a039d4cdca1d7c03dff3cc69,
+    type: 3}
+  thumbImagePrefab: {fileID: 1262514350935981509, guid: 04c3dc4b1cb5a4531addb91d22a44c9c,
+    type: 3}
+  thumbRowPrefab: {fileID: 5923306860754484038, guid: f235a28a64f7f4d39889caa6defb173a,
     type: 3}
   tocContainerPrefab: {fileID: 7627653151861961021, guid: 29019de554bd44da9a8bf3f2fa6d38ee,
     type: 3}

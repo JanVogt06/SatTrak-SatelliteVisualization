@@ -15,6 +15,7 @@ Pressing "Esc"
 Show Satellites 
 Day-Night-Cycle
 Show Heatmap 
+--> image 
 
 
 ## Visual Menu
