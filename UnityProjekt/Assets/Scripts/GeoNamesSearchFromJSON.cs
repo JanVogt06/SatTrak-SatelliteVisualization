@@ -145,7 +145,7 @@ public class GeoNamesSearchFromJSON : MonoBehaviour
         filterDropdown.ClearOptions();
         var opts = new List<TMP_Dropdown.OptionData>
         {
-            new(L("GameScene", "gs.All")),
+            new(L("GameScene", "gs.AllCitys")),
             new(L("GameScene", "gs.FamousCity")),
             new(L("GameScene", "gs.NameAsc")),
             new(L("GameScene", "gs.NameDesc"))

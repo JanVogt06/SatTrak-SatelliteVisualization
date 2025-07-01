@@ -165,48 +165,41 @@ public class SearchPanelController : MonoBehaviour
         filterDropdown.RefreshShownValue();
     }
 
-    void Start()
+    private void Start()
     {
-        if (satelliteManager == null)
-            satelliteManager = SatelliteManager.Instance;
-        if (zoomController == null)
-            zoomController = FindObjectOfType<CesiumZoomController>();
-        if (georeference == null)
-            georeference = FindObjectOfType<CesiumGeoreference>();
-
-        infoPanel.SetActive(false);
-        panel.SetActive(false);
-        openButton.onClick.AddListener(() => OpenButtonPanel());
+        openButton.onClick.AddListener(OpenButtonPanel);
 
         nextPageButton.onClick.AddListener(() => ShowPage(currentPage + 1));
-        nextPageButton.onClick.AddListener(() => ResetHighlight());
         prevPageButton.onClick.AddListener(() => ShowPage(currentPage - 1));
-        prevPageButton.onClick.AddListener(() => ResetHighlight());
-
         firstPageButton.onClick.AddListener(() => ShowPage(0));
-        firstPageButton.onClick.AddListener(() => ResetHighlight());
-
         lastPageButton.onClick.AddListener(() => ShowPage(totalPages - 1));
-        lastPageButton.onClick.AddListener(() => ResetHighlight());
+
+        nextPageButton.onClick.AddListener(ResetHighlight);
+        prevPageButton.onClick.AddListener(ResetHighlight);
+        firstPageButton.onClick.AddListener(ResetHighlight);
+        lastPageButton.onClick.AddListener(ResetHighlight);
 
         disableAllOrbitsButton.onClick.AddListener(DisableAllOrbits);
 
-        satelliteManager.OnSatellitesLoaded += list =>
-        {
-            allSatelliteNames = list.Select(s => s.gameObject.name).ToList();
-            ApplySearchFilter(searchInputField.text);
-        };
-
         searchInputField.onValueChanged.AddListener(ApplySearchFilter);
 
+        PopulateFilterDropdown();
         filterDropdown.onValueChanged.AddListener(OnFilterChanged);
-        searchInputField.onValueChanged.AddListener(ApplySearchFilter);
 
-        satelliteManager.OnSatellitesLoaded += list =>
+        LocalizationSettings.SelectedLocaleChanged += _ =>
         {
-            allSatelliteNames = list.Select(s => s.gameObject.name).ToList();
-            ApplyCurrentFilter();
+            PopulateFilterDropdown();
+
+            pageLabel.text = filteredSatelliteNames.Count == 0
+                ? L("GameScene", "NoResults")
+                : L("GameScene", "PageLabel", currentPage + 1, totalPages);
+
+            if (famousInfoPanel.activeSelf && trackedSatellite != null)
+                ShowSatelliteInfo(trackedSatellite);         
         };
+
+        ApplyCurrentFilter();  
+        ShowPage(0);          
     }
 
     public void ResetHighlight()
@@ -284,21 +277,24 @@ public class SearchPanelController : MonoBehaviour
             ResetSearchPanel();
     }
 
-
     private void Awake()
     {
         satelliteManager.OnSatellitesLoaded += list =>
         {
             allSatelliteNames = list.Select(s => s.gameObject.name).ToList();
             perigeeByName = list.ToDictionary(
-                sat => sat.gameObject.name,
-                sat => sat.OrbitPropagator.Orbit.Perigee);
+                                    sat => sat.gameObject.name,
+                                    sat => sat.OrbitPropagator.Orbit.Perigee);
 
-            ApplyCurrentFilter();
+            ApplyCurrentFilter();                             
         };
 
         theUI1.SetActive(true);
         theUI2.SetActive(true);
+
+        panel.SetActive(false);
+        infoPanel.SetActive(false);
+        famousInfoPanel.SetActive(false);
 
         zoomSlider.minValue = 0f;
         zoomSlider.maxValue = 1f;
@@ -308,36 +304,6 @@ public class SearchPanelController : MonoBehaviour
 
         _targetDistance = Mathf.Lerp(minDistance, maxDistance, defaultSliderPos);
         cameraDistanceOffset = _targetDistance;
-
-        filterDropdown.ClearOptions();
-        filterDropdown.AddOptions(new List<TMP_Dropdown.OptionData>
-        {
-            new TMP_Dropdown.OptionData("All satellites"),
-            new TMP_Dropdown.OptionData("Famous satellites"),
-            new TMP_Dropdown.OptionData("Name ascending"),
-            new TMP_Dropdown.OptionData("Name descending"),
-            new TMP_Dropdown.OptionData("Distance ascending"),
-            new TMP_Dropdown.OptionData("Distance descending")
-        });
-        filterDropdown.RefreshShownValue();
-
-        LocalizationSettings.SelectedLocaleChanged += _ =>
-        {
-            if (famousInfoPanel.activeSelf && trackedSatellite != null)
-                ShowSatelliteInfo(trackedSatellite);   
-        };
-
-        PopulateFilterDropdown();
-
-        LocalizationSettings.SelectedLocaleChanged += _ =>
-        {
-            PopulateFilterDropdown();             
-
-            pageLabel.text = L("GameScene", "PageLabel",
-                               currentPage + 1, totalPages);
-            if (filteredSatelliteNames.Count == 0)
-                pageLabel.text = L("GameScene", "NoResults");
-        };
     }
 
     private static string StripLeadingDigits(string input)

@@ -363,6 +363,10 @@ MonoBehaviour:
     m_Localized: "Ber\xFChmte Orte"
     m_Metadata:
       m_Items: []
+  - m_Id: 302505446735872
+    m_Localized: "Alle St\xE4dte / D\xF6rfer"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
