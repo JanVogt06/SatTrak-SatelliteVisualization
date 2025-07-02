@@ -151,29 +151,53 @@ public class HelpContentBuilder : MonoBehaviour
     }
 
     /* ───────── TOC ───────── */
+    /* ───────── TOC  (no extra stack, 4 buttons per row) ───────── */
     void BuildTOC()
     {
         if (tocEntries.Count == 0 || tocContainerPrefab == null
             || tocButtonPrefab == null || scrollRect == null) return;
 
-        var toc = Instantiate(tocContainerPrefab, contentRoot);
-        toc.transform.SetSiblingIndex(1);                        // direkt unter H1
-
-        if (toc.TryGetComponent(out HorizontalLayoutGroup hlg))
+        // helper to spawn a new horizontal row directly under contentRoot
+        RectTransform NewRow(int siblingIndex)
         {
-            hlg.padding.left = 30;                               // linker Rand
-            hlg.SetLayoutHorizontal();
+            var row = Instantiate(tocContainerPrefab, contentRoot)
+                    .GetComponent<RectTransform>();
+
+            // linker Margin
+            if (row.TryGetComponent(out HorizontalLayoutGroup hlg))
+            {
+                hlg.padding.left = 30;
+                hlg.SetLayoutHorizontal();
+            }
+
+            row.transform.SetSiblingIndex(siblingIndex);
+            return row;
         }
 
-        foreach (var e in tocEntries)
+        /* erste Zeile direkt unter dem H1-Header (Index 1) */
+        int            nextSibling = 1;
+        RectTransform  currentRow  = NewRow(nextSibling++);
+        int            btnInRow    = 0;
+
+        foreach (var entry in tocEntries)
         {
-            var btn = Instantiate(tocButtonPrefab, toc.transform);
-            btn.GetComponentInChildren<TMP_Text>().text = e.title;
+            // nach 4 Buttons neue Zeile erstellen
+            if (btnInRow >= 4)
+            {
+                currentRow = NewRow(nextSibling++);
+                btnInRow   = 0;
+            }
+
+            var btn = Instantiate(tocButtonPrefab, currentRow);
+            btn.GetComponentInChildren<TMP_Text>().text = entry.title;
 
             var tb = btn.GetComponent<TOCButton>() ?? btn.AddComponent<TOCButton>();
-            tb.Init(e.section, scrollRect);
+            tb.Init(entry.section, scrollRect);
+
+            btnInRow++;
         }
     }
+
 
     /* ───────── Helpers ───────── */
     RectTransform InstantiateTMP(GameObject prefab, string text)

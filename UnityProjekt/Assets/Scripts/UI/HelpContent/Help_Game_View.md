@@ -1,45 +1,96 @@
 # Game View
 
+\
+
 ## Space View
 
 ![Space](spaceview)
 
-### The yellow Dot
-Is a marker for the ISS. Aufgrund der Bekanntheit dieser Station haben wir uns entschieden sie dauerhaft markiert anzuzeigen. 
+### The Yellow Dot  
+A **persistent yellow marker** highlights the *International Space Station (ISS)* so you can locate it instantly.
 
-### Rotating the Earth
-You can rotate the earth by left click holding on the earth and moving the mouse in any direction. 
+\
 
-### Back To Space View 
-In every view except the space view, you can always press the "Back to Space" button. 
+### Rotating the Globe  
+- **Left-click and drag** anywhere on the Earth to spin it freely.  
+- Drag direction = rotation direction.
+
+\
+
+### Jump Back to Space  
+Wherever you are, press **Back to Space** to return to the default orbit-wide view.
 
 ![thumb](backtospacebutton)
 
+---
+
 ## Satellite View
-After Searching for a Satellite (more Information in the Game Menu Tab) you are in the Satellite View. The free fly camera is disabled in this view. 
 
-### Metadata of Satellite, Zoom
-By Pressing the Button in the top left of the program u can see more information about the Satellite directly downloaded over the API where we also collect the information of the satellite position (which one, was previously discribed in chat in read me)
+After searching for a satellite (see *Game Menu* tab) the camera auto-zooms to that object.  
+*Free-Fly* mode is **disabled** here.
 
-image of arrow, image of menu 
+![view](SatellitenView)
 
-### Orbit
-You can have a look on the suggested Orbit path of the satellite by activating the checkbox
-image
+\
 
-It is also possible to have multiple orbits activated.
-image
+### Satellite Metadata & Zoom
+
+Click the **Info** button (top-left) to view  
+
+- General information  
+- Orbital parameters  
+- Mission facts (for famous satellites)
+
+*(All data is sourced from the same API that supplies real-time positions.)*
+
+Use the **Zoom slider** to adjust field of view.
+
+![thumb](SatellitenInfosButton)  
+![thumb](SatellitenInfos)
+
+\
+
+### Orbit Paths
+
+![thumb](showorbit)
+
+- Enable the **Orbit** checkbox to display the predicted track.  
+- **Multiple orbits** can be shown simultaneously (search multiple satellites and activate their orbit checkbox).  
+- Reset all active orbits via **Reset Orbit** in the *Visual Menu*.
+
+![thumb](multipleorbit)
+
+---
 
 ## Earth View
-After Searching for a City (more Information in the Game Menu Tab) you are in the Earth View on the city position. Here the Free Fly Camera is activated. 
-image
 
-We cleered the Earth View and Resized the Satellites, so u can see them. 
+Searching for a city switches to **Earth View** centred on that location.
 
+![earthview](earthview)
 
-### Control of the Free Fly Cam 
---> control via w a s d and direction of the camera, switch between locked view and camer view by pressing 'ESC'
+- Satellites are **scaled up** for clarity.  
+- *Free-Fly Camera* is **enabled**.  
+- See the *Game Menu* tab for details on location search.
 
-### Look at Satellites for more Information 
-By looking at the satellites with the crosshair in the free fly camera mode, u get the name of a satellite. When interested u can later on search for the name, to get more Information about it. 
-image
+![image](CityViewFreeFly)
+
+\
+
+### Free-Fly Controls
+
+- **W / A / S / D** – move forward / left / back / right  
+- **Mouse** – look around  
+- **Shift** – fast movement  
+- **ESC** – toggle between *Locked* and *Camera* mode
+
+\
+
+### Identify Nearby Satellites
+
+Centre a satellite in the **crosshair** to display its name.  
+Take note of the ID or name and use the search panel later for full details.
+
+![satellite](earthviewsatelliteinfo)
+
+\
+
