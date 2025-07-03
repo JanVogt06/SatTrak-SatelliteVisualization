@@ -48,3 +48,7 @@ UnityProjekt/Assets/StreamingAssets/crashlytics-build.properties
 UnityProjekt/.vscode/extensions.json
 UnityProjekt/.vscode/launch.json
 UnityProjekt/.vscode/settings.json
+# Unity Build Ordner
+MacOS_Built/
+Windows_Built/
+*_Built/
