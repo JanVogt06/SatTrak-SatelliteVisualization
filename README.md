@@ -6,6 +6,10 @@ auf einem virtuellen Globus zu verfolgen.
 ![Satellite Tracker Screenshot](screenshots/main-view.png)
 *Screenshot der Weltraumansicht mit aktiven Satelliten*
 
+## 📋 Migration Notice
+
+Dieses Repository wurde von GitLab zu GitHub migriert. Siehe [MIGRATION.md](MIGRATION.md) für Details über den Migrationsprozess.
+
 ## 🌍 Features
 
 ### Kern-Features
@@ -27,13 +31,13 @@ auf einem virtuellen Globus zu verfolgen.
 ### User Interface
 
 - **Anpassbare UI**:
-    - Customizable Crosshair (6 Designs, 8 Farben)
-    - Cursor-Designs (2 Varianten, 8 Farben)
-    - FPS-Anzeige (optional)
+  - Customizable Crosshair (6 Designs, 8 Farben)
+  - Cursor-Designs (2 Varianten, 8 Farben)
+  - FPS-Anzeige (optional)
 - **Zeitsteuerung**:
-    - Zeitraffer (0x - 1000x)
-    - Zeit-Slider mit Zoom-Funktion
-    - Pause/Play Kontrollen
+  - Zeitraffer (0x - 1000x)
+  - Zeit-Slider mit Zoom-Funktion
+  - Pause/Play Kontrollen
 - **Audio-System**: Hintergrundmusik mit Lautstärkeregelung
 
 ## 📋 Systemanforderungen
@@ -71,24 +75,51 @@ auf einem virtuellen Globus zu verfolgen.
 ### 1. Voraussetzungen
 
 - Unity Hub installiert
-- Git installiert (für Repository-Klonen)
+- Git und Git LFS installiert (für Repository-Klonen)
+- Cesium Ion Account (kostenlos unter https://cesium.com/ion/)
 
-### 2. Projekt Setup
+### 2. Git LFS Setup
 
 ```bash
-# Repository klonen
-git clone https://git.uni-jena.de/se47toc/UnitySeminar.git
+# Git LFS installieren (einmalig)
+# macOS: brew install git-lfs
+# Windows: Download von https://git-lfs.github.com/
+# Linux: sudo apt-get install git-lfs
 
-# In Projektverzeichnis wechseln
-cd UnitySeminar
+# LFS initialisieren
+git lfs install
 ```
 
-### 3. Unity Projekt öffnen
+### 3. Projekt Setup
+
+```bash
+# Repository klonen (mit LFS für große Dateien)
+git clone https://github.com/JanVogt06/SatTrak-SatelliteVisualization.git
+
+# In Projektverzeichnis wechseln
+cd SatTrak-SatelliteVisualization/UnityProjekt
+```
+
+### 4. Cesium API Key einrichten
+
+**WICHTIG**: Das Projekt benötigt einen Cesium Ion API Key!
+
+1. Erstelle einen kostenlosen Account auf https://cesium.com/ion/
+2. Generiere einen neuen API Token unter "Access Tokens"
+3. Erstelle eine Datei `UnityProjekt/Assets/cesium-config.txt`
+4. Füge deinen API Key ein: `CESIUM_API_KEY=dein-api-key-hier`
+
+**Alternativ**: Suche im Code nach `Cesium-Api-Key-Placeholder` und ersetze es durch deinen API Key.
+
+⚠️ **Sicherheitshinweis**: Committe niemals deinen API Key! Die `cesium-config.txt` ist in `.gitignore` aufgeführt.
+
+### 5. Unity Projekt öffnen
 
 1. Unity Hub öffnen
-2. "Add" → Projektordner auswählen
+2. "Add" → `UnityProjekt` Ordner auswählen
 3. Mit Unity 2022.3 LTS öffnen
 4. Warten bis alle Packages importiert sind
+5. Cesium Panel öffnen (Window → Cesium) und Token einfügen
 
 ## 🎮 Bedienung
 
@@ -104,11 +135,11 @@ cd UnitySeminar
 
 - **ESC**: Zwischen Inspektions- und Kameramodus wechseln
 - Im Kameramodus:
-    - **W/A/S/D**: Vorwärts/Links/Rückwärts/Rechts
-    - **Maus**: Umsehen
-    - **Shift**: Schnellere Bewegung
-    - **Mausrad**: Vorwärts/Rückwärts
-    - **R**: Zurück zur Ausgangsposition
+  - **W/A/S/D**: Vorwärts/Links/Rückwärts/Rechts
+  - **Maus**: Umsehen
+  - **Shift**: Schnellere Bewegung
+  - **Mausrad**: Vorwärts/Rückwärts
+  - **R**: Zurück zur Ausgangsposition
 
 ### UI-Elemente
 
@@ -119,98 +150,108 @@ cd UnitySeminar
 - **Heatmap Toggle**: Satellitendichte-Visualisierung ein/aus
 - **Show/Hide Toggle**: Satelliten ein-/ausblenden
 - **Time Controls**:
-    - Time Multiplier: Simulationsgeschwindigkeit (1x - 1000x)
-    - Time Slider: Zeitpunkt einstellen (Mausrad zum Zoomen)
+  - Time Multiplier: Simulationsgeschwindigkeit (1x - 1000x)
+  - Time Slider: Zeitpunkt einstellen (Mausrad zum Zoomen)
 - **Altitude Slider**: Satelliten nach Höhe filtern (200km - 40.000km)
 - **Settings**: Crosshair, Cursor, Audio und Grafikeinstellungen
 
 ## 🏗️ Projektstruktur
 
 ```
-UnityProjekt/
-├── Assets/
-│   ├── Scripts/
-│   │   ├── Satellites/                    # Satelliten-Kernlogik
-│   │   │   ├── SGP/                      # SGP4 Orbit-Propagation Algorithmus
-│   │   │   ├── Satellite.cs              # Satelliten-Entität
-│   │   │   ├── SatelliteManager.cs       # Zentrale Satelliten-Verwaltung
-│   │   │   ├── SatelliteOrbit.cs         # Orbit-Visualisierung
-│   │   │   ├── SatelliteModelController.cs # LOD-System & Modell-Switching
-│   │   │   └── MoveSatelliteJobParallelForTransform.cs # Job System
+SatTrak-SatelliteVisualization/
+├── UnityProjekt/
+│   ├── Assets/
+│   │   ├── Scripts/
+│   │   │   ├── Satellites/                    # Satelliten-Kernlogik
+│   │   │   │   ├── SGP/                      # SGP4 Orbit-Propagation Algorithmus
+│   │   │   │   ├── Satellite.cs              # Satelliten-Entität
+│   │   │   │   ├── SatelliteManager.cs       # Zentrale Satelliten-Verwaltung
+│   │   │   │   ├── SatelliteOrbit.cs         # Orbit-Visualisierung
+│   │   │   │   ├── SatelliteModelController.cs # LOD-System & Modell-Switching
+│   │   │   │   └── MoveSatelliteJobParallelForTransform.cs # Job System
+│   │   │   │
+│   │   │   ├── UI/                           # User Interface
+│   │   │   │   ├── SearchPanelController.cs  # Satelliten-Suche & Filter
+│   │   │   │   ├── SatelliteLabelUI.cs       # Satelliten-Labels
+│   │   │   │   ├── ISSQuickButton.cs         # ISS Schnellzugriff
+│   │   │   │   ├── SatelliteShowHide.cs      # Sichtbarkeits-Toggle
+│   │   │   │   └── TooltipController.cs      # Tooltip-System
+│   │   │   │
+│   │   │   ├── Lighting/                     # Beleuchtung
+│   │   │   │   ├── DayNightSystem.cs         # Tag/Nacht-Zyklus
+│   │   │   │   └── EarthDayNightOverlay.cs   # Terminator-Visualisierung
+│   │   │   │
+│   │   │   ├── Heatmap/                      # Dichtevisualisierung
+│   │   │   │   ├── HeatmapController.cs      # Heatmap-Verwaltung
+│   │   │   │   └── HeatmapDensityJob.cs      # GPU-Berechnung
+│   │   │   │
+│   │   │   ├── TimeSlider/                   # Zeitsteuerung
+│   │   │   │   ├── TimeSlider.cs             # Zeit-Kontrolle
+│   │   │   │   └── SliderStep.cs             # Zoom-Stufen
+│   │   │   │
+│   │   │   ├── DoubleSlider/                 # Altitude-Filter
+│   │   │   │   └── Scripts/                  # Doppel-Slider Komponenten
+│   │   │   │
+│   │   │   ├── CesiumZoomController.cs       # Kamera-Modi (Space/Earth)
+│   │   │   ├── FreeFlyCamera.cs              # First-Person Kamera
+│   │   │   ├── GlobeRotationController.cs    # Orbit-Kamera
+│   │   │   ├── IntroOrbitCam.cs              # Start-Animation
+│   │   │   ├── CameraFlySequence.cs          # Kamera-Übergänge
+│   │   │   ├── CameraAccessMonitor.cs        # Debug-Tool
+│   │   │   │
+│   │   │   ├── MenuManager.cs                # Hauptmenü-Verwaltung
+│   │   │   ├── MainMenuCameraMovement.cs     # Menü-Animation
+│   │   │   ├── MainMenuSatelliteSpawner.cs   # Menü-Dekoration
+│   │   │   ├── PreloadScene.cs               # Asset-Preloading
+│   │   │   ├── SceneSwitcher.cs              # Szenen-Verwaltung
+│   │   │   │
+│   │   │   ├── CrosshairSelector.cs          # Crosshair-Einstellungen
+│   │   │   ├── CrosshairSettings.cs          # Crosshair-Speicher
+│   │   │   ├── CustomCursor.cs               # Cursor-System
+│   │   │   ├── MusicManager.cs               # Audio-Verwaltung
+│   │   │   │
+│   │   │   ├── GeoNamesSearchFromJSON.cs     # Ortssuche
+│   │   │   ├── ConversionExtensions.cs       # Koordinaten-Helfer
+│   │   │   ├── TerrainHeightClamp.cs         # Terrain-Anpassung
+│   │   │   ├── FlyingUIPhysics.cs            # UI-Physik
+│   │   │   └── DefaultStuff.cs               # Verschiedene UI-Funktionen
 │   │   │
-│   │   ├── UI/                           # User Interface
-│   │   │   ├── SearchPanelController.cs  # Satelliten-Suche & Filter
-│   │   │   ├── SatelliteLabelUI.cs       # Satelliten-Labels
-│   │   │   ├── ISSQuickButton.cs         # ISS Schnellzugriff
-│   │   │   ├── SatelliteShowHide.cs      # Sichtbarkeits-Toggle
-│   │   │   └── TooltipController.cs      # Tooltip-System
+│   │   ├── Modelle/                          # 3D Assets (über Git LFS)
+│   │   │   ├── Satellites/                   # Standard-Satelliten
+│   │   │   ├── FamousSatellites/             # ISS, Hubble, etc.
+│   │   │   ├── Materials/                    # Materialien & Shader
+│   │   │   └── UI/                           # UI-Grafiken
 │   │   │
-│   │   ├── Lighting/                     # Beleuchtung
-│   │   │   ├── DayNightSystem.cs         # Tag/Nacht-Zyklus
-│   │   │   └── EarthDayNightOverlay.cs   # Terminator-Visualisierung
+│   │   ├── Resources/                        # Runtime-Ressourcen
+│   │   │   ├── Localization/                 # Sprachdateien (DE/EN)
+│   │   │   ├── Audio/                        # Musik & Sounds
+│   │   │   └── Data/                         # JSON-Daten (GeoNames, etc.)
 │   │   │
-│   │   ├── Heatmap/                      # Dichtevisualisierung
-│   │   │   ├── HeatmapController.cs      # Heatmap-Verwaltung
-│   │   │   └── HeatmapDensityJob.cs      # GPU-Berechnung
+│   │   ├── Data/
+│   │   │   └── Cities/                       # Städte-Datenbank (über Git LFS)
+│   │   │       └── cities.json               # 189 MB große Datei
 │   │   │
-│   │   ├── TimeSlider/                   # Zeitsteuerung
-│   │   │   ├── TimeSlider.cs             # Zeit-Kontrolle
-│   │   │   └── SliderStep.cs             # Zoom-Stufen
+│   │   ├── Scenes/                           # Unity-Szenen
+│   │   │   ├── PreloadScene.unity            # Lade-Szene
+│   │   │   ├── MainMenu.unity                # Hauptmenü
+│   │   │   └── GameScene.unity               # Spiel-Szene
 │   │   │
-│   │   ├── DoubleSlider/                 # Altitude-Filter
-│   │   │   └── Scripts/                  # Doppel-Slider Komponenten
+│   │   ├── Plugins/                          # Externe Plugins
+│   │   │   └── Cesium/                       # Cesium for Unity
 │   │   │
-│   │   ├── CesiumZoomController.cs       # Kamera-Modi (Space/Earth)
-│   │   ├── FreeFlyCamera.cs              # First-Person Kamera
-│   │   ├── GlobeRotationController.cs    # Orbit-Kamera
-│   │   ├── IntroOrbitCam.cs              # Start-Animation
-│   │   ├── CameraFlySequence.cs          # Kamera-Übergänge
-│   │   ├── CameraAccessMonitor.cs        # Debug-Tool
-│   │   │
-│   │   ├── MenuManager.cs                # Hauptmenü-Verwaltung
-│   │   ├── MainMenuCameraMovement.cs     # Menü-Animation
-│   │   ├── MainMenuSatelliteSpawner.cs   # Menü-Dekoration
-│   │   ├── PreloadScene.cs               # Asset-Preloading
-│   │   ├── SceneSwitcher.cs              # Szenen-Verwaltung
-│   │   │
-│   │   ├── CrosshairSelector.cs          # Crosshair-Einstellungen
-│   │   ├── CrosshairSettings.cs          # Crosshair-Speicher
-│   │   ├── CustomCursor.cs               # Cursor-System
-│   │   ├── MusicManager.cs               # Audio-Verwaltung
-│   │   │
-│   │   ├── GeoNamesSearchFromJSON.cs     # Ortssuche
-│   │   ├── ConversionExtensions.cs       # Koordinaten-Helfer
-│   │   ├── TerrainHeightClamp.cs         # Terrain-Anpassung
-│   │   ├── FlyingUIPhysics.cs            # UI-Physik
-│   │   └── DefaultStuff.cs               # Verschiedene UI-Funktionen
+│   │   └── StreamingAssets/                  # Cesium Tiles & große Dateien
 │   │
-│   ├── Modelle/                          # 3D Assets
-│   │   ├── Satellites/                   # Standard-Satelliten
-│   │   ├── Famous/                       # ISS, Hubble, etc.
-│   │   ├── Materials/                    # Materialien & Shader
-│   │   └── UI/                           # UI-Grafiken
+│   ├── Packages/                             # Unity Package Manager
+│   │   ├── manifest.json                     # Package-Definitionen
+│   │   └── packages-lock.json                # Version Lock
 │   │
-│   ├── Resources/                        # Runtime-Ressourcen
-│   │   ├── Localization/                 # Sprachdateien (DE/EN)
-│   │   ├── Audio/                        # Musik & Sounds
-│   │   └── Data/                         # JSON-Daten (GeoNames, etc.)
-│   │
-│   ├── Scenes/                           # Unity-Szenen
-│   │   ├── PreloadScene.unity            # Lade-Szene
-│   │   ├── MainMenu.unity                # Hauptmenü
-│   │   └── GameScene.unity               # Spiel-Szene
-│   │
-│   ├── Plugins/                          # Externe Plugins
-│   │   └── Cesium/                       # Cesium for Unity
-│   │
-│   └── StreamingAssets/                  # Cesium Tiles & große Dateien
+│   └── ProjectSettings/                      # Unity-Projekteinstellungen
 │
-├── Packages/                             # Unity Package Manager
-│   ├── manifest.json                     # Package-Definitionen
-│   └── packages-lock.json                # Version Lock
-│
-├── ProjectSettings/                      # Unity-Projekteinstellungen
-└── README.md                             # Projektdokumentation
+├── screenshots/                              # Projekt-Screenshots
+├── .gitignore                               # Git Ignore-Regeln
+├── .gitattributes                           # Git LFS Tracking
+├── MIGRATION.md                             # Migrations-Dokumentation
+└── README.md                                # Diese Datei
 ```
 
 ### Hauptkomponenten
@@ -231,7 +272,7 @@ UnityProjekt/
 
 - **HeatmapController**: GPU-basierte Satellitendichte-Darstellung
 - **EarthDayNightOverlay**: Shader-basierte Tag/Nacht-Grenze
-- **SatelliteModelConroller**: Modelle basierend auf Ansicht ein/ausschalten
+- **SatelliteModelController**: Modelle basierend auf Ansicht ein/ausschalten
 
 #### UI & Interaktion
 
@@ -283,21 +324,27 @@ updateFrequency = 0.1f;        // Update-Rate (Sekunden)
 
 ## 🚀 Build-Anweisungen
 
+### Vorbereitung
+
+1. **Cesium API Key** im Code ersetzen oder über Config-Datei setzen
+2. Build Settings öffnen (File → Build Settings)
+3. Szenen hinzufügen: PreloadScene, MainMenu, GameScene
+
 ### Windows Build
 
-1. File → Build Settings
-2. Platform: PC, Mac & Linux Standalone
-3. Target Platform: Windows
-4. Architecture: x86_64
-5. Build
+1. Platform: PC, Mac & Linux Standalone
+2. Target Platform: Windows
+3. Architecture: x86_64
+4. Build
 
 ### macOS Build
 
-1. File → Build Settings
-2. Platform: PC, Mac & Linux Standalone
-3. Target Platform: macOS
-4. Architecture: Intel 64-bit + Apple silicon
-5. Build
+1. Platform: PC, Mac & Linux Standalone
+2. Target Platform: macOS
+3. Architecture: Intel 64-bit + Apple silicon
+4. Build
+
+⚠️ **Hinweis**: Build-Ordner sind nicht im Repository enthalten. Die kompilierten Versionen müssen lokal erstellt werden.
 
 ## 🐛 Troubleshooting
 
@@ -305,9 +352,15 @@ updateFrequency = 0.1f;        // Update-Rate (Sekunden)
 
 **Cesium Tiles werden nicht geladen**
 
+- API Key überprüfen (Cesium-Api-Key-Placeholder ersetzen!)
 - Internetverbindung prüfen
 - Cesium Ion Token in Cesium Panel überprüfen
 - Firewall-Einstellungen kontrollieren
+
+**Git LFS Fehler beim Klonen**
+
+- Git LFS installieren: `git lfs install`
+- Große Dateien manuell abrufen: `git lfs pull`
 
 **Niedrige FPS / Performance-Probleme**
 
@@ -328,12 +381,17 @@ updateFrequency = 0.1f;        // Update-Rate (Sekunden)
 - [SGP4 Algorithmus Erklärung](https://celestrak.com/NORAD/documentation/)
 - [TLE Format Spezifikation](https://celestrak.com/columns/v04n03/)
 - [Unity Job System](https://docs.unity3d.com/Manual/JobSystem.html)
+- [Git LFS Dokumentation](https://git-lfs.github.com/)
 
 ## 👥 Credits
 
 - **Projektleitung**: Jan Vogt, Yannik Köllmann, Leon Erdhütter, Niklas Maximilian Becker-Klöster
 - **Entwicklung**: Universitätsprojekt FSU Jena
 - **Datenquellen**:
-    - [CelesTrak](https://celestrak.org/) für TLE-Daten
-    - [GeoNames](https://www.geonames.org/) für Ortsdatenbank
+  - [CelesTrak](https://celestrak.org/) für TLE-Daten
+  - [GeoNames](https://www.geonames.org/) für Ortsdatenbank
 - **3D-Modelle**: Von NASA bereitgestellte Modelle
+
+## 📄 Lizenz
+
+Dieses Projekt ist ein Universitätsprojekt. Für Lizenzinformationen kontaktiere die Projektautoren.
