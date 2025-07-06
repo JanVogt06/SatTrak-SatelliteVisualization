@@ -1,5 +1,4 @@
 # Satellite Tracker Unity
-
 Ein interaktives 3D-Satelliten-Visualisierungsprojekt für Unity, das Cesium for Unity nutzt, um Satelliten in Echtzeit
 auf einem virtuellen Globus zu verfolgen.
 
